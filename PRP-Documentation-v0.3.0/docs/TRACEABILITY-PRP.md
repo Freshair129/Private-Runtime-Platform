@@ -1,0 +1,120 @@
+---
+document_id: TRACEABILITY-PRP
+title: "Traceability | Requirements to Evidence"
+product: PRP - Private Runtime Platform
+version: 0.3.0
+status: draft-for-review
+created_at: 2026-09-20
+language: th-TH
+source_authority: authored-proposal
+implementation_status: NOT_IMPLEMENTED_IN_THIS_DELIVERY
+runtime_verification: NOT_RUN
+repository_integration: NOT_PERFORMED
+---
+
+# Traceability | Requirements to Evidence
+
+**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+
+เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [SRS](SRS-PRP.md) · [Roadmap](ROADMAP-PRP.md)
+
+## 1. Generated trace matrix
+Derived from the SRS requirement records. Requirement statements remain authoritative in SRS-PRP. All runtime status NOT_RUN. Roadmap epic links are stage anchors, not proof of implementation.
+
+| Requirement | Epic | Phase | Owner | Diagram | Test | Status |
+|---|---|---|---|---|---|---|
+| [PRP-FR-001](SRS-PRP.md#PRP-FR-001) | E01 | P1-A | Core | [D01](DIAGRAMS-PRP.md#D01) | [PRP-AT-001](TEST-PRP.md#PRP-AT-001) | NOT_RUN |
+| [PRP-FR-002](SRS-PRP.md#PRP-FR-002) | E01 | P1-A | Core | [D03](DIAGRAMS-PRP.md#D03) | [PRP-AT-002](TEST-PRP.md#PRP-AT-002) | NOT_RUN |
+| [PRP-FR-003](SRS-PRP.md#PRP-FR-003) | E01 | P1-A | Identity | [D17](DIAGRAMS-PRP.md#D17) | [PRP-AT-003](TEST-PRP.md#PRP-AT-003) | NOT_RUN |
+| [PRP-FR-004](SRS-PRP.md#PRP-FR-004) | E01 | P1-A | Identity | [D05](DIAGRAMS-PRP.md#D05) | [PRP-AT-004](TEST-PRP.md#PRP-AT-004) | NOT_RUN |
+| [PRP-FR-005](SRS-PRP.md#PRP-FR-005) | E01 | P1-A | Identity | [D08](DIAGRAMS-PRP.md#D08) | [PRP-AT-005](TEST-PRP.md#PRP-AT-005) | NOT_RUN |
+| [PRP-FR-006](SRS-PRP.md#PRP-FR-006) | E01 | P1-A | Identity | [D08](DIAGRAMS-PRP.md#D08) | [PRP-AT-006](TEST-PRP.md#PRP-AT-006) | NOT_RUN |
+| [PRP-FR-007](SRS-PRP.md#PRP-FR-007) | E01 | P1-A | Identity | [D05](DIAGRAMS-PRP.md#D05) | [PRP-AT-007](TEST-PRP.md#PRP-AT-007) | NOT_RUN |
+| [PRP-FR-008](SRS-PRP.md#PRP-FR-008) | E01 | P1-A | Admission | [D09](DIAGRAMS-PRP.md#D09) | [PRP-AT-008](TEST-PRP.md#PRP-AT-008) | NOT_RUN |
+| [PRP-FR-009](SRS-PRP.md#PRP-FR-009) | E01 | P1-A | Identity | [D17](DIAGRAMS-PRP.md#D17) | [PRP-AT-009](TEST-PRP.md#PRP-AT-009) | NOT_RUN |
+| [PRP-FR-010](SRS-PRP.md#PRP-FR-010) | E02 | P1-A | Registry | [D10](DIAGRAMS-PRP.md#D10) | [PRP-AT-010](TEST-PRP.md#PRP-AT-010) | NOT_RUN |
+| [PRP-FR-011](SRS-PRP.md#PRP-FR-011) | E02 | P1-A | Registry | [D10](DIAGRAMS-PRP.md#D10) | [PRP-AT-011](TEST-PRP.md#PRP-AT-011) | NOT_RUN |
+| [PRP-FR-012](SRS-PRP.md#PRP-FR-012) | E02 | P1-A | Registry | [D18](DIAGRAMS-PRP.md#D18) | [PRP-AT-012](TEST-PRP.md#PRP-AT-012) | NOT_RUN |
+| [PRP-FR-013](SRS-PRP.md#PRP-FR-013) | E02 | P1-A | Admission | [D18](DIAGRAMS-PRP.md#D18) | [PRP-AT-013](TEST-PRP.md#PRP-AT-013) | NOT_RUN |
+| [PRP-FR-014](SRS-PRP.md#PRP-FR-014) | E02 | P1-A | Observability | [D14](DIAGRAMS-PRP.md#D14) | [PRP-AT-014](TEST-PRP.md#PRP-AT-014) | NOT_RUN |
+| [PRP-FR-015](SRS-PRP.md#PRP-FR-015) | E02 | P1-A | Registry | [D14](DIAGRAMS-PRP.md#D14) | [PRP-AT-015](TEST-PRP.md#PRP-AT-015) | NOT_RUN |
+| [PRP-FR-016](SRS-PRP.md#PRP-FR-016) | E02 | P1-A | Router | [D09](DIAGRAMS-PRP.md#D09) | [PRP-AT-016](TEST-PRP.md#PRP-AT-016) | NOT_RUN |
+| [PRP-FR-017](SRS-PRP.md#PRP-FR-017) | E02 | P1-A | Admission | [D09](DIAGRAMS-PRP.md#D09) | [PRP-AT-017](TEST-PRP.md#PRP-AT-017) | NOT_RUN |
+| [PRP-FR-018](SRS-PRP.md#PRP-FR-018) | E02 | P1-B | Admission | [D04](DIAGRAMS-PRP.md#D04) | [PRP-AT-018](TEST-PRP.md#PRP-AT-018) | NOT_RUN |
+| [PRP-FR-019](SRS-PRP.md#PRP-FR-019) | E02 | P1-A | Admission | [D09](DIAGRAMS-PRP.md#D09) | [PRP-AT-019](TEST-PRP.md#PRP-AT-019) | NOT_RUN |
+| [PRP-FR-020](SRS-PRP.md#PRP-FR-020) | E02 | P1-A | Execution | [D13](DIAGRAMS-PRP.md#D13) | [PRP-AT-020](TEST-PRP.md#PRP-AT-020) | NOT_RUN |
+| [PRP-FR-021](SRS-PRP.md#PRP-FR-021) | E02 | P1-A | Execution | [D12](DIAGRAMS-PRP.md#D12) | [PRP-AT-021](TEST-PRP.md#PRP-AT-021) | NOT_RUN |
+| [PRP-FR-022](SRS-PRP.md#PRP-FR-022) | E02 | P1-A | Execution | [D13](DIAGRAMS-PRP.md#D13) | [PRP-AT-022](TEST-PRP.md#PRP-AT-022) | NOT_RUN |
+| [PRP-FR-023](SRS-PRP.md#PRP-FR-023) | E03 | P1-A | API | [D06](DIAGRAMS-PRP.md#D06) | [PRP-AT-023](TEST-PRP.md#PRP-AT-023) | NOT_RUN |
+| [PRP-FR-024](SRS-PRP.md#PRP-FR-024) | E03 | P1-A | Chat Adapter | [D06](DIAGRAMS-PRP.md#D06) | [PRP-AT-024](TEST-PRP.md#PRP-AT-024) | NOT_RUN |
+| [PRP-FR-025](SRS-PRP.md#PRP-FR-025) | E03 | P1-A | Chat Adapter | [D06](DIAGRAMS-PRP.md#D06) | [PRP-AT-025](TEST-PRP.md#PRP-AT-025) | NOT_RUN |
+| [PRP-FR-026](SRS-PRP.md#PRP-FR-026) | E03 | P1-A | Chat Adapter | [D03](DIAGRAMS-PRP.md#D03) | [PRP-AT-026](TEST-PRP.md#PRP-AT-026) | NOT_RUN |
+| [PRP-FR-027](SRS-PRP.md#PRP-FR-027) | E03 | P1-A | Accounting | [D16](DIAGRAMS-PRP.md#D16) | [PRP-AT-027](TEST-PRP.md#PRP-AT-027) | NOT_RUN |
+| [PRP-FR-028](SRS-PRP.md#PRP-FR-028) | E03 | P1-A | Core | [D19](DIAGRAMS-PRP.md#D19) | [PRP-AT-028](TEST-PRP.md#PRP-AT-028) | NOT_RUN |
+| [PRP-FR-029](SRS-PRP.md#PRP-FR-029) | E04 | P1-B | Artifact | [D07](DIAGRAMS-PRP.md#D07) | [PRP-AT-029](TEST-PRP.md#PRP-AT-029) | NOT_RUN |
+| [PRP-FR-030](SRS-PRP.md#PRP-FR-030) | E04 | P1-B | Speech Adapter | [D20](DIAGRAMS-PRP.md#D20) | [PRP-AT-030](TEST-PRP.md#PRP-AT-030) | NOT_RUN |
+| [PRP-FR-031](SRS-PRP.md#PRP-FR-031) | E04 | P1-B | Speech Adapter | [D07](DIAGRAMS-PRP.md#D07) | [PRP-AT-031](TEST-PRP.md#PRP-AT-031) | NOT_RUN |
+| [PRP-FR-032](SRS-PRP.md#PRP-FR-032) | E04 | P1-B | Speech Adapter | [D07](DIAGRAMS-PRP.md#D07) | [PRP-AT-032](TEST-PRP.md#PRP-AT-032) | NOT_RUN |
+| [PRP-FR-033](SRS-PRP.md#PRP-FR-033) | E04 | P1-B | Speech Adapter | [D07](DIAGRAMS-PRP.md#D07) | [PRP-AT-033](TEST-PRP.md#PRP-AT-033) | NOT_RUN |
+| [PRP-FR-034](SRS-PRP.md#PRP-FR-034) | E04 | P1-B | Speech Adapter | [D07](DIAGRAMS-PRP.md#D07) | [PRP-AT-034](TEST-PRP.md#PRP-AT-034) | NOT_RUN |
+| [PRP-FR-035](SRS-PRP.md#PRP-FR-035) | E04 | P1-B | API | [D07](DIAGRAMS-PRP.md#D07) | [PRP-AT-035](TEST-PRP.md#PRP-AT-035) | NOT_RUN |
+| [PRP-FR-036](SRS-PRP.md#PRP-FR-036) | E05 | P1-B | Jobs | [D12](DIAGRAMS-PRP.md#D12) | [PRP-AT-036](TEST-PRP.md#PRP-AT-036) | NOT_RUN |
+| [PRP-FR-037](SRS-PRP.md#PRP-FR-037) | E05 | P1-B | Jobs | [D12](DIAGRAMS-PRP.md#D12) | [PRP-AT-037](TEST-PRP.md#PRP-AT-037) | NOT_RUN |
+| [PRP-FR-038](SRS-PRP.md#PRP-FR-038) | E05 | P1-B | Jobs | [D12](DIAGRAMS-PRP.md#D12) | [PRP-AT-038](TEST-PRP.md#PRP-AT-038) | NOT_RUN |
+| [PRP-FR-039](SRS-PRP.md#PRP-FR-039) | E05 | P1-B | Artifact | [D19](DIAGRAMS-PRP.md#D19) | [PRP-AT-039](TEST-PRP.md#PRP-AT-039) | NOT_RUN |
+| [PRP-FR-040](SRS-PRP.md#PRP-FR-040) | E05 | P1-B | Artifact | [D11](DIAGRAMS-PRP.md#D11) | [PRP-AT-040](TEST-PRP.md#PRP-AT-040) | NOT_RUN |
+| [PRP-FR-041](SRS-PRP.md#PRP-FR-041) | E05 | P1-B | Artifact | [D19](DIAGRAMS-PRP.md#D19) | [PRP-AT-041](TEST-PRP.md#PRP-AT-041) | NOT_RUN |
+| [PRP-FR-042](SRS-PRP.md#PRP-FR-042) | E02 | P1-A | Worker Adapter | [D18](DIAGRAMS-PRP.md#D18) | [PRP-AT-042](TEST-PRP.md#PRP-AT-042) | NOT_RUN |
+| [PRP-FR-043](SRS-PRP.md#PRP-FR-043) | E04 | P1-B | Speech Adapter | [D03](DIAGRAMS-PRP.md#D03) | [PRP-AT-043](TEST-PRP.md#PRP-AT-043) | NOT_RUN |
+| [PRP-FR-044](SRS-PRP.md#PRP-FR-044) | E02 | P1-B | Admission | [D14](DIAGRAMS-PRP.md#D14) | [PRP-AT-044](TEST-PRP.md#PRP-AT-044) | NOT_RUN |
+| [PRP-FR-045](SRS-PRP.md#PRP-FR-045) | E06 | P1-A | Observability | [D21](DIAGRAMS-PRP.md#D21) | [PRP-AT-045](TEST-PRP.md#PRP-AT-045) | NOT_RUN |
+| [PRP-FR-046](SRS-PRP.md#PRP-FR-046) | E06 | P1-C | Observability | [D21](DIAGRAMS-PRP.md#D21) | [PRP-AT-046](TEST-PRP.md#PRP-AT-046) | NOT_RUN |
+| [PRP-FR-047](SRS-PRP.md#PRP-FR-047) | E06 | P1-A | Audit | [D17](DIAGRAMS-PRP.md#D17) | [PRP-AT-047](TEST-PRP.md#PRP-AT-047) | NOT_RUN |
+| [PRP-FR-048](SRS-PRP.md#PRP-FR-048) | E06 | P1-A | Console | [D05](DIAGRAMS-PRP.md#D05) | [PRP-AT-048](TEST-PRP.md#PRP-AT-048) | NOT_RUN |
+| [PRP-FR-049](SRS-PRP.md#PRP-FR-049) | E07 | P1-B | Reference Client | [D07](DIAGRAMS-PRP.md#D07) | [PRP-AT-049](TEST-PRP.md#PRP-AT-049) | NOT_RUN |
+| [PRP-FR-050](SRS-PRP.md#PRP-FR-050) | E01 | P1-A | Operations | [D04](DIAGRAMS-PRP.md#D04) | [PRP-AT-050](TEST-PRP.md#PRP-AT-050) | NOT_RUN |
+| [PRP-FR-051](SRS-PRP.md#PRP-FR-051) | E06 | P1-C | Operations | [D22](DIAGRAMS-PRP.md#D22) | [PRP-AT-051](TEST-PRP.md#PRP-AT-051) | NOT_RUN |
+| [PRP-FR-052](SRS-PRP.md#PRP-FR-052) | E06 | P1-C | Operations | [D23](DIAGRAMS-PRP.md#D23) | [PRP-AT-052](TEST-PRP.md#PRP-AT-052) | NOT_RUN |
+| [PRP-FR-053](SRS-PRP.md#PRP-FR-053) | E07 | P1-C | API | [D26](DIAGRAMS-PRP.md#D26) | [PRP-AT-053](TEST-PRP.md#PRP-AT-053) | NOT_RUN |
+| [PRP-FR-054](SRS-PRP.md#PRP-FR-054) | E07 | P1-A | Core | [D01](DIAGRAMS-PRP.md#D01) | [PRP-AT-054](TEST-PRP.md#PRP-AT-054) | NOT_RUN |
+| [PRP-FR-055](SRS-PRP.md#PRP-FR-055) | E07 | P1-C | Integration Adapter | [D11](DIAGRAMS-PRP.md#D11) | [PRP-AT-055](TEST-PRP.md#PRP-AT-055) | NOT_RUN |
+| [PRP-FR-056](SRS-PRP.md#PRP-FR-056) | E08 | P1-A | Core | [D24](DIAGRAMS-PRP.md#D24) | [PRP-AT-056](TEST-PRP.md#PRP-AT-056) | NOT_RUN |
+| [PRP-NFR-001](SRS-PRP.md#PRP-NFR-001) | E06 | P1-A | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-057](TEST-PRP.md#PRP-AT-057) | NOT_RUN |
+| [PRP-NFR-002](SRS-PRP.md#PRP-NFR-002) | E06 | P1-A | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-058](TEST-PRP.md#PRP-AT-058) | NOT_RUN |
+| [PRP-NFR-003](SRS-PRP.md#PRP-NFR-003) | E06 | P1-A | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-059](TEST-PRP.md#PRP-AT-059) | NOT_RUN |
+| [PRP-NFR-004](SRS-PRP.md#PRP-NFR-004) | E06 | P1-C | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-060](TEST-PRP.md#PRP-AT-060) | NOT_RUN |
+| [PRP-NFR-005](SRS-PRP.md#PRP-NFR-005) | E06 | P1-C | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-061](TEST-PRP.md#PRP-AT-061) | NOT_RUN |
+| [PRP-NFR-006](SRS-PRP.md#PRP-NFR-006) | E06 | P1-C | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-062](TEST-PRP.md#PRP-AT-062) | NOT_RUN |
+| [PRP-NFR-007](SRS-PRP.md#PRP-NFR-007) | E06 | P1-B | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-063](TEST-PRP.md#PRP-AT-063) | NOT_RUN |
+| [PRP-NFR-008](SRS-PRP.md#PRP-NFR-008) | E06 | P1-B | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-064](TEST-PRP.md#PRP-AT-064) | NOT_RUN |
+| [PRP-NFR-009](SRS-PRP.md#PRP-NFR-009) | E06 | P1-B | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-065](TEST-PRP.md#PRP-AT-065) | NOT_RUN |
+| [PRP-NFR-010](SRS-PRP.md#PRP-NFR-010) | E06 | P1-B | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-066](TEST-PRP.md#PRP-AT-066) | NOT_RUN |
+| [PRP-NFR-011](SRS-PRP.md#PRP-NFR-011) | E06 | P1-A | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-067](TEST-PRP.md#PRP-AT-067) | NOT_RUN |
+| [PRP-NFR-012](SRS-PRP.md#PRP-NFR-012) | E06 | P1-C | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-068](TEST-PRP.md#PRP-AT-068) | NOT_RUN |
+| [PRP-NFR-013](SRS-PRP.md#PRP-NFR-013) | E06 | P1-B | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-069](TEST-PRP.md#PRP-AT-069) | NOT_RUN |
+| [PRP-NFR-014](SRS-PRP.md#PRP-NFR-014) | E06 | P1-B | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-070](TEST-PRP.md#PRP-AT-070) | NOT_RUN |
+| [PRP-NFR-015](SRS-PRP.md#PRP-NFR-015) | E06 | P1-C | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-071](TEST-PRP.md#PRP-AT-071) | NOT_RUN |
+| [PRP-NFR-016](SRS-PRP.md#PRP-NFR-016) | E06 | P1-A | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-072](TEST-PRP.md#PRP-AT-072) | NOT_RUN |
+| [PRP-NFR-017](SRS-PRP.md#PRP-NFR-017) | E06 | P1-C | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-073](TEST-PRP.md#PRP-AT-073) | NOT_RUN |
+| [PRP-NFR-018](SRS-PRP.md#PRP-NFR-018) | E06 | P1-C | Quality | [D25](DIAGRAMS-PRP.md#D25) | [PRP-AT-074](TEST-PRP.md#PRP-AT-074) | NOT_RUN |
+| [PRP-SEC-001](SRS-PRP.md#PRP-SEC-001) | E01 | P1-A | Security | [D20](DIAGRAMS-PRP.md#D20) | [PRP-AT-075](TEST-PRP.md#PRP-AT-075) | NOT_RUN |
+| [PRP-SEC-002](SRS-PRP.md#PRP-SEC-002) | E01 | P1-A | Security | [D08](DIAGRAMS-PRP.md#D08) | [PRP-AT-076](TEST-PRP.md#PRP-AT-076) | NOT_RUN |
+| [PRP-SEC-003](SRS-PRP.md#PRP-SEC-003) | E01 | P1-A | Security | [D20](DIAGRAMS-PRP.md#D20) | [PRP-AT-077](TEST-PRP.md#PRP-AT-077) | NOT_RUN |
+| [PRP-SEC-004](SRS-PRP.md#PRP-SEC-004) | E01 | P1-A | Security | [D17](DIAGRAMS-PRP.md#D17) | [PRP-AT-078](TEST-PRP.md#PRP-AT-078) | NOT_RUN |
+| [PRP-SEC-005](SRS-PRP.md#PRP-SEC-005) | E01 | P1-A | Security | [D20](DIAGRAMS-PRP.md#D20) | [PRP-AT-079](TEST-PRP.md#PRP-AT-079) | NOT_RUN |
+| [PRP-SEC-006](SRS-PRP.md#PRP-SEC-006) | E01 | P1-A | Security | [D05](DIAGRAMS-PRP.md#D05) | [PRP-AT-080](TEST-PRP.md#PRP-AT-080) | NOT_RUN |
+| [PRP-SEC-007](SRS-PRP.md#PRP-SEC-007) | E01 | P1-B | Security | [D18](DIAGRAMS-PRP.md#D18) | [PRP-AT-081](TEST-PRP.md#PRP-AT-081) | NOT_RUN |
+| [PRP-SEC-008](SRS-PRP.md#PRP-SEC-008) | E01 | P1-A | Security | [D21](DIAGRAMS-PRP.md#D21) | [PRP-AT-082](TEST-PRP.md#PRP-AT-082) | NOT_RUN |
+| [PRP-SEC-009](SRS-PRP.md#PRP-SEC-009) | E01 | P1-B | Security | [D19](DIAGRAMS-PRP.md#D19) | [PRP-AT-083](TEST-PRP.md#PRP-AT-083) | NOT_RUN |
+| [PRP-SEC-010](SRS-PRP.md#PRP-SEC-010) | E01 | P1-A | Security | [D23](DIAGRAMS-PRP.md#D23) | [PRP-AT-084](TEST-PRP.md#PRP-AT-084) | NOT_RUN |
+| [PRP-SEC-011](SRS-PRP.md#PRP-SEC-011) | E01 | P1-A | Security | [D20](DIAGRAMS-PRP.md#D20) | [PRP-AT-085](TEST-PRP.md#PRP-AT-085) | NOT_RUN |
+| [PRP-SEC-012](SRS-PRP.md#PRP-SEC-012) | E01 | P1-A | Security | [D03](DIAGRAMS-PRP.md#D03) | [PRP-AT-086](TEST-PRP.md#PRP-AT-086) | NOT_RUN |
+| [PRP-NFR-019](SRS-PRP.md#PRP-NFR-019) | E01 | P1-A | Core | [D32](DIAGRAMS-PRP.md#D32) | [PRP-AT-087](TEST-PRP.md#PRP-AT-087) | NOT_RUN |
+| [PRP-NFR-020](SRS-PRP.md#PRP-NFR-020) | E02 | G0 | Architecture + QA | [D31](DIAGRAMS-PRP.md#D31) | [PRP-AT-088](TEST-PRP.md#PRP-AT-088) | NOT_RUN |
+| [PRP-NFR-021](SRS-PRP.md#PRP-NFR-021) | E02 | P1-A | Core + Runtime | [D32](DIAGRAMS-PRP.md#D32) | [PRP-AT-089](TEST-PRP.md#PRP-AT-089) | NOT_RUN |
+| [PRP-NFR-022](SRS-PRP.md#PRP-NFR-022) | E06 | P1-A | Build + Operations | [D23](DIAGRAMS-PRP.md#D23) | [PRP-AT-090](TEST-PRP.md#PRP-AT-090) | NOT_RUN |
+| [PRP-NFR-023](SRS-PRP.md#PRP-NFR-023) | E03 | P1-A | Security + Admission | [D33](DIAGRAMS-PRP.md#D33) | [PRP-AT-091](TEST-PRP.md#PRP-AT-091) | NOT_RUN |
+| [PRP-NFR-024](SRS-PRP.md#PRP-NFR-024) | E08 | P1-C | API + Operations | [D34](DIAGRAMS-PRP.md#D34) | [PRP-AT-092](TEST-PRP.md#PRP-AT-092) | NOT_RUN |
+
+## 2. P2 trace
+P2 IDs link to E08 and P2-A/P2-B. They are envelopes; detailed acceptance tests are NOT_SPECIFIED until the P2 baseline is refined. They do not count as Phase1 test coverage.

@@ -1,0 +1,15 @@
+{
+  "evidence_id": null,
+  "test_id": "PRP-AT-001",
+  "status": "NOT_RUN",
+  "commit": null,
+  "image_digest": null,
+  "model_profile_hash": null,
+  "hardware": {},
+  "workload": null,
+  "sample_count": null,
+  "observations": null,
+  "result_files": [],
+  "reviewer": null,
+  "notes": "Template only. No runtime result generated."
+}

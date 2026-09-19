@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant L as LINE Platform
+    participant A as External adapter
+    participant P as PRP
+    participant S as Artifact access
+    participant U as LINE user
+    L->>A: Webhook event / raw signature
+    Note over L,U: Adapter verifies, deduplicates and commits ingress before HTTP 200; DB failure is not acknowledged as success
+    A-->>L: 200 webhook + optional reply ACK
+    A->>L: Get authorized audio content
+    A->>P: ASR -> client context -> chat -> TTS
+    P-->>A: Text + artifact references
+    A->>S: Mint policy-approved audio grant
+    S-->>A: HTTPS URL / bounded TTL
+    A->>L: Push with first-request retry key
+    L->>U: Deliver message / fetch media
+    Note over L,U: ACK consumed reply token. Push policy/quota required. Unknown send is reconciled; no new inference to repair delivery

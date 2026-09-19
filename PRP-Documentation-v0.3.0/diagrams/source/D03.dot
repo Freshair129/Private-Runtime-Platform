@@ -1,0 +1,35 @@
+digraph D03 {
+	bgcolor=white fontname="DejaVu Sans" fontsize=16 labelloc=t nodesep=0.4 pad=0.25 rankdir=LR ranksep=0.65 splines=spline
+	node [color="#536779" fillcolor="#E9F3F8" fontname="DejaVu Sans" fontsize=12 margin="0.18,0.12" penwidth=1.1 shape=box style="rounded,filled"]
+	edge [arrowsize=0.7 color="#5B6F81" fontname="DejaVu Sans" fontsize=10]
+	app [label="Client application
+Conversation / tools / RAG / delivery" fillcolor="#F0F1F3" shape=box]
+	api [label="PRP public contracts" fillcolor="#E9F3F8" shape=box]
+	core [label="Python PRP policy + ports
+Framework-backed capabilities" fillcolor="#E9F3F8" shape=box]
+	port [label="Worker + Storage Ports
+Stable interfaces" fillcolor="#ECE8F6" shape=box]
+	llm [label="Selected manager / vLLM adapter" fillcolor="#E5F3ED" shape=box]
+	voice [label="Headless voice adapter
+Lalin-derived candidate" fillcolor="#E5F3ED" shape=box]
+	engine [label="ASR / TTS model engines" fillcolor="#E5F3ED" shape=box]
+	data [label="PRP data only
+No business FK/import" fillcolor="#FFF4DB" shape=box]
+	studio [label="Lalin Studio / Desktop
+Optional separate client" fillcolor="#F0F1F3" shape=box]
+	no [label="Forbidden coupling
+Zuri DB / LINE keys / app agent
+inside PRP or workers" fillcolor="#FDECE6" shape=box]
+	app -> api [label="" style=solid]
+	studio -> api [label="" style=solid]
+	api -> core [label="" style=solid]
+	core -> port [label="" style=solid]
+	core -> data [label="" style=solid]
+	port -> llm [label="" style=solid]
+	port -> voice [label="" style=solid]
+	voice -> engine [label="" style=solid]
+	no -> core [label="NOT permitted" style=dashed]
+	rankdir=LR
+	rankdir=TB
+	rankdir=TB
+}

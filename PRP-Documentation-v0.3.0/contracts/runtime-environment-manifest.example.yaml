@@ -1,0 +1,41 @@
+# TEMPLATE ONLY. Not a deployable configuration or an actual dependency lock.
+product: PRP
+spec_version: 0.3.0
+status: NOT_QUALIFIED
+selected_runtime_strategy: null  # A or B after WP24; C requires a separate decision
+client_key_authority: null
+admission_authority: null
+services:
+  control:
+    language: python
+    python_version: null
+    lock_or_image_digest: null
+    model_loading_allowed: false
+    cuda_initialization_allowed: false
+  llm_a:
+    runtime: vllm
+    runtime_manager: null
+    python_version: null
+    image_digest: null
+    model_revision: null
+    physical_resource_id: null
+    profile_epoch: null
+    qualified: false
+  llm_b:
+    runtime: vllm
+    runtime_manager: null
+    python_version: null
+    image_digest: null
+    model_revision: null
+    physical_resource_id: null
+    profile_epoch: null
+    qualified: false
+  speech:
+    adapter: null
+    python_version: null
+    lock_or_image_digest: null
+    placement: null
+    model_revision: null
+    approved_voice_revision: null
+    qualified: false
+# Include only credential references in a real manifest. Never embed key bytes.

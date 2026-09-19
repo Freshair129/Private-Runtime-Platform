@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant O as Operator
+    participant R as Registry
+    participant P as Private transport
+    participant W as Runtime / adapter
+    participant D as State store
+    O->>R: Register allowed origin / profile
+    R->>P: Validate DNS / TLS / route
+    P->>W: Missing + wrong credential tests
+    W-->>R: Protected endpoint must deny
+    P->>W: Valid credential + model listing
+    W-->>R: Exact model / capability identity
+    R->>W: Synthetic inference qualification
+    W-->>R: Result + measured evidence
+    R->>D: Receipt bound to profile epochs
+    R-->>O: READY only with fresh observation
+    Note over O,D: Health success alone is insufficient; configuration change or restore invalidates old qualification

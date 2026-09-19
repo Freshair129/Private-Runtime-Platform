@@ -1,0 +1,116 @@
+{
+  "actors": [
+    [
+      "OP",
+      "Operator"
+    ],
+    [
+      "PRP",
+      "PRP control\nPython adapter"
+    ],
+    [
+      "MGR",
+      "Selected runtime\nmanager"
+    ],
+    [
+      "W",
+      "Bound runtime\nA or B"
+    ],
+    [
+      "DB",
+      "PRP state\nand evidence"
+    ]
+  ],
+  "events": [
+    [
+      "OP",
+      "PRP",
+      "Request approved lifecycle/profile change",
+      "call"
+    ],
+    [
+      "PRP",
+      "DB",
+      "Persist intent, expected config epoch and authorization",
+      "call"
+    ],
+    [
+      "PRP",
+      "MGR",
+      "Delegate supported launch/list action; no arbitrary model path",
+      "call"
+    ],
+    [
+      "MGR",
+      "W",
+      "Start the approved full-model replica",
+      "call"
+    ],
+    [
+      "MGR",
+      "PRP",
+      "Return manager UID and deployment binding",
+      "return"
+    ],
+    [
+      "PRP",
+      "W",
+      "Verify protected auth, profile and actual resource identity",
+      "call"
+    ],
+    [
+      "PRP",
+      "DB",
+      "Save qualification + residency; only now mark ready",
+      "call"
+    ],
+    [
+      "NOTE",
+      "",
+      "Invocation dispatch requires a matching committed lease. Opaque internal routing fails the binding gate.",
+      "note"
+    ],
+    [
+      "PRP",
+      "W",
+      "Send one attempt to the proven target; preserve deadline",
+      "call"
+    ],
+    [
+      "NOTE",
+      "",
+      "Manager relocation, unobserved retry or unknown termination: fence result and quarantine capacity.",
+      "note"
+    ],
+    [
+      "PRP",
+      "DB",
+      "Settle once with matching runtime epoch or retain UNKNOWN",
+      "call"
+    ],
+    [
+      "OP",
+      "PRP",
+      "Drain/unload through same lifecycle owner",
+      "call"
+    ],
+    [
+      "PRP",
+      "MGR",
+      "Terminate only when authorized and existing work reconciled",
+      "call"
+    ],
+    [
+      "MGR",
+      "PRP",
+      "Report actual termination evidence, not merely timeout",
+      "return"
+    ],
+    [
+      "PRP",
+      "DB",
+      "Release residency only after verified stop",
+      "call"
+    ]
+  ]
+}

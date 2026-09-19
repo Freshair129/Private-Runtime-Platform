@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant A as Org admin
+    participant I as Identity / Policy
+    participant D as Verifier store
+    participant C as Client
+    participant G as Gateway
+    A->>I: Create least-privilege grant
+    I->>D: Store verifier / prefix / policy
+    I-->>A: Show plaintext secret once
+    A->>C: Deliver key securely
+    C->>G: Invoke with Bearer key
+    G->>I: Resolve trusted identity
+    I-->>G: Current scopes + quota
+    A->>I: Revoke / rotate grant
+    I->>D: Versioned update + invalidate
+    Note over A,G: All new admission, dispatch and result reads honor revocation bound; inference keys never become admin

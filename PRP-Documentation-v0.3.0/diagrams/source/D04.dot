@@ -1,0 +1,42 @@
+digraph D04 {
+	bgcolor=white fontname="DejaVu Sans" fontsize=16 labelloc=t nodesep=0.4 pad=0.25 rankdir=LR ranksep=0.65 splines=spline
+	node [color="#536779" fillcolor="#E9F3F8" fontname="DejaVu Sans" fontsize=12 margin="0.18,0.12" penwidth=1.1 shape=box style="rounded,filled"]
+	edge [arrowsize=0.7 color="#5B6F81" fontname="DejaVu Sans" fontsize=10]
+	subgraph cluster_0 {
+		color="#B7C6D1" fontcolor="#344B5E" fontsize=13 label="HOST A: proposed co-location, not HA" style=rounded
+		tls [label="Private TLS ingress
+Gateway only" fillcolor="#E9F3F8" shape=box]
+		ctl [label="Thin Python control
+No model weights / no CUDA" fillcolor="#E9F3F8" shape=box]
+		db [label="PRP DB + storage
+SPOF in this placement" fillcolor="#FFF4DB" shape=cylinder]
+		la [label="vLLM A
+12 GB nominal GPU" fillcolor="#E5F3ED" shape=box]
+	}
+	subgraph cluster_1 {
+		color="#B7C6D1" fontcolor="#344B5E" fontsize=13 label="HOST B" style=rounded
+		lb [label="vLLM B
+16 GB nominal GPU" fillcolor="#E5F3ED" shape=box]
+		sp [label="Isolated speech service
+CPU trial OR calibrated B headroom" fillcolor="#E5F3ED" shape=box]
+	}
+	subgraph cluster_2 {
+		color="#B7C6D1" fontcolor="#344B5E" fontsize=13 label=OPS style=rounded
+		obs [label="Private observer" fillcolor="#E9F3F8" shape=box]
+	}
+	client [label="Team LAN / approved VPN" fillcolor="#F0F1F3" shape=box]
+	pub [label="Optional external LINE adapter
+Public webhook / policy-limited media" fillcolor="#F0F1F3" shape=box]
+	client -> tls [label="" style=solid]
+	tls -> ctl [label="" style=solid]
+	ctl -> db [label="" style=solid]
+	ctl -> la [label="Private service identity" style=solid]
+	ctl -> lb [label="LAN private service identity" style=solid]
+	ctl -> sp [label="Reserved speech work" style=solid]
+	obs -> la [label="" style=solid]
+	obs -> lb [label="" style=solid]
+	pub -> tls [label="Provisioned route required" style=solid]
+	rankdir=LR
+	rankdir=TB
+	rankdir=TB
+}

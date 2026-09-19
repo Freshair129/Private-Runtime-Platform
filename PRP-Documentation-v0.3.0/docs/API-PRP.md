@@ -1,0 +1,126 @@
+---
+document_id: API-PRP
+title: "API | Public, Worker & Integration Contracts"
+product: PRP - Private Runtime Platform
+version: 0.3.0
+status: draft-for-review
+created_at: 2026-09-20
+language: th-TH
+source_authority: authored-proposal
+implementation_status: NOT_IMPLEMENTED_IN_THIS_DELIVERY
+runtime_verification: NOT_RUN
+repository_integration: NOT_PERFORMED
+---
+
+# API | Public, Worker & Integration Contracts
+
+**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+
+เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [Architecture](ARCH-PRP.md) · [Tests](TEST-PRP.md) · [Sources](SOURCES-PRP.md)
+
+## 1. Contract authority
+Machine-readable client contract: `../contracts/openapi-prp-v0.3.0.yaml` (OpenAPI 3.1). This is a proposed contract, not proof that a server implements it. Published routes must match SRS-PRP; unsupported fields are rejected rather than silently dropped. Management API is documented below but its full machine-readable schema is deferred to G0 implementation freeze.
+
+Public prefix `/v1` contains compatible chat/audio subsets. PRP-native `/prp/v1` contains capabilities, artifacts and async jobs. The namespace itself does not promise all OpenAI APIs. Client keys never authorize worker/admin APIs.
+
+## 2. Authentication and errors
+Client requests use `Authorization: Bearer <client-key>` over approved TLS/VPN. Server derives org/principal from verified key; supplied org/team/user IDs do not grant access. Console uses separate authenticated session; CSRF/secure cookie policy applies. No master/service key in browser JavaScript.
+
+`X-Request-ID` is server-assigned and returned; optional inbound correlation is bounded/sanitized and stored separately. `Idempotency-Key` is required only on native job creation. `traceparent` may be supported after validation; not identity.
+
+| HTTP | Code | Meaning / retry |
+|---|---|---|
+| 400 | INVALID_REQUEST / UNSUPPORTED_PARAMETER | fix request; no dispatch |
+| 401 | INVALID_KEY / EXPIRED_KEY | reauthenticate; don't reveal another key |
+| 403 | SCOPE_DENIED / POLICY_DENIED | no privilege/fallback escalation |
+| 404 | NOT_FOUND | missing or unauthorized object; avoid existence leaks |
+| 409 | IDEMPOTENCY_CONFLICT / VERSION_CONFLICT | do not mutate state on conflict |
+| 413 | AUDIO_TOO_LARGE | bounded ingest rejection |
+| 415 | AUDIO_FORMAT_UNSUPPORTED | actual codec/signature unsupported |
+| 422 | CONTEXT_LIMIT / NO_SPEECH / AUDIO_UNINTELLIGIBLE / ASYNC_REQUIRED | no silent truncation or fabricated transcript |
+| 429 | QUOTA_EXCEEDED / QUEUE_FULL | Retry-After only when estimated truthfully |
+| 503 | NO_ELIGIBLE_NODE / STATE_STORE_UNAVAILABLE | fail closed; no cloud fallback |
+| 504 | DEADLINE_EXCEEDED | execution may still be UNKNOWN; safe_to_retry=false until evidence |
+
+Error body: `error.code`, `error.type`, `error.message`, optional `error.param`, `request_id`, `safe_to_retry`. Never include upstream full response or secret. After SSE headers have begun, terminal errors are SSE error events, not a fictional new HTTP 503.
+
+## 3. Chat subset
+POST `/v1/chat/completions` supports `model`, text `messages`, `stream`, `temperature`, `top_p`, `max_tokens`, and qualified `tools/tool_choice`. `n=1` only; no logprobs/images/arbitrary provider extras in P1. Chat tool output is data returned to caller, never executed by PRP.
+
+Example request:
+```json
+{"model":"chat-default","messages":[{"role":"user","content":"สรุปข้อความนี้ให้หน่อย"}],"stream":false,"max_tokens":128}
+```
+
+Successful JSON uses chat-completion compatible fields `id`, `object`, `created`, `model`, `choices`, optional `usage`; PRP profile revision and usage provenance can be supplied in headers/native receipt metadata. Missing usage remains unavailable, not fake zero. The model response must be validated before settlement.
+
+SSE success: data chunks with stable completion id -> optional usage chunk when supported -> `data: [DONE]`. Failure: `event: error` + error envelope -> close; no `[DONE]` indicating success after error. Partial chunks are not automatically replayed or resumed across nodes.
+
+## 4. Synchronous ASR and TTS
+ASR: POST `/v1/audio/transcriptions`, multipart `file`, granted `model`, optional language `th/en/auto`. Returns `text`, `language`, `duration_seconds`, optional segments and PRP profile metadata. Never treat language probability as transcription confidence.
+
+TTS: POST `/v1/audio/speech`, JSON `model`, `input`, approved `voice`, `response_format=wav|mp3`, optional supported speed. Returns validated audio bytes with matching Content-Type and request/profile headers. Engine-specific reference audio/text is server-side preset state, not user payload.
+
+Estimated duration beyond sync budget returns 422 ASYNC_REQUIRED before dispatch. An unexpected overrun returns deadline error and starts execution reconciliation; it does not secretly return a 202 job object under an audio-byte contract.
+
+## 5. Native async speech protocol
+Step 1: POST `/prp/v1/artifacts` multipart audio -> 201 `{artifact_id, mime_type, duration_seconds, expires_at}`; owner assigned by server. Raw content quarantined until decoded/validated. No arbitrary remote media URL in P1.
+
+Step 2: POST `/prp/v1/jobs` with Idempotency-Key. One of:
+```json
+{"kind":"asr","model":"asr-default","input_artifact_id":"00000000-0000-4000-8000-000000000001","language":"th","deadline_seconds":180}
+```
+```json
+{"kind":"tts","model":"tts-default","input":"สวัสดีครับ","voice":"thai-preset-01","response_format":"mp3","deadline_seconds":180}
+```
+Step 3: 202 only after durable commit of job/payload/quota/outbox. Response includes `job_id`, `request_id`, `outcome=PENDING`, `execution_status=QUEUED`, relative `status_path`. Both examples are illustrative IDs/aliases, not registered resources.
+
+Step 4: scoped GET status/list; client polls using bounded exponential backoff and honors Retry-After. Polling does not create model work. P1 does not require a public job WebSocket or client callback URL, avoiding unneeded auth/SSRF surfaces.
+
+Step 5: successful ASR job returns result text/segments; TTS returns artifact ID. Failed/timeout job preserves error and execution dimension. The result's presence does not authorize another principal to read its artifact.
+
+Step 6: cancel: queued job may return200 CANCELLED+FINISHED; running returns202 cancellation_requested=true until verified cessation. Timeout/unknown may remain quarantined after response. Same request repeats do not create cancel side effects.
+
+## 6. Artifact API and lifecycle
+GET `/prp/v1/artifacts/{id}`: authenticated streaming audio response, no directory listing. DELETE: tombstone immediately, block new reads/grants, purge worker/temp/object bytes according to erasure policy. Late output is discarded against tombstone.
+
+POST `/prp/v1/artifacts/{id}/grants`: only explicit share grant. Returns `grant_id`, `url`, `expires_at`; URL is a revocable bearer capability, not a guaranteed private channel. TTL <=24h and <=artifact TTL. Authorization rechecked when minting and request policy evaluated again on fetch. Repeated/range fetches may be required; not one-time by default. DELETE `/prp/v1/grants/{id}` revokes.
+
+Artifact deletion cannot pull back copies already downloaded by LINE/clients. API and consent text must explain this boundary; erasure of PRP copies is distinct from third-party copies.
+
+## 7. Worker contract (internal design)
+| Port/method | Input | Output | Safety |
+|---|---|---|---|
+| describe | runtime identity, version request | profile hash, capabilities, language/formats, cancellation support | redacted/no secrets |
+| readiness | current epoch | READY/UNKNOWN + observed_at + limits | health alone not qualification |
+| invoke | invocation/attempt ID, profile epoch, bounded payload/artifact grant, absolute deadline | result/stream + measured metadata | already reserved by PRP |
+| cancel | attempt + fence token | ACK / UNSUPPORTED / ALREADY_FINISHED | ACK not proof CUDA stopped |
+| status/termination evidence | attempt + current runtime epoch | running/finished/unknown evidence | unsupported -> quarantine/operator recovery |
+
+An adapter/supervisor implements these ports around vLLM or speech engine; native vLLM does not have to expose custom PRP handshake endpoints. Worker never receives client-key database, LINE credential, customer database token or arbitrary shell command.
+
+## 8. Management operation inventory (schema to freeze at G0)
+Org/principal/app grants; key create/rotate/revoke; pool/node register/update/qualify/drain/disable/resume; model/voice profile approve; quota/retention policy updates; redacted usage/audit export; backup/restore initiation.
+
+Every mutation requires role+scope, current version/If-Match equivalent, idempotent operation identity where retryable, and redacted audit. Node resume/raise capacity requires current qualification receipt. No admin action silently runs host reboot/kill/model load from a user inference request.
+
+## 9. Integration-specific contract: LINE outside PRP
+External adapter owns raw-body signature verification, event dedupe by account+webhookEventId, durable ingress before HTTP200, content retrieval with its own channel credential, conversation policy/context and final delivery [SRC-04].
+
+For long voice work, adapter may consume Reply token for acknowledgement then use Push under explicit delayed-push policy. Reply token is single-use/time-bounded; do not wait for inference then assume token valid [SRC-05]. Push retry key is set on first supported request and reused only with same payload/recipient; Reply API does not use this header; acceptance does not prove user read/delivery [SRC-06].
+
+Audio delivery uses HTTPS-accessible MP3/M4A and duration in milliseconds per LINE contract [SRC-05]. Worker remains private. Native media grant is only minted when org policy accepts bearer-link exposure; otherwise send authenticated playback link from the app. No model rerun to repair a delivery acknowledgement failure.
+
+## 10. Versioning
+Breaking API/schema semantics require new major route/version and migration note. Additive capabilities are denied until explicit grants. Engine-specific fields are namespaced and profile-qualified; do not leak `provider_config` as arbitrary dictionary. Contract test fixtures are shared across native/replacement adapters; model quality remains a separate gate.
+
+## Python/framework binding addendum — v0.3.0
+Public client paths, operation IDs and schemas remain compatible with v0.2.0; info.version changes only to identify this specification revision. Xinference/Ray/LiteLLM admin paths and runtime model UIDs are not added to the PRP public namespace. Management schemas still require G0 freeze.
+
+Thin Python API uses explicit request/response types and unknown-field policy matching the published subset. A Python SDK is optional; standard HTTP clients remain first-class. No handler imports torch, loads a voice model or starts a runtime when an inference key requests a model alias.
+
+Internal binding stores public alias/profile -> provider deployment ID -> actual runtime/physical resource/epoch. Fail closed when a framework cannot prove the bound execution target required by the reservation. The adapter must normalize errors, terminal state, content-retention behavior and usage provenance rather than pass vendor objects/tracebacks through.
+
+Client auth has one authority; service-to-manager auth is a separate least-privilege credential. Gateway/SDK implicit retries, failovers and hedging are disabled unless every extra attempt is readmitted and uses the original deadline. Job/identity/artifact APIs enforce object grants even when a vendor gateway successfully authenticated the key.
+
+Synthetic A/B evaluation uses the same existing models/chat/audio/job contracts and the same error expectations. No endpoint is considered implemented merely because FastAPI generated an OpenAPI page. See NFR-019..024 and STACK-EVALUATION-PRP.
