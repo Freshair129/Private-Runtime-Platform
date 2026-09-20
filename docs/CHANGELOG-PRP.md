@@ -148,6 +148,11 @@ repository_integration: NOT_PERFORMED
 - ข้อสังเกตต่อเครื่องมือ: ค่า clock skew ของ tool รวมเวลาระหว่างการดึง reference time กับการวัด และตัวอย่างจาก HTTP Date header ไม่สอดคล้องกัน (15.1 / 2.3 / 3.4 s) จึงวัดใหม่ด้วย `w32tm /stripchart` กับ time.windows.com (`ntp_offset.json`) เป็นค่าอ้างอิงจริง และ header ของ `nvidia-smi` บน Windows ใช้คำว่า `CUDA UMD Version:` ไม่ใช่ `CUDA Version:` ที่ tool มองหา (เก็บ header เป็น artifact และกรอก 13.4 เอง) ทั้งสองข้อเป็น candidate สำหรับปรับ `host_inventory.py` ก่อนใช้กับ host A/B ไม่ใช่ blocker
 - ไม่มี verdict เปลี่ยน; EV02 ยัง NOT_RUN; ทุก AT ยัง NOT_RUN
 
+### แก้ host_inventory.py หลังการรันจริงบน control host (2026-09-20, C-1 / H2)
+- parser CUDA รับทั้ง `CUDA Version:` (Linux) และ `CUDA UMD Version:` (Windows driver 616.x) และบันทึก label ที่พบใน `cuda_version_header_label`; กรณีไม่พบทั้งสองยังบันทึกเป็น observation เช่นเดิม; unit tests ใช้ header จริงจาก artifact `WP24-2026-09-20-run1/control/EV01/nvidia_smi_header.txt` เป็น fixture ฝั่ง Windows
+- เพิ่ม `--ntp-check` / `--ntp-server`: ถาม NTP โดยตรงแบบ read-only ผ่าน `w32tm /stripchart` (Windows) หรือ `chronyc tracking` / `ntpdate -q` (อื่น ๆ) เรียกด้วย argument list เพื่อเลี่ยง path mangling ของ Git Bash รายงาน `offsets_seconds` แบบ local − server พร้อม median; ไม่มี tool ก็บันทึกแล้วไปต่อ ไม่ปรับนาฬิกา
+- `--reference-time` ยังใช้ได้แต่ field เปลี่ยนชื่อเป็น `reference_time_delta_seconds` และมี observation ระบุว่ารวม latency ระหว่างดึงเวลาอ้างอิงกับการวัด (การรันจริงได้ 4.9–11.2 s ขณะ offset จริง −0.63 s); README และ EV02-CHECKLIST อธิบายพฤติกรรมทั้งสอง; artifact ที่บันทึกไปแล้วไม่แก้
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
