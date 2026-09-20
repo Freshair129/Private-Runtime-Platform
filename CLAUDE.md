@@ -20,6 +20,7 @@ Prose is Thai (`language: th-TH`); identifiers, API names, state names and diagr
 | `docs/releases/PRP-Documentation-v0.3.0/` | **Frozen** delivered package with `MANIFEST.sha256`, Word/HTML/PDF and its own copy of the tools | never edit; only add new release folders |
 | `contracts/openapi/*.yaml`, `contracts/schemas/`, `contracts/examples/` | protocol source of truth | YAML is authored; regenerate the `.json` twins with `tools/contracts/export_json.py` (CI rejects stale ones) |
 | `tools/docs/`, `tools/contracts/` | validator, HTML builder, sequence renderer; contract export and example validation | repo tooling only; `tools/contracts` needs `pip install -r tools/contracts/requirements.txt` |
+| `tools/wp24/` | WP24 operator tooling; stdlib only; produces evidence inputs, not verdicts | repo tooling only; run from a host where only Python is installed |
 | `docs/registry/*.json`, `docs/*.html` | **Derived** | never hand-edit registry content; HTML is gitignored and built on demand |
 | `apps/control-api/` | Python control plane: `platform/` kernel, `core/` six bounded contexts with ports, `contracts/` generated models, `api/` bound to the client contract, `entrypoints/` (api, dispatcher, observer) | own `uv.lock`; adding any ML or CUDA package fails `test_no_ml_import` and `lint-imports` |
 | `workers/voice/` | Python speech worker: `contract/` models, `engines/` ports, `lifecycle/`, `server/` bound to the worker contract | own `uv.lock`; ML imports allowed only under `engines/` from M4 |
