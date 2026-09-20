@@ -3,18 +3,25 @@
 
 Run this on the control host and on each GPU host (A, B) before an EV02 run. It collects OS /
 kernel / Python version, GPU inventory and driver/CUDA version from ``nvidia-smi`` (recorded as
-"nvidia-smi not found" rather than failing when the binary is missing, since the control host is
-allowed to have no GPU driver at all), disk free space for a candidate's weights path, an optional
-clock-skew check against a reference time, and whether a container runtime is present (version
-check only, nothing is started).
+"nvidia-smi not found" rather than failing when the binary is missing; a GPU driver on the control
+host is recorded, never disqualifying, per procedure section 2), disk free space for a candidate's
+weights path, two optional clock checks, and whether a container runtime is present (version check
+only, nothing is started).
+
+Clock checks. ``--reference-time`` compares an ISO time the operator fetched earlier with the local
+clock at measurement time; the result therefore includes every second spent between fetching and
+running and is reported as ``reference_time_delta_seconds``, not as skew. ``--ntp-check`` queries an
+NTP server directly (``w32tm /stripchart`` on Windows, ``chronyc tracking`` or ``ntpdate -q`` on
+other systems, whichever is installed) and reports ``offsets_seconds`` as local minus server. Both
+are read-only; the clock is never adjusted.
 
 This script computes no verdict and makes no candidate claim; it only shapes host facts into the
 measurements/observations/artifacts fields that docs/registry/wp24-run-record-template.json
 expects under ``environment.control_host`` / ``environment.gpu_hosts[]``. Standard library only.
 
 Usage:
-  python tools/wp24/host_inventory.py --host-id A --weights-path D:/models --out wp24-out
-  python tools/wp24/host_inventory.py --host-id control --reference-time 2026-09-20T12:00:00Z
+  python tools/wp24/host_inventory.py --host-id A --weights-path D:/models --ntp-check
+  python tools/wp24/host_inventory.py --host-id control --ntp-check --ntp-server time.windows.com
 """
 
 from __future__ import annotations
@@ -23,15 +30,35 @@ import argparse
 import platform
 import re
 import shutil
+import statistics
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
 import wp24_common as common
 
-CUDA_VERSION_RE = re.compile(r"CUDA Version:\s*([\d.]+)")
+# Linux drivers print "CUDA Version: 12.4"; recent Windows drivers print "CUDA UMD Version: 13.4".
+CUDA_VERSION_RE = re.compile(r"(CUDA(?: UMD)? Version):\s*([\d.]+)")
+CUDA_LABELS = ("CUDA Version:", "CUDA UMD Version:")
 GPU_L_LINE_RE = re.compile(r"^GPU (\d+):\s*(.*?)\s*\(UUID:\s*(GPU-[0-9a-fA-F-]+)\)\s*$")
 GPU_QUERY_FIELDS = ("name", "memory.total", "driver_version", "uuid")
+
+# w32tm /stripchart ... /dataonly lines: "23:44:07, -00.6247612s" (offset = local - server).
+W32TM_OFFSET_RE = re.compile(r",\s*([+-]?\d+\.\d+)s")
+# chronyc tracking: "System time     : 0.000012 seconds fast of NTP time"
+CHRONYC_SYSTEM_TIME_RE = re.compile(
+    r"System time\s*:\s*([\d.]+)\s+seconds\s+(fast|slow)\s+of NTP time"
+)
+# ntpdate -q: "server 1.2.3.4, stratum 2, offset -0.001234, delay 0.02567" (offset = server - local)
+NTPDATE_OFFSET_RE = re.compile(r"offset\s+([+-]?\d+\.\d+)")
+
+DEFAULT_NTP_SERVER_WINDOWS = "time.windows.com"
+DEFAULT_NTP_SERVER_OTHER = "pool.ntp.org"
+
+
+def default_ntp_server(system: str | None = None) -> str:
+    system = system or platform.system()
+    return DEFAULT_NTP_SERVER_WINDOWS if system == "Windows" else DEFAULT_NTP_SERVER_OTHER
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -47,7 +74,23 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--reference-time",
         default=None,
-        help="ISO-8601 UTC time to compare this host's clock against",
+        help=(
+            "ISO-8601 UTC time fetched earlier by the operator; the reported delta includes the "
+            "fetch-to-measure latency (prefer --ntp-check for an offset)"
+        ),
+    )
+    parser.add_argument(
+        "--ntp-check",
+        action="store_true",
+        help="query an NTP server read-only (w32tm on Windows, chronyc/ntpdate elsewhere)",
+    )
+    parser.add_argument(
+        "--ntp-server",
+        default=None,
+        help=(
+            f"NTP server for --ntp-check (default {DEFAULT_NTP_SERVER_WINDOWS} on Windows, "
+            f"{DEFAULT_NTP_SERVER_OTHER} elsewhere)"
+        ),
     )
     parser.add_argument(
         "--out", default="./wp24-out", help="output directory (default: ./wp24-out)"
@@ -100,18 +143,34 @@ def collect_gpu_query(observations: list[str], gpu_driver_present: bool) -> list
     return common.parse_nvidia_smi_csv(result["stdout"], GPU_QUERY_FIELDS)
 
 
-def collect_cuda_version(observations: list[str], gpu_driver_present: bool) -> str | None:
+def parse_cuda_version(header_text: str) -> tuple[str, str] | None:
+    """Return ``(label, version)`` from a bare ``nvidia-smi`` header, or None when absent.
+
+    Accepts the Linux label ``CUDA Version:`` and the Windows label ``CUDA UMD Version:``.
+    """
+    match = CUDA_VERSION_RE.search(header_text)
+    if not match:
+        return None
+    return f"{match.group(1)}:", match.group(2)
+
+
+def collect_cuda_version(
+    observations: list[str], gpu_driver_present: bool
+) -> dict[str, str] | None:
     if not gpu_driver_present:
         return None
     result = common.run_command(["nvidia-smi"])
     if not result["found"] or result["return_code"] != 0:
         observations.append("could not read CUDA version from bare `nvidia-smi` header")
         return None
-    match = CUDA_VERSION_RE.search(result["stdout"])
-    if not match:
-        observations.append("`nvidia-smi` header did not contain a 'CUDA Version:' field")
+    parsed = parse_cuda_version(result["stdout"])
+    if parsed is None:
+        labels = " or ".join(f"'{label}'" for label in CUDA_LABELS)
+        observations.append(f"`nvidia-smi` header did not contain a {labels} field")
         return None
-    return match.group(1)
+    label, version = parsed
+    observations.append(f"CUDA version read from the `nvidia-smi` header label '{label}'")
+    return {"version": version, "header_label": label}
 
 
 def collect_disk_free(
@@ -139,9 +198,14 @@ def collect_disk_free(
     }
 
 
-def collect_clock_skew(
+def collect_reference_time_delta(
     reference_time: str | None, observations: list[str]
 ) -> dict[str, object] | None:
+    """Compare an operator-supplied reference time with the local clock.
+
+    The delta includes the seconds between fetching the reference and running this script, so it
+    bounds, but does not measure, the host's clock skew. ``collect_ntp_offset`` is the measurement.
+    """
     if reference_time is None:
         return None
     try:
@@ -152,12 +216,92 @@ def collect_clock_skew(
         observations.append(f"--reference-time {reference_time!r} is not valid ISO-8601")
         return None
     now = datetime.now(UTC)
-    skew_seconds = (now - reference).total_seconds()
+    observations.append(
+        "reference_time_delta_seconds includes the latency between fetching --reference-time and "
+        "this measurement; it is an upper bound, not a skew measurement (use --ntp-check)"
+    )
     return {
         "reference_time_utc": reference.isoformat(),
         "measured_at_utc": now.isoformat(),
-        "skew_seconds": skew_seconds,
+        "reference_time_delta_seconds": (now - reference).total_seconds(),
     }
+
+
+def parse_w32tm_stripchart(text: str) -> list[float]:
+    """Offsets (local minus server, seconds) from ``w32tm /stripchart ... /dataonly`` output."""
+    return [float(value) for value in W32TM_OFFSET_RE.findall(text)]
+
+
+def parse_chronyc_tracking(text: str) -> list[float]:
+    """Offset (local minus server, seconds) from ``chronyc tracking``; 'fast' = local ahead."""
+    match = CHRONYC_SYSTEM_TIME_RE.search(text)
+    if not match:
+        return []
+    magnitude = float(match.group(1))
+    return [magnitude if match.group(2) == "fast" else -magnitude]
+
+
+def parse_ntpdate_query(text: str) -> list[float]:
+    """Offsets (local minus server, seconds) from ``ntpdate -q`` (its offset is server - local)."""
+    return [-float(value) for value in NTPDATE_OFFSET_RE.findall(text)]
+
+
+def collect_ntp_offset(
+    enabled: bool, server: str | None, observations: list[str], system: str | None = None
+) -> dict[str, object] | None:
+    """Query an NTP server read-only and report offsets as local minus server seconds."""
+    if not enabled:
+        return None
+    system = system or platform.system()
+    server = server or default_ntp_server(system)
+    attempts: list[tuple[str, list[str], object]] = []
+    if system == "Windows":
+        attempts.append(
+            (
+                "w32tm",
+                [
+                    "w32tm",
+                    "/stripchart",
+                    f"/computer:{server}",
+                    "/samples:3",
+                    "/period:2",
+                    "/dataonly",
+                ],
+                parse_w32tm_stripchart,
+            )
+        )
+    else:
+        attempts.append(("chronyc", ["chronyc", "tracking"], parse_chronyc_tracking))
+        attempts.append(("ntpdate", ["ntpdate", "-q", server], parse_ntpdate_query))
+
+    tried: list[str] = []
+    for tool, args, parser in attempts:
+        result = common.run_command(args, timeout_seconds=30.0)
+        tried.append(tool)
+        if not result["found"]:
+            continue
+        stdout = common.redact_text(result["stdout"])
+        offsets = parser(stdout)
+        if not offsets:
+            observations.append(
+                f"{tool} ran (exit {result['return_code']}) but no offset could be parsed from its output"
+            )
+            continue
+        return {
+            "tool": tool,
+            "server": server,
+            "command": " ".join(args),
+            "offsets_seconds": offsets,
+            "median_offset_seconds": statistics.median(offsets),
+            "sign_convention": "local minus server",
+            "raw_output": stdout.strip(),
+            "return_code": result["return_code"],
+        }
+    observations.append(
+        "no NTP query tool available or none produced an offset "
+        f"(tried: {', '.join(tried)}); clock offset not measured, clock not adjusted"
+    )
+    return None
 
 
 def collect_container_runtime(observations: list[str]) -> dict[str, object]:
@@ -189,19 +333,31 @@ def main(argv: list[str]) -> int:
     collect_os_python(measurements)
     gpu_list, gpu_driver_present = collect_gpu_list(observations)
     gpu_query_rows = collect_gpu_query(observations, gpu_driver_present)
-    cuda_version = collect_cuda_version(observations, gpu_driver_present)
+    cuda = collect_cuda_version(observations, gpu_driver_present)
     disk_free = collect_disk_free(args.weights_path, observations)
-    clock_skew = collect_clock_skew(args.reference_time, observations)
+    reference_delta = collect_reference_time_delta(args.reference_time, observations)
+    ntp_offset = collect_ntp_offset(args.ntp_check, args.ntp_server, observations)
     container_runtime = collect_container_runtime(observations)
 
     measurements.append({"name": "gpu_driver_present", "value": gpu_driver_present})
     measurements.append({"name": "gpu_count", "value": len(gpu_list)})
-    if cuda_version is not None:
-        measurements.append({"name": "cuda_version", "value": cuda_version})
+    if cuda is not None:
+        measurements.append({"name": "cuda_version", "value": cuda["version"]})
+        measurements.append({"name": "cuda_version_header_label", "value": cuda["header_label"]})
     if disk_free is not None:
         measurements.append({"name": "weights_path_free_bytes", "value": disk_free["free_bytes"]})
-    if clock_skew is not None:
-        measurements.append({"name": "clock_skew_seconds", "value": clock_skew["skew_seconds"]})
+    if reference_delta is not None:
+        measurements.append(
+            {
+                "name": "reference_time_delta_seconds",
+                "value": reference_delta["reference_time_delta_seconds"],
+            }
+        )
+    if ntp_offset is not None:
+        measurements.append(
+            {"name": "ntp_offset_seconds_median", "value": ntp_offset["median_offset_seconds"]}
+        )
+        measurements.append({"name": "ntp_offsets_seconds", "value": ntp_offset["offsets_seconds"]})
     measurements.append({"name": "docker_present", "value": container_runtime["docker"]["present"]})
     measurements.append(
         {"name": "systemctl_present", "value": container_runtime["systemctl"]["present"]}
@@ -222,8 +378,10 @@ def main(argv: list[str]) -> int:
         "host_id": args.host_id,
         "gpu_list": gpu_list,
         "gpu_query_rows": gpu_query_rows,
+        "cuda": cuda,
         "disk_free": disk_free,
-        "clock_skew": clock_skew,
+        "reference_time_delta": reference_delta,
+        "ntp_offset": ntp_offset,
         "container_runtime": container_runtime,
         "measurements": measurements,
         "observations": observations,

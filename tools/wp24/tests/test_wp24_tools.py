@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import ev02_gpu_binding  # noqa: E402
+import host_inventory  # noqa: E402
 import wp24_common as common  # noqa: E402
 
 
@@ -134,6 +135,79 @@ class TestGpuBindingJoin(unittest.TestCase):
         matched, unrelated = ev02_gpu_binding.join_and_classify(gpu_list, compute_apps, "python")
         self.assertEqual(matched[0]["gpu_index"], None)
         self.assertEqual(unrelated, 0)
+
+
+WINDOWS_SMI_HEADER = (
+    "Sun Sep 20 23:42:26 2026       \n"
+    "+-----------------------------------------------------------------------------------------+\n"
+    "| NVIDIA-SMI 616.92                 KMD Version: 616.92        CUDA UMD Version: 13.4     |\n"
+    "+-----------------------------------------+------------------------+----------------------+\n"
+)
+LINUX_SMI_HEADER = (
+    "Sat Sep 19 10:00:00 2026       \n"
+    "+-----------------------------------------------------------------------------------------+\n"
+    "| NVIDIA-SMI 550.54.14              Driver Version: 550.54.14      CUDA Version: 12.4     |\n"
+    "+-----------------------------------------+------------------------+----------------------+\n"
+)
+
+
+class TestHostInventoryCudaParsing(unittest.TestCase):
+    def test_windows_header_uses_cuda_umd_label(self) -> None:
+        self.assertEqual(
+            host_inventory.parse_cuda_version(WINDOWS_SMI_HEADER), ("CUDA UMD Version:", "13.4")
+        )
+
+    def test_linux_header_uses_cuda_version_label(self) -> None:
+        self.assertEqual(
+            host_inventory.parse_cuda_version(LINUX_SMI_HEADER), ("CUDA Version:", "12.4")
+        )
+
+    def test_header_without_cuda_field_returns_none(self) -> None:
+        header = (
+            "| NVIDIA-SMI 616.92                 KMD Version: 616.92                              |"
+        )
+        self.assertIsNone(host_inventory.parse_cuda_version(header))
+
+
+class TestHostInventoryNtpParsing(unittest.TestCase):
+    def test_w32tm_stripchart_offsets(self) -> None:
+        text = (
+            "Tracking time.windows.com [52.148.114.188:123].\n"
+            "Collecting 3 samples.\n"
+            "The current time is 9/20/2026 11:44:07 PM.\n"
+            "23:44:07, -00.6247612s\n"
+            "23:44:09, -00.6253330s\n"
+            "23:44:11, +00.0012000s\n"
+        )
+        self.assertEqual(
+            host_inventory.parse_w32tm_stripchart(text), [-0.6247612, -0.625333, 0.0012]
+        )
+
+    def test_chronyc_fast_is_positive_local_minus_server(self) -> None:
+        text = "Reference ID    : A9FEA97B\nSystem time     : 0.000012 seconds fast of NTP time\n"
+        self.assertEqual(host_inventory.parse_chronyc_tracking(text), [0.000012])
+
+    def test_chronyc_slow_is_negative(self) -> None:
+        text = "System time     : 0.250000 seconds slow of NTP time\n"
+        self.assertEqual(host_inventory.parse_chronyc_tracking(text), [-0.25])
+
+    def test_ntpdate_offset_sign_is_inverted_to_local_minus_server(self) -> None:
+        text = "server 1.2.3.4, stratum 2, offset -0.001234, delay 0.02567\n"
+        self.assertEqual(host_inventory.parse_ntpdate_query(text), [0.001234])
+
+    def test_unparseable_ntp_output_gives_empty_list(self) -> None:
+        self.assertEqual(host_inventory.parse_w32tm_stripchart("The command failed"), [])
+        self.assertEqual(host_inventory.parse_chronyc_tracking("nothing"), [])
+        self.assertEqual(host_inventory.parse_ntpdate_query("no servers"), [])
+
+    def test_default_ntp_server_by_platform(self) -> None:
+        self.assertEqual(host_inventory.default_ntp_server("Windows"), "time.windows.com")
+        self.assertEqual(host_inventory.default_ntp_server("Linux"), "pool.ntp.org")
+
+    def test_ntp_check_disabled_returns_none_without_observation(self) -> None:
+        observations: list[str] = []
+        self.assertIsNone(host_inventory.collect_ntp_offset(False, None, observations))
+        self.assertEqual(observations, [])
 
 
 if __name__ == "__main__":

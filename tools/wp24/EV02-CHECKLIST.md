@@ -17,7 +17,7 @@
 
 Launch runtime ของ candidate เอง (A: Xinference supervisor + workers [SRC-09]; B: vLLM service ต่อเครื่อง [SRC-01]) ด้วย `shared_revision` เดียวกันตามที่ owner ระบุใน §2 ของ procedure ขั้นตอนนี้ไม่มีสคริปต์ใน `tools/wp24/` ทำแทน — เป็นคำสั่ง launch ของ candidate เอง log คำสั่งและ stdout/stderr ไว้เป็น artifact ตาม procedure §3 ข้อ 3
 
-หลัง launch แล้ว รัน `tools/wp24/host_inventory.py --host-id <A|B>` บนแต่ละ GPU host เพื่อบันทึก driver / CUDA / GPU UUID ปัจจุบัน — ผลไปที่ `environment.gpu_hosts[]` ของ run record (ไม่ใช่ `experiments.EV02` โดยตรง แต่เป็นหลักฐานประกอบการ join GPU UUID ในขั้นตอน 2)
+หลัง launch แล้ว รัน `tools/wp24/host_inventory.py --host-id <A|B> --ntp-check` บนแต่ละ GPU host (ใช้ `--ntp-check` วัด clock offset ตรงจาก NTP; ค่า `reference_time_delta_seconds` จาก `--reference-time` เป็นเพียงขอบบนเพราะรวม latency ระหว่างดึงเวลาอ้างอิงกับการวัด; header ของ `nvidia-smi` บน Windows ใช้ `CUDA UMD Version:` ซึ่ง tool อ่านได้แล้ว) เพื่อบันทึก driver / CUDA / GPU UUID ปัจจุบัน — ผลไปที่ `environment.gpu_hosts[]` ของ run record (ไม่ใช่ `experiments.EV02` โดยตรง แต่เป็นหลักฐานประกอบการ join GPU UUID ในขั้นตอน 2)
 
 ## ขั้นตอน 2 — ดึงสิ่งที่ candidate รายงาน
 

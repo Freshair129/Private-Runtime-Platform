@@ -43,16 +43,26 @@ section 3 item 4 reserves that decision for the reviewer, based on the criteria 
 
 Run on the control host and on each GPU host. Records OS / kernel / Python version, GPU inventory
 (`nvidia-smi -L` and `nvidia-smi --query-gpu=name,memory.total,driver_version,uuid --format=csv,noheader`),
-CUDA version parsed from the bare `nvidia-smi` header, disk free space for `--weights-path`, an
-optional clock-skew check against `--reference-time`, and container-runtime presence (`docker
+CUDA version parsed from the bare `nvidia-smi` header (both the Linux label `CUDA Version:` and the
+Windows label `CUDA UMD Version:`; the matched label is recorded as `cuda_version_header_label`),
+disk free space for `--weights-path`, two optional clock checks, and container-runtime presence (`docker
 --version` / `systemctl --version`, version check only, nothing is started). A missing `nvidia-smi`
 is recorded as an observation ("nvidia-smi not found on this host"), never a crash — a control host
 with no GPU driver is expected and allowed by `docs/WP24-EXPERIMENT-PROCEDURE.md` section 2.
 
 ```
 python tools/wp24/host_inventory.py --host-id A --weights-path D:/models --out wp24-out
+python tools/wp24/host_inventory.py --host-id control --ntp-check
 python tools/wp24/host_inventory.py --host-id control --reference-time 2026-09-20T12:00:00Z
 ```
+
+Clock checks: `--ntp-check` queries an NTP server read-only (`w32tm /stripchart` on Windows,
+`chronyc tracking` or `ntpdate -q` elsewhere, whichever is installed; default server
+`time.windows.com` on Windows, `pool.ntp.org` otherwise; the clock is never adjusted) and reports
+`ntp_offset.offsets_seconds` as local minus server. `--reference-time` still works but its result is
+named `reference_time_delta_seconds` because it includes the seconds between fetching the reference
+and running the script (values of 5-11 s were seen on a host whose real offset was -0.6 s); treat it
+as an upper bound only. When no NTP tool exists on the host the script records that and continues.
 
 Feeds `environment.control_host` / `environment.gpu_hosts[]` of the run record template.
 

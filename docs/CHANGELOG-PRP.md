@@ -143,6 +143,11 @@ repository_integration: NOT_PERFORMED
 - candidate B ยืนยันเป็น vLLM ตามเดิมหลังพิจารณา Ollama/GGUF (บันทึกใน `scope_decisions.candidate_B_engine`); Ollama ใช้เป็น dev target ของ chatbot client ได้ ไม่ใช่ runtime ของ PRP; BYOM: owner รับ model แล้ว license receipt ตาม SEC-007 ยังต้องยื่นก่อน activation
 - template `shared_revision` เพิ่ม field pin (requested_as, last_modified, tokenizer/generation hashes, architecture, dtype, weights, context note, llm_license, decided_by/on, pins_fetched_at) และ `scope_decisions.candidate_B_engine`; procedure §9 ข้อ 1 ตัดสินแล้ว ทุกข้อใน §9 ปิดครบ
 
+### แก้ host_inventory.py หลังการรันจริงบน control host (2026-09-20, C-1 / H2)
+- parser CUDA รับทั้ง `CUDA Version:` (Linux) และ `CUDA UMD Version:` (Windows driver 616.x) และบันทึก label ที่พบใน `cuda_version_header_label`; กรณีไม่พบทั้งสองยังบันทึกเป็น observation เช่นเดิม; unit tests ใช้ header จริงจาก artifact `WP24-2026-09-20-run1/control/EV01/nvidia_smi_header.txt` เป็น fixture ฝั่ง Windows
+- เพิ่ม `--ntp-check` / `--ntp-server`: ถาม NTP โดยตรงแบบ read-only ผ่าน `w32tm /stripchart` (Windows) หรือ `chronyc tracking` / `ntpdate -q` (อื่น ๆ) เรียกด้วย argument list เพื่อเลี่ยง path mangling ของ Git Bash รายงาน `offsets_seconds` แบบ local − server พร้อม median; ไม่มี tool ก็บันทึกแล้วไปต่อ ไม่ปรับนาฬิกา
+- `--reference-time` ยังใช้ได้แต่ field เปลี่ยนชื่อเป็น `reference_time_delta_seconds` และมี observation ระบุว่ารวม latency ระหว่างดึงเวลาอ้างอิงกับการวัด (การรันจริงได้ 4.9–11.2 s ขณะ offset จริง −0.63 s); README และ EV02-CHECKLIST อธิบายพฤติกรรมทั้งสอง; artifact ที่บันทึกไปแล้วไม่แก้
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
