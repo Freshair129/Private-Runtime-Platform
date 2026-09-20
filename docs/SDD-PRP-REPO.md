@@ -113,8 +113,8 @@ contracts/
 │   ├── prp-client.json            # generated จาก YAML โดย tools/contracts/export_json.py; CI ตรวจ equality
 │   ├── prp-worker.yaml            # worker adapter contract (API-PRP §7): describe / invoke / cancel / observe — draft ที่ WP03
 │   └── prp-management.yaml        # private management inventory (API-PRP §8) — freeze ที่ G0/WP03
-├── schemas/                       # JSON Schema: job payloads, observation/describe envelopes, runtime-environment-manifest
-└── examples/                      # job-asr.example.json, job-tts.example.json, runtime-environment-manifest.example.yaml
+├── schemas/                       # JSON Schema เฉพาะสิ่งที่ไม่มีใน OpenAPI: runtime-environment-manifest (job payload และ describe/observe envelope อยู่ใน OpenAPI แล้ว ไม่ทำซ้ำ)
+└── examples/                      # job-asr / job-tts / runtime-environment-manifest examples + index.json (map ตัวอย่าง → schema สำหรับ tools/contracts/validate_examples.py)
 ```
 
 กติกา: version อยู่ใน `info.version` ไม่อยู่ในชื่อไฟล์ (การ rename เป็น owner decision §12); ทุก `$ref` เป็น local; ทุก operation มี security; inventory 12 paths / 14 operations / 21 schemas ของ client contract คงเดิมจนกว่าจะมี ADR แก้ Python project แต่ละตัว **validate** request/response model ของตนกับไฟล์นี้ใน test ไม่บังคับ import generated Python package ร่วมกัน (ARCH §14)

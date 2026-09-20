@@ -18,8 +18,8 @@ Prose is Thai (`language: th-TH`); identifiers, API names, state names and diagr
 |---|---|---|
 | `docs/*.md`, `docs/standards/`, `docs/diagrams/`, `docs/registry/` | **Living** documentation, canonical for PRP | edit here, then run the validator |
 | `docs/releases/PRP-Documentation-v0.3.0/` | **Frozen** delivered package with `MANIFEST.sha256`, Word/HTML/PDF and its own copy of the tools | never edit; only add new release folders |
-| `contracts/openapi/prp-client.yaml` + `.json`, `contracts/examples/` | protocol source of truth | YAML is authored; JSON is a hand-kept twin until the M2 export tool exists, so change both |
-| `tools/docs/` | validator, HTML builder, sequence renderer | repo tooling only, stdlib except the HTML builder |
+| `contracts/openapi/*.yaml`, `contracts/schemas/`, `contracts/examples/` | protocol source of truth | YAML is authored; regenerate the `.json` twins with `tools/contracts/export_json.py` (CI rejects stale ones) |
+| `tools/docs/`, `tools/contracts/` | validator, HTML builder, sequence renderer; contract export and example validation | repo tooling only; `tools/contracts` needs `pip install -r tools/contracts/requirements.txt` |
 | `docs/registry/*.json`, `docs/*.html` | **Derived** | never hand-edit registry content; HTML is gitignored and built on demand |
 
 ## Commands
@@ -30,6 +30,16 @@ python tools/docs/validate_docs.py
 ```
 
 It skips `docs/releases/`. Its JSON output is what `docs/registry/document-validation.json` holds; refresh that file from the output when counts change.
+
+```bash
+# After editing any contracts/openapi/*.yaml: regenerate the JSON exports (needs pip install -r tools/contracts/requirements.txt).
+python tools/contracts/export_json.py
+```
+
+```bash
+# Examples must satisfy the schemas named in contracts/examples/index.json.
+python tools/contracts/validate_examples.py
+```
 
 ```bash
 # Rebuild docs/PRP-Documentation.html and docs/PRP-Diagram-Atlas.html (gitignored). Needs markdown-it-py and beautifulsoup4,
@@ -53,7 +63,7 @@ python tools/docs/render_sequence.py docs/diagrams/source/D07.sequence.json --ou
 cd docs/releases/PRP-Documentation-v0.3.0 && sha256sum -c MANIFEST.sha256 --quiet
 ```
 
-CI: `.github/workflows/docs.yml` runs the validator, the manifest check and the HTML build on changes under `docs/`, `contracts/`, `tools/`.
+CI: `.github/workflows/docs.yml` runs the validator, the manifest check and the HTML build on changes under `docs/`, `contracts/`, `tools/`. `.github/workflows/contracts.yml` runs the export check, example validation and the validator on contract changes.
 
 ## How the documentation fits together
 
@@ -66,7 +76,7 @@ The central idea is **one canonical source with derived views, and a validator t
 
 **Diagram chain (34 views, D01–D34).** `docs/diagrams/catalog.json` is the index. Each entry points to a Graphviz `.dot`, or for sequence diagrams a `.sequence.json` **plus** an equivalent `.mmd`. `render_sequence.py` consumes the JSON and regenerates the `.mmd`, so edit the JSON and re-render rather than editing Mermaid alone. Every diagram needs both `svg/` (well-formed XML, inlined into the Atlas) and `png/`. No font files may be distributed.
 
-**API contract.** `contracts/openapi/prp-client.yaml` and `.json` must stay structurally identical: 12 paths, 14 operations, 21 schemas, only local `#/` refs, global security declared and never disabled per operation. The validator checks the JSON. Worker and management contracts (API-PRP §7, §8) are added in M2.
+**API contracts.** Three OpenAPI documents live in `contracts/openapi/`: `prp-client.yaml` (public; 12 paths, 14 operations, 21 schemas, inventory unchanged since v0.2.0), `prp-worker.yaml` and `prp-management.yaml` (both `x-prp-status: DRAFT`, freeze at WP03). YAML is canonical; every `.json` is generated. The validator checks each export for local `#/` refs, unique operationIds and declared security, and checks the client inventory. `contracts/examples/index.json` maps each example to the schema it must satisfy. Schemas shared across boundaries (Error, Message) are copied per document on purpose, never cross-referenced, because each boundary has a different trust level.
 
 **Document frontmatter.** Every doc under `docs/` opens with YAML frontmatter (`document_id`, `version`, `status`, `implementation_status`, `runtime_verification`) and exactly one `# Title` H1. The HTML builder strips the frontmatter, uses that H1 for navigation, and orders documents by the `ORDER` list in `tools/docs/build_html_views.py`.
 

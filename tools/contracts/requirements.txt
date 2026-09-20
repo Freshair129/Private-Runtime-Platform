@@ -1,0 +1,4 @@
+# Runtime dependencies for tools/contracts/*.py only (not application dependencies).
+# Exact pins verified on 2026-09-20; move to a uv lock together with the rest of tools/ at WP25.
+pyyaml==6.0.3
+jsonschema==4.26.0

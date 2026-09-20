@@ -1,1407 +1,35 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "PRP - Private Runtime Platform",
-    "version": "0.3.0",
-    "description": "DRAFT client API contract. Not implemented/tested by this document delivery. No mandatory Zuri/LINE dependency. Native P1 jobs are atomic ASR/TTS; apps own voice-turn orchestration. Keys/scopes required on all routes. Limits also depend on qualified profile."
+    "title": "PRP - Private Management Contract",
+    "version": "0.4.0-draft",
+    "description": "DRAFT machine-readable form of the management operation inventory in API-PRP §8. The inventory is fixed by that document; field-level schemas remain to be frozen at G0 (WP03) and are therefore minimal here. Every mutation requires role + scope, a current version (If-Match), an idempotent operation identity where retryable (Idempotency-Key) and produces a redacted audit event. Inference client keys never authorize these routes. No operation here may run a host reboot, kill or model load in response to a user inference request. Not implemented or tested."
   },
+  "x-prp-status": "DRAFT",
+  "x-prp-freeze-gate": "WP03",
+  "x-prp-consumers": [
+    "apps/console (operator UX over these routes only)",
+    "apps/control-api api/ (implements)"
+  ],
   "servers": [
     {
       "url": "https://prp.example.invalid",
-      "description": "Documentation placeholder; replace with approved private ingress"
+      "description": "Documentation placeholder. Management routes are reachable only through the approved private ingress / VPN (ARCH-PRP §4)."
     }
   ],
   "security": [
     {
-      "ClientKey": []
+      "OperatorSession": []
+    },
+    {
+      "OperatorKey": []
     }
   ],
   "paths": {
-    "/v1/models": {
-      "get": {
-        "operationId": "listModels",
-        "summary": "List granted model aliases",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ModelList"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/prp/v1/capabilities": {
-      "get": {
-        "operationId": "listCapabilities",
-        "summary": "List qualified and granted capabilities",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Capability"
-                      }
-                    }
-                  },
-                  "required": [
-                    "data"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/chat/completions": {
+    "/prp/admin/v1/grants": {
       "post": {
-        "operationId": "chatCompletion",
-        "summary": "Text chat; compatible subset only",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChatResponse"
-                }
-              },
-              "text/event-stream": {
-                "schema": {
-                  "type": "string"
-                },
-                "description": "Compatible data chunks. On success [DONE]; terminal event:error on failure, never resume partial stream on another node."
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid or unsupported request",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Idempotency/version conflict",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Audio too large",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported media",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Semantic/context/no-speech/async-required error",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Quota/queue limit",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Deadline; execution may be unknown",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChatRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/audio/transcriptions": {
-      "post": {
-        "operationId": "transcribeAudio",
-        "summary": "Bounded synchronous ASR",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Transcript"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid or unsupported request",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Idempotency/version conflict",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Audio too large",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported media",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Semantic/context/no-speech/async-required error",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Quota/queue limit",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Deadline; execution may be unknown",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "model": {
-                    "type": "string"
-                  },
-                  "language": {
-                    "type": "string",
-                    "enum": [
-                      "th",
-                      "en",
-                      "auto"
-                    ]
-                  }
-                },
-                "required": [
-                  "file",
-                  "model"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/audio/speech": {
-      "post": {
-        "operationId": "synthesizeSpeech",
-        "summary": "Bounded approved-preset TTS",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "audio/wav": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              },
-              "audio/mpeg": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid or unsupported request",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Idempotency/version conflict",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Audio too large",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported media",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Semantic/context/no-speech/async-required error",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Quota/queue limit",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Deadline; execution may be unknown",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SpeechRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/prp/v1/artifacts": {
-      "post": {
-        "operationId": "uploadArtifact",
-        "summary": "Upload bounded audio; no remote URL",
-        "responses": {
-          "201": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Artifact"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid or unsupported request",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Idempotency/version conflict",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Audio too large",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported media",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Semantic/context/no-speech/async-required error",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Quota/queue limit",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Deadline; execution may be unknown",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                },
-                "required": [
-                  "file"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        }
-      }
-    },
-    "/prp/v1/jobs": {
-      "post": {
-        "operationId": "createJob",
-        "summary": "Durable native ASR or TTS job only",
-        "responses": {
-          "202": {
-            "description": "Durably accepted or same pending logical job",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Job"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid or unsupported request",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Idempotency/version conflict",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Audio too large",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported media",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Semantic/context/no-speech/async-required error",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Quota/queue limit",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Deadline; execution may be unknown",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JobRequest"
-              }
-            }
-          }
-        },
+        "operationId": "createAccessGrant",
+        "summary": "Grant an organization, principal or application access to a pool with scopes",
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -1412,115 +40,22 @@
               "minLength": 8,
               "maxLength": 128
             },
-            "description": "Scoped to org + principal + route + canonical payload. Same payload returns same job."
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
           }
-        ]
-      },
-      "get": {
-        "operationId": "listJobs",
-        "summary": "Paginated authorized jobs",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobList"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccessGrantRequest"
               }
             }
           }
         },
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
-            }
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/prp/v1/jobs/{id}": {
-      "get": {
-        "operationId": "getJob",
-        "summary": "Get scoped job outcome and execution state",
         "responses": {
-          "200": {
-            "description": "Success",
+          "201": {
+            "description": "Grant created",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1532,13 +67,31 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Job"
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
           },
           "401": {
-            "description": "Invalid or expired credential",
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1556,152 +109,7 @@
             }
           },
           "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ]
-      }
-    },
-    "/prp/v1/jobs/{id}/cancel": {
-      "post": {
-        "operationId": "cancelJob",
-        "summary": "Request cancellation; not proof of compute stopped",
-        "responses": {
-          "202": {
-            "description": "Cancellation requested",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Job"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Already terminal or queued cancellation completed",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Job"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1719,25 +127,7 @@
             }
           },
           "409": {
-            "description": "Idempotency/version conflict",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1754,27 +144,38 @@
               }
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ]
+        }
       }
     },
-    "/prp/v1/artifacts/{id}": {
-      "get": {
-        "operationId": "readArtifact",
-        "summary": "Authenticated content read",
+    "/prp/admin/v1/grants/{grant_id}": {
+      "parameters": [
+        {
+          "name": "grant_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "delete": {
+        "operationId": "revokeAccessGrant",
+        "summary": "Revoke an access grant",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Authorized audio bytes",
+            "description": "Mutation applied",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1784,34 +185,15 @@
               }
             },
             "content": {
-              "audio/wav": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              },
-              "audio/mpeg": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              },
-              "audio/mp4": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              },
-              "audio/webm": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
+                  "$ref": "#/components/schemas/MutationReceipt"
                 }
               }
             }
           },
           "401": {
-            "description": "Invalid or expired credential",
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1829,7 +211,7 @@
             }
           },
           "403": {
-            "description": "Policy or scope denied",
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1847,7 +229,7 @@
             }
           },
           "404": {
-            "description": "Not found or not authorized to know",
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1864,8 +246,8 @@
               }
             }
           },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1882,259 +264,76 @@
               }
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "deleteArtifact",
-        "summary": "Tombstone artifact and block grants/late output",
-        "responses": {
-          "204": {
-            "description": "Deletion accepted; content blocked"
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ]
+        }
       }
     },
-    "/prp/v1/artifacts/{id}/grants": {
+    "/prp/admin/v1/keys": {
       "post": {
-        "operationId": "createArtifactGrant",
-        "summary": "Explicitly authorized revocable bearer-link access",
-        "responses": {
-          "201": {
-            "description": "Success",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
+        "operationId": "createKey",
+        "summary": "Issue a scoped inference key for a principal or application",
+        "description": "The secret is returned exactly once. PRP stores a verifier only (PRP-FR-005); no later call, export or backup can reveal it.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
             },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Grant"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid or expired credential",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Policy or scope denied",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found or not authorized to know",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Semantic/context/no-speech/async-required error",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
-            "headers": {
-              "X-Request-ID": {
-                "description": "Server-assigned correlation identifier",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
           }
-        },
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GrantRequest"
+                "$ref": "#/components/schemas/KeyRequest"
               }
             }
           }
         },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ]
-      }
-    },
-    "/prp/v1/grants/{id}": {
-      "delete": {
-        "operationId": "revokeGrant",
-        "summary": "Revoke artifact bearer grant",
         "responses": {
-          "204": {
-            "description": "Grant revoked"
+          "201": {
+            "description": "Key issued; secret shown once",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyIssued"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Invalid or expired credential",
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2152,7 +351,120 @@
             }
           },
           "403": {
-            "description": "Policy or scope denied",
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/keys/{key_id}/rotate": {
+      "parameters": [
+        {
+          "name": "key_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "rotateKey",
+        "summary": "Rotate a key; the new secret is shown once, the old verifier expires per grace policy",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New secret issued once",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyIssued"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2170,7 +482,7 @@
             }
           },
           "404": {
-            "description": "Not found or not authorized to know",
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2187,8 +499,8 @@
               }
             }
           },
-          "503": {
-            "description": "Unavailable, no cloud fallback",
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2205,27 +517,1893 @@
               }
             }
           }
-        },
+        }
+      }
+    },
+    "/prp/admin/v1/keys/{key_id}/revoke": {
+      "parameters": [
+        {
+          "name": "key_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "revokeKey",
+        "summary": "Revoke a key immediately",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/pools": {
+      "post": {
+        "operationId": "registerPool",
+        "summary": "Register a pool of physical resources",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PoolRequest"
+              }
             }
           }
-        ]
+        },
+        "responses": {
+          "201": {
+            "description": "Pool registered",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/nodes": {
+      "post": {
+        "operationId": "registerNode",
+        "summary": "Register a runtime node (OPS-PRP RB02 enrollment)",
+        "description": "Records allowed origin, physical GPU identity, runtime identity, credential reference and desired profile. Registration does not make the node eligible; qualification and resume do.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NodeRegistration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Node registered in DISABLED state",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/nodes/{node_id}": {
+      "parameters": [
+        {
+          "name": "node_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "patch": {
+        "operationId": "updateNode",
+        "summary": "Update node registration or capacity",
+        "description": "Raising capacity requires a current qualification receipt covering the new value; otherwise 409 QUALIFICATION_REQUIRED.",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NodeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/nodes/{node_id}/qualify": {
+      "parameters": [
+        {
+          "name": "node_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "qualifyNode",
+        "summary": "Attach a qualification receipt to a node/profile/epoch",
+        "description": "The receipt mirrors docs/registry/evidence-template.json. A receipt with status other than PASS is recorded but does not make the node eligible.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationReceipt"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/nodes/{node_id}/drain": {
+      "parameters": [
+        {
+          "name": "node_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "drainNode",
+        "summary": "Stop new admissions; running attempts finish or become UNKNOWN",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StateChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/nodes/{node_id}/disable": {
+      "parameters": [
+        {
+          "name": "node_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "disableNode",
+        "summary": "Disable a node; its bindings are removed from routing",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StateChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/nodes/{node_id}/resume": {
+      "parameters": [
+        {
+          "name": "node_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "resumeNode",
+        "summary": "Make a node eligible again",
+        "description": "Requires a current qualification receipt for the node's runtime epoch and profile; otherwise 409 QUALIFICATION_REQUIRED (API-PRP §8).",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StateChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/profiles/{profile_id}/approve": {
+      "parameters": [
+        {
+          "name": "profile_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "approveProfile",
+        "summary": "Approve a model or voice profile revision for serving",
+        "description": "Approval records the license / voice-rights receipt reference (OPS-PRP RB01). Approval is not qualification of any node.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileApproval"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/policies/{policy_kind}": {
+      "parameters": [
+        {
+          "name": "policy_kind",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "quota",
+              "retention"
+            ]
+          }
+        }
+      ],
+      "patch": {
+        "operationId": "updatePolicy",
+        "summary": "Update quota or retention policy",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/exports": {
+      "post": {
+        "operationId": "createExport",
+        "summary": "Start a redacted usage or audit export",
+        "description": "Exports never contain raw prompts, transcripts, audio, key material or upstream bodies (Coding-Standards §8).",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Export accepted",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/exports/{export_id}": {
+      "parameters": [
+        {
+          "name": "export_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getExport",
+        "summary": "Export status and, when ready, the artifact reference",
+        "responses": {
+          "200": {
+            "description": "Export state",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/backups": {
+      "post": {
+        "operationId": "initiateBackup",
+        "summary": "Initiate a backup of control state (keys stored separately from encrypted backups)",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Operation accepted",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationTicket"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/restores": {
+      "post": {
+        "operationId": "initiateRestore",
+        "summary": "Initiate a restore following OPS-PRP RB07",
+        "description": "Traffic must already be isolated; the erasure ledger is replayed before any restored content becomes readable (ADR-PRP-007); node bindings come back DISABLED and must be requalified.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Operation accepted",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationTicket"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/operations/{operation_id}": {
+      "parameters": [
+        {
+          "name": "operation_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getOperation",
+        "summary": "Status of a backup or restore operation",
+        "responses": {
+          "200": {
+            "description": "Operation state",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationTicket"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "ClientKey": {
+      "OperatorSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "prp_session",
+        "description": "Console session with CSRF protection and secure cookie policy (API-PRP §2). No master or service key is ever exposed to browser JavaScript."
+      },
+      "OperatorKey": {
         "type": "http",
         "scheme": "bearer",
-        "description": "PRP-scoped human or application key. Inference credentials never grant administrative rights."
+        "description": "Administrative-scope key for operator automation. Distinct from inference client keys, which never authorize management routes."
       }
     },
     "schemas": {
@@ -2236,7 +2414,20 @@
             "type": "object",
             "properties": {
               "code": {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                  "INVALID_REQUEST",
+                  "UNSUPPORTED_PARAMETER",
+                  "INVALID_KEY",
+                  "EXPIRED_KEY",
+                  "SCOPE_DENIED",
+                  "POLICY_DENIED",
+                  "NOT_FOUND",
+                  "IDEMPOTENCY_CONFLICT",
+                  "VERSION_CONFLICT",
+                  "QUALIFICATION_REQUIRED",
+                  "STATE_STORE_UNAVAILABLE"
+                ]
               },
               "type": {
                 "type": "string"
@@ -2272,757 +2463,559 @@
         ],
         "additionalProperties": false
       },
-      "Model": {
+      "MutationReceipt": {
         "type": "object",
+        "description": "Uniform response for management mutations",
         "properties": {
-          "id": {
+          "resource_id": {
             "type": "string"
           },
-          "object": {
-            "const": "model"
-          },
-          "created": {
-            "type": "integer"
-          },
-          "owned_by": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "object"
-        ],
-        "additionalProperties": false
-      },
-      "ModelList": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "const": "list"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Model"
-            }
-          }
-        },
-        "required": [
-          "object",
-          "data"
-        ],
-        "additionalProperties": false
-      },
-      "Capability": {
-        "type": "object",
-        "properties": {
-          "model": {
-            "type": "string"
-          },
-          "profile_revision": {
-            "type": "string"
-          },
-          "capabilities": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "chat",
-                "asr",
-                "tts",
-                "tool_calls"
-              ]
-            }
-          },
-          "languages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "formats": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "limits": {
-            "type": "object",
-            "properties": {
-              "max_context_tokens": {
-                "type": "integer"
-              },
-              "max_audio_seconds": {
-                "type": "number"
-              },
-              "max_input_bytes": {
-                "type": "integer"
-              },
-              "max_tts_codepoints": {
-                "type": "integer"
-              }
-            },
-            "required": [],
-            "additionalProperties": false
-          },
-          "status": {
+          "version": {
             "type": "string",
-            "enum": [
-              "ready",
-              "unavailable"
-            ]
-          }
-        },
-        "required": [
-          "model",
-          "profile_revision",
-          "capabilities",
-          "status"
-        ],
-        "additionalProperties": false
-      },
-      "Tool": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "const": "function"
+            "description": "New resource version to send as If-Match on the next mutation"
           },
-          "function": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "maxLength": 64
-              },
-              "description": {
-                "type": "string"
-              },
-              "parameters": {
-                "type": "object"
-              },
-              "strict": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "name"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "required": [
-          "type",
-          "function"
-        ],
-        "additionalProperties": false
-      },
-      "ToolCall": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "const": "function"
-          },
-          "function": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "arguments": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "arguments"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "function"
-        ],
-        "additionalProperties": false
-      },
-      "Message": {
-        "type": "object",
-        "properties": {
-          "role": {
-            "type": "string",
-            "enum": [
-              "system",
-              "user",
-              "assistant",
-              "tool"
-            ]
-          },
-          "content": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "tool_call_id": {
-            "type": "string"
-          },
-          "tool_calls": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ToolCall"
-            }
-          }
-        },
-        "required": [
-          "role",
-          "content"
-        ],
-        "additionalProperties": false
-      },
-      "ChatRequest": {
-        "type": "object",
-        "properties": {
-          "model": {
-            "type": "string"
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Message"
-            },
-            "minItems": 1
-          },
-          "stream": {
-            "type": "boolean",
-            "default": false
-          },
-          "temperature": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 2
-          },
-          "top_p": {
-            "type": "number",
-            "exclusiveMinimum": 0,
-            "maximum": 1
-          },
-          "max_tokens": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 8192
-          },
-          "tools": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Tool"
-            }
-          },
-          "tool_choice": {
-            "oneOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "auto",
-                  "none",
-                  "required"
-                ]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "const": "function"
-                  },
-                  "function": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "name"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "required": [
-                  "type",
-                  "function"
-                ],
-                "additionalProperties": false
-              }
-            ]
-          },
-          "n": {
-            "type": "integer",
-            "const": 1
-          }
-        },
-        "required": [
-          "model",
-          "messages"
-        ],
-        "additionalProperties": false
-      },
-      "Usage": {
-        "type": "object",
-        "properties": {
-          "prompt_tokens": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "completion_tokens": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "total_tokens": {
-            "type": "integer",
-            "minimum": 0
-          }
-        },
-        "required": [
-          "prompt_tokens",
-          "completion_tokens",
-          "total_tokens"
-        ],
-        "additionalProperties": false
-      },
-      "ChatResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "const": "chat.completion"
-          },
-          "created": {
-            "type": "integer"
-          },
-          "model": {
-            "type": "string"
-          },
-          "choices": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "index": {
-                  "type": "integer"
-                },
-                "message": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "finish_reason": {
-                  "type": "string",
-                  "enum": [
-                    "stop",
-                    "length",
-                    "tool_calls"
-                  ]
-                }
-              },
-              "required": [
-                "index",
-                "message",
-                "finish_reason"
-              ],
-              "additionalProperties": false
-            }
-          },
-          "usage": {
-            "$ref": "#/components/schemas/Usage"
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "created",
-          "model",
-          "choices"
-        ],
-        "additionalProperties": false
-      },
-      "Segment": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "number",
-            "minimum": 0
-          },
-          "end": {
-            "type": "number",
-            "minimum": 0
-          },
-          "text": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "start",
-          "end",
-          "text"
-        ],
-        "additionalProperties": false
-      },
-      "Transcript": {
-        "type": "object",
-        "properties": {
-          "text": {
-            "type": "string"
-          },
-          "language": {
-            "type": "string"
-          },
-          "duration_seconds": {
-            "type": "number",
-            "minimum": 0
-          },
-          "segments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Segment"
-            }
-          },
-          "profile_revision": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "text",
-          "language",
-          "duration_seconds",
-          "profile_revision"
-        ],
-        "additionalProperties": false
-      },
-      "SpeechRequest": {
-        "type": "object",
-        "properties": {
-          "model": {
-            "type": "string"
-          },
-          "input": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 800
-          },
-          "voice": {
-            "type": "string"
-          },
-          "response_format": {
-            "type": "string",
-            "enum": [
-              "wav",
-              "mp3"
-            ]
-          },
-          "speed": {
-            "type": "number",
-            "minimum": 0.5,
-            "maximum": 2,
-            "default": 1
-          }
-        },
-        "required": [
-          "model",
-          "input",
-          "voice",
-          "response_format"
-        ],
-        "additionalProperties": false
-      },
-      "Artifact": {
-        "type": "object",
-        "properties": {
-          "artifact_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "mime_type": {
-            "type": "string"
-          },
-          "duration_seconds": {
-            "type": "number",
-            "minimum": 0
-          },
-          "checksum_sha256": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "expires_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "artifact_id",
-          "mime_type",
-          "duration_seconds",
-          "expires_at"
-        ],
-        "additionalProperties": false
-      },
-      "AsrJobRequest": {
-        "type": "object",
-        "properties": {
-          "kind": {
-            "const": "asr"
-          },
-          "model": {
-            "type": "string"
-          },
-          "input_artifact_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "language": {
-            "type": "string",
-            "enum": [
-              "th",
-              "en",
-              "auto"
-            ]
-          },
-          "deadline_seconds": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 180,
-            "default": 180
-          },
-          "external_reference": {
-            "type": "string",
-            "maxLength": 128
-          }
-        },
-        "required": [
-          "kind",
-          "model",
-          "input_artifact_id"
-        ],
-        "additionalProperties": false
-      },
-      "TtsJobRequest": {
-        "type": "object",
-        "properties": {
-          "kind": {
-            "const": "tts"
-          },
-          "model": {
-            "type": "string"
-          },
-          "input": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 800
-          },
-          "voice": {
-            "type": "string"
-          },
-          "response_format": {
-            "type": "string",
-            "enum": [
-              "wav",
-              "mp3"
-            ]
-          },
-          "deadline_seconds": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 180,
-            "default": 180
-          },
-          "external_reference": {
-            "type": "string",
-            "maxLength": 128
-          }
-        },
-        "required": [
-          "kind",
-          "model",
-          "input",
-          "voice",
-          "response_format"
-        ],
-        "additionalProperties": false
-      },
-      "JobRequest": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/AsrJobRequest"
-          },
-          {
-            "$ref": "#/components/schemas/TtsJobRequest"
-          }
-        ],
-        "discriminator": {
-          "propertyName": "kind",
-          "mapping": {
-            "asr": "#/components/schemas/AsrJobRequest",
-            "tts": "#/components/schemas/TtsJobRequest"
-          }
-        }
-      },
-      "Job": {
-        "type": "object",
-        "properties": {
-          "job_id": {
+          "audit_event_id": {
             "type": "string",
             "format": "uuid"
           },
           "request_id": {
             "type": "string"
-          },
-          "kind": {
+          }
+        },
+        "required": [
+          "resource_id",
+          "version",
+          "audit_event_id",
+          "request_id"
+        ],
+        "additionalProperties": false
+      },
+      "AccessGrantRequest": {
+        "type": "object",
+        "properties": {
+          "subject_type": {
             "type": "string",
             "enum": [
-              "asr",
-              "tts"
+              "organization",
+              "principal",
+              "application"
             ]
           },
-          "outcome": {
-            "type": "string",
-            "enum": [
-              "PENDING",
-              "SUCCEEDED",
-              "FAILED",
-              "TIMED_OUT",
-              "CANCELLED"
-            ]
-          },
-          "execution_status": {
-            "type": "string",
-            "enum": [
-              "QUEUED",
-              "RESERVED",
-              "DISPATCHED",
-              "RUNNING",
-              "UNKNOWN",
-              "FINISHED"
-            ]
-          },
-          "cancellation_requested": {
-            "type": "boolean"
-          },
-          "status_path": {
+          "subject_id": {
             "type": "string"
           },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "deadline_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "result": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Transcript"
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "artifact_id": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                },
-                "required": [
-                  "artifact_id"
-                ],
-                "additionalProperties": false
-              }
-            ]
-          },
-          "error": {
-            "$ref": "#/components/schemas/Error"
-          },
-          "usage_provenance": {
-            "type": "string",
-            "enum": [
-              "actual",
-              "estimated",
-              "unavailable"
-            ]
-          }
-        },
-        "required": [
-          "job_id",
-          "request_id",
-          "kind",
-          "outcome",
-          "execution_status",
-          "cancellation_requested",
-          "status_path",
-          "created_at",
-          "deadline_at"
-        ],
-        "additionalProperties": false
-      },
-      "JobList": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Job"
-            }
-          },
-          "next_cursor": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        },
-        "required": [
-          "data",
-          "next_cursor"
-        ],
-        "additionalProperties": false
-      },
-      "GrantRequest": {
-        "type": "object",
-        "properties": {
-          "ttl_seconds": {
-            "type": "integer",
-            "minimum": 60,
-            "maximum": 86400,
-            "default": 86400
-          }
-        },
-        "required": [
-          "ttl_seconds"
-        ],
-        "additionalProperties": false
-      },
-      "Grant": {
-        "type": "object",
-        "properties": {
-          "grant_id": {
+          "pool_id": {
             "type": "string",
             "format": "uuid"
           },
-          "url": {
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "expires_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "subject_type",
+          "subject_id",
+          "pool_id",
+          "scopes"
+        ],
+        "additionalProperties": false
+      },
+      "KeyRequest": {
+        "type": "object",
+        "properties": {
+          "subject_type": {
+            "type": "string",
+            "enum": [
+              "principal",
+              "application"
+            ]
+          },
+          "subject_id": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "pool_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 1
+          },
+          "expires_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "subject_type",
+          "subject_id",
+          "scopes",
+          "pool_ids"
+        ],
+        "additionalProperties": false
+      },
+      "KeyIssued": {
+        "type": "object",
+        "properties": {
+          "key_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "secret": {
+            "type": "string",
+            "description": "Shown once; never retrievable, exportable or restorable afterwards (PRP-FR-005)"
+          },
+          "key_prefix": {
+            "type": "string",
+            "description": "Non-secret prefix for identification in logs and UI"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expires_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string"
+          },
+          "audit_event_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "request_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key_id",
+          "secret",
+          "key_prefix",
+          "scopes",
+          "version",
+          "audit_event_id",
+          "request_id"
+        ],
+        "additionalProperties": false
+      },
+      "PoolRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "NodeRegistration": {
+        "type": "object",
+        "properties": {
+          "pool_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "origin": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "description": "Allowed worker/adapter endpoint on the private network"
+          },
+          "physical_resource_id": {
+            "type": "string",
+            "description": "host + GPU UUID, verified host-local identity or CPU pool (ARCH-PRP §5)"
+          },
+          "runtime_uid": {
+            "type": "string"
+          },
+          "credential_ref": {
+            "type": "string",
+            "description": "Reference to the service credential in the secret store; never the credential itself"
+          },
+          "desired_profile_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pool_id",
+          "origin",
+          "physical_resource_id",
+          "runtime_uid",
+          "credential_ref",
+          "desired_profile_id"
+        ],
+        "additionalProperties": false
+      },
+      "NodeUpdate": {
+        "type": "object",
+        "description": "Partial update; fields to freeze at G0. Capacity increases are gated by qualification.",
+        "properties": {
+          "origin": {
             "type": "string",
             "format": "uri",
             "pattern": "^https://"
           },
-          "expires_at": {
+          "credential_ref": {
+            "type": "string"
+          },
+          "desired_profile_id": {
+            "type": "string"
+          },
+          "max_concurrent_invocations": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "QualificationReceipt": {
+        "type": "object",
+        "description": "Mirrors docs/registry/evidence-template.json",
+        "properties": {
+          "evidence_id": {
+            "type": "string"
+          },
+          "test_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^PRP-AT-[0-9]{3}$"
+            },
+            "minItems": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_RUN",
+              "BLOCKED"
+            ]
+          },
+          "commit": {
+            "type": "string"
+          },
+          "image_digest": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "model_profile_hash": {
+            "type": "string"
+          },
+          "profile_epoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "hardware": {
+            "type": "object"
+          },
+          "workload": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sample_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "observations": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "result_files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reviewer": {
+            "type": "string"
+          },
+          "recorded_at": {
             "type": "string",
             "format": "date-time"
           }
         },
         "required": [
-          "grant_id",
-          "url",
-          "expires_at"
+          "evidence_id",
+          "test_ids",
+          "status",
+          "commit",
+          "model_profile_hash",
+          "profile_epoch",
+          "hardware",
+          "reviewer",
+          "recorded_at"
+        ],
+        "additionalProperties": false
+      },
+      "StateChangeRequest": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 512
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileApproval": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "model",
+              "voice"
+            ]
+          },
+          "revision": {
+            "type": "string"
+          },
+          "license_receipt_ref": {
+            "type": "string",
+            "description": "Reference to the recorded license / voice-rights receipt; not the document itself"
+          },
+          "approved_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "kind",
+          "revision",
+          "license_receipt_ref"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyUpdate": {
+        "type": "object",
+        "description": "Policy field schemas are frozen at G0; until then settings is an opaque object validated server-side against the frozen schema.",
+        "properties": {
+          "scope": {
+            "type": "object",
+            "properties": {
+              "organization_id": {
+                "type": "string"
+              },
+              "application_id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "settings": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "settings"
+        ],
+        "additionalProperties": false
+      },
+      "ExportRequest": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "usage",
+              "audit"
+            ]
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "organization_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "from",
+          "to"
+        ],
+        "additionalProperties": false
+      },
+      "ExportJob": {
+        "type": "object",
+        "properties": {
+          "export_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "usage",
+              "audit"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "READY",
+              "FAILED"
+            ]
+          },
+          "redaction": {
+            "const": "redacted"
+          },
+          "artifact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "expires_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "request_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "export_id",
+          "kind",
+          "status",
+          "redaction",
+          "request_id"
+        ],
+        "additionalProperties": false
+      },
+      "RestoreRequest": {
+        "type": "object",
+        "properties": {
+          "backup_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "traffic_isolated": {
+            "const": true,
+            "description": "Operator attests that traffic is isolated (OPS-PRP RB07 step 1)"
+          },
+          "replay_erasure_ledger": {
+            "const": true,
+            "description": "Always true; erasure tombstones are applied before restored content is readable (ADR-PRP-007)"
+          }
+        },
+        "required": [
+          "backup_id",
+          "traffic_isolated",
+          "replay_erasure_ledger"
+        ],
+        "additionalProperties": false
+      },
+      "OperationTicket": {
+        "type": "object",
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "backup",
+              "restore"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "RUNNING",
+              "SUCCEEDED",
+              "FAILED"
+            ]
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "audit_event_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "request_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "operation_id",
+          "kind",
+          "status",
+          "started_at",
+          "audit_event_id",
+          "request_id"
         ],
         "additionalProperties": false
       }

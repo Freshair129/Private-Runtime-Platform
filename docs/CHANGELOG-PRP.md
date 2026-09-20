@@ -30,6 +30,15 @@ repository_integration: NOT_PERFORMED
 - ไม่มีการเปลี่ยนข้อความ requirement, acceptance status หรือ roadmap status; ทุก AT ยัง NOT_RUN
 - ค้างไว้: header ใน HTML builder ยังพิมพ์ "v0.3.0" (แก้ตอน bump version); `render_sequence.py` ยัง `write_text()` ไม่ระบุ encoding (แก้เมื่อต้อง render ใหม่); `Definition-of-Done` / `Risk-Assessment` / `Verification-Standards` ยังอ้าง Rust/Tauri/Vitest ต้อง map เป็น toolchain ตาม Coding-Standards §10 ใน task แยก
 
+### M2 · Contracts (2026-09-20)
+- เพิ่ม `contracts/openapi/prp-worker.yaml` (DRAFT, 5 operations: describe / readiness / invoke / execution evidence / cancel ตาม API-PRP §7, ARCH-PRP §9/§11, ADR-PRP-005) และ `contracts/openapi/prp-management.yaml` (DRAFT, 19 operations ตาม inventory API-PRP §8; field schemas freeze ที่ G0) ทั้งคู่มี `x-prp-status: DRAFT`, `x-prp-freeze-gate: WP03`
+- YAML เป็น canonical; `tools/contracts/export_json.py` สร้าง `.json` และ `--check` ปฏิเสธไฟล์ค้าง `prp-client.json` regenerate แล้วเท่ากับเดิมเชิงความหมาย (deep-compare ก่อนเขียนทับ); inventory 12 paths / 14 operations / 21 schemas คงเดิม
+- เพิ่ม `contracts/schemas/runtime-environment-manifest.schema.json` (encode NFR-021: control `model_loading_allowed` และ `cuda_initialization_allowed` เป็น const false; status QUALIFIED บังคับทุก service qualified) และ `contracts/examples/index.json`; `tools/contracts/validate_examples.py` ตรวจตัวอย่างทั้งสามผ่าน job payload validate กับ component ใน prp-client โดยตรง ไม่ทำ schema ซ้ำ
+- validator ตรวจ OpenAPI ทุกไฟล์ใน `contracts/openapi/` (local refs, operationId ไม่ซ้ำ, security, `x-prp-status` สำหรับไฟล์ที่ไม่ใช่ client) และ YAML/JSON pairing; เพิ่ม `openapi_documents` ใน document-validation.json
+- เพิ่ม `contracts/README.md`, `tools/contracts/requirements.txt` (pyyaml, jsonschema pin ตามที่ verify), `.github/workflows/contracts.yml`
+- API-PRP §1 ชี้ไปยัง draft contracts และ bump เป็น 0.4.0-draft
+- ค้างไว้ให้ WP03 ตัดสิน: Readiness เพิ่มค่า NOT_READY เกินตาราง API-PRP §7 (ระบุใน description); `PolicyUpdate.settings` ของ management ยังเป็น opaque object; security scheme ของ management (OperatorSession + OperatorKey) ต้องยืนยัน; TTS invocation คืน audio เป็น binary body พร้อม `X-PRP-*` headers
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

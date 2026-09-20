@@ -1,0 +1,1557 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PRP - Worker Adapter Contract",
+    "version": "0.4.0-draft",
+    "description": "DRAFT internal contract between the PRP control plane (dispatcher / observer processes) and a worker adapter or supervisor that wraps vLLM or a speech engine (API-PRP §7, ARCH-PRP §9, §11). Status DRAFT until the WP03 contract freeze; not implemented or tested by this document. Every invocation reaching a worker has already been admitted and reserved by PRP; the worker never receives the client-key database, LINE credentials, customer database tokens or shell commands. Native engines do not have to expose these routes; an external adapter/supervisor provides them. Cancellation ACK, client timeout and lease expiry are never proof that compute stopped (ADR-PRP-005)."
+  },
+  "x-prp-status": "DRAFT",
+  "x-prp-freeze-gate": "WP03",
+  "x-prp-consumers": [
+    "apps/control-api entrypoints/dispatcher.py (invoke, cancel)",
+    "apps/control-api entrypoints/observer.py (describe, readiness, execution evidence)",
+    "workers/voice server (implements)",
+    "apps/control-api adapters/runtimes/vllm (external adapter implements around vLLM)"
+  ],
+  "servers": [
+    {
+      "url": "https://worker.example.invalid",
+      "description": "Documentation placeholder. Private management/worker port on the runtime host; never publicly routable (ARCH-PRP §4)."
+    }
+  ],
+  "security": [
+    {
+      "ServiceCredential": []
+    }
+  ],
+  "paths": {
+    "/prp/worker/v1/describe": {
+      "get": {
+        "operationId": "describeRuntime",
+        "summary": "Runtime identity, profile hash, capabilities and cancellation support",
+        "description": "Redacted; never returns secrets or credential material. Binds manager UID + runtime UID + physical resource + profile + epoch (ARCH-PRP §11). A describe response is evidence input for qualification, not qualification itself.",
+        "responses": {
+          "200": {
+            "description": "Current description",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Describe"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid service credential",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Runtime unavailable (RUNTIME_UNAVAILABLE); adapter must not fabricate a healthy answer",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/worker/v1/readiness": {
+      "get": {
+        "operationId": "getReadiness",
+        "summary": "Readiness for the epoch PRP believes is current",
+        "description": "Health alone is not qualification. Limits are measured or advertised values; a field that cannot be measured is omitted rather than reported as zero or as free capacity (Coding-Standards §5, §8).",
+        "parameters": [
+          {
+            "name": "profile_epoch",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "Epoch the caller currently holds for this runtime. A mismatch yields NOT_READY with the worker's actual epoch."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Readiness observation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid service credential",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Runtime unavailable (RUNTIME_UNAVAILABLE); adapter must not fabricate a healthy answer",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/worker/v1/invocations": {
+      "post": {
+        "operationId": "invoke",
+        "summary": "Execute one reserved attempt",
+        "description": "Input is already admitted and bounded by PRP: invocation/attempt IDs, profile epoch, fence token, absolute deadline and a bounded payload or artifact grant. Response content type depends on kind: chat -> application/json or text/event-stream when stream=true; asr -> application/json; tts -> audio/wav or audio/mpeg with X-PRP-* metadata headers. SSE: data chunks with stable id, optional usage chunk, then data: [DONE]; on failure event: error with an Error envelope and no [DONE]. The result must echo invocation, attempt and runtime epoch so PRP can fence settlement (ARCH-PRP §6).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvocationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Attempt finished on this runtime",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-PRP-Attempt-ID": {
+                "description": "Echo of attempt_id (all content types)",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "X-PRP-Profile-Epoch": {
+                "description": "Runtime profile epoch that executed the attempt",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-PRP-Usage-Provenance": {
+                "description": "actual | estimated | unavailable (binary content types)",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "actual",
+                    "estimated",
+                    "unavailable"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvocationResult"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Chat stream. Each data line is a ChatChunk JSON object; terminal line is [DONE]."
+                }
+              },
+              "audio/wav": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "audio/mpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER / PAYLOAD_TOO_LARGE",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid service credential",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "EPOCH_MISMATCH or FENCE_REJECTED; nothing was executed",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "CONTEXT_LIMIT / NO_SPEECH / AUDIO_UNINTELLIGIBLE; no silent truncation or fabricated output",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Runtime unavailable (RUNTIME_UNAVAILABLE); adapter must not fabricate a healthy answer",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "DEADLINE_EXCEEDED at the absolute deadline; execution may still be UNKNOWN and safe_to_retry is false until evidence",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/worker/v1/invocations/{attempt_id}": {
+      "parameters": [
+        {
+          "name": "attempt_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getExecutionEvidence",
+        "summary": "Running / finished / unknown evidence for an attempt",
+        "description": "Used by the observer to resolve the ambiguity window after dispatch. UNKNOWN is a legitimate answer. An adapter that cannot provide evidence returns 501 UNSUPPORTED; PRP then quarantines the lease and escalates to operator recovery (OPS-PRP RB05).",
+        "parameters": [
+          {
+            "name": "runtime_epoch",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "Runtime epoch the caller believes is current; evidence from another epoch is reported as UNKNOWN with the actual epoch."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evidence observation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionEvidence"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid service credential",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; the runtime has no record of this attempt",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "UNSUPPORTED; this adapter cannot report termination evidence",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Runtime unavailable (RUNTIME_UNAVAILABLE); adapter must not fabricate a healthy answer",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/worker/v1/invocations/{attempt_id}/cancel": {
+      "parameters": [
+        {
+          "name": "attempt_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "cancelAttempt",
+        "summary": "Request cancellation of an attempt",
+        "description": "ACK means the request was accepted, not that CUDA work stopped. PRP keeps the lease QUARANTINED until getExecutionEvidence reports FINISHED. Repeating the same cancel has no additional side effect.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cancellation disposition",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER / PAYLOAD_TOO_LARGE",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid service credential",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; the runtime has no record of this attempt",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "EPOCH_MISMATCH or FENCE_REJECTED; nothing was executed",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Runtime unavailable (RUNTIME_UNAVAILABLE); adapter must not fabricate a healthy answer",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ServiceCredential": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Least-privilege service-to-worker credential owned by the control plane. Never a client key, never a master key; rotated independently (API-PRP addendum)."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "INVALID_REQUEST",
+                  "UNSUPPORTED_PARAMETER",
+                  "PAYLOAD_TOO_LARGE",
+                  "EPOCH_MISMATCH",
+                  "FENCE_REJECTED",
+                  "NOT_FOUND",
+                  "UNSUPPORTED",
+                  "CONTEXT_LIMIT",
+                  "NO_SPEECH",
+                  "AUDIO_UNINTELLIGIBLE",
+                  "RUNTIME_UNAVAILABLE",
+                  "DEADLINE_EXCEEDED"
+                ]
+              },
+              "type": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string",
+                "description": "Sanitized; never an upstream body or stack trace (Coding-Standards §5)"
+              },
+              "param": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "type",
+              "message"
+            ],
+            "additionalProperties": false
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "safe_to_retry": {
+            "type": "boolean",
+            "description": "false whenever the attempt may have been dispatched or started"
+          }
+        },
+        "required": [
+          "error",
+          "request_id",
+          "safe_to_retry"
+        ],
+        "additionalProperties": false
+      },
+      "RuntimeIdentity": {
+        "type": "object",
+        "description": "Binding advertised by the adapter (ARCH-PRP §11). PRP fails closed when a reservation cannot be tied to this identity.",
+        "properties": {
+          "manager_uid": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Lifecycle manager identity when a runtime manager (candidate A) is in use; null for independently supervised services (candidate B)"
+          },
+          "runtime_uid": {
+            "type": "string"
+          },
+          "physical_resource_id": {
+            "type": "string",
+            "description": "host + GPU UUID, verified host-local identity, or CPU pool identifier (ARCH-PRP §5)"
+          },
+          "profile_hash": {
+            "type": "string"
+          },
+          "profile_epoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "engine": {
+            "type": "string",
+            "description": "Engine name and version as reported by the adapter; informational, not a qualification claim"
+          },
+          "adapter_version": {
+            "type": "string"
+          },
+          "evidence_revision": {
+            "type": "string",
+            "description": "Revision of the qualification evidence this identity was last bound to; empty when unqualified"
+          }
+        },
+        "required": [
+          "runtime_uid",
+          "physical_resource_id",
+          "profile_hash",
+          "profile_epoch",
+          "engine",
+          "adapter_version"
+        ],
+        "additionalProperties": false
+      },
+      "Limits": {
+        "type": "object",
+        "description": "Advertised or measured bounds. Omit a field rather than report zero when it is not known.",
+        "properties": {
+          "max_context_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "max_audio_seconds": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "max_input_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "max_tts_codepoints": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "max_concurrent_invocations": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "Capability": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "Served profile identifier (not the public alias; the control plane owns alias -> profile mapping)"
+          },
+          "profile_revision": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "chat",
+                "asr",
+                "tts",
+                "tool_calls"
+              ]
+            }
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "formats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          }
+        },
+        "required": [
+          "model",
+          "profile_revision",
+          "capabilities"
+        ],
+        "additionalProperties": false
+      },
+      "Describe": {
+        "type": "object",
+        "properties": {
+          "identity": {
+            "$ref": "#/components/schemas/RuntimeIdentity"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Capability"
+            },
+            "minItems": 1
+          },
+          "cancellation": {
+            "type": "object",
+            "properties": {
+              "supported": {
+                "type": "boolean"
+              },
+              "termination_evidence": {
+                "type": "boolean",
+                "description": "true when getExecutionEvidence can distinguish FINISHED from UNKNOWN"
+              }
+            },
+            "required": [
+              "supported",
+              "termination_evidence"
+            ],
+            "additionalProperties": false
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "identity",
+          "capabilities",
+          "cancellation",
+          "observed_at"
+        ],
+        "additionalProperties": false
+      },
+      "Readiness": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "NOT_READY",
+              "UNKNOWN"
+            ],
+            "description": "NOT_READY covers loading/draining (added in this draft for review at WP03; API-PRP §7 lists READY/UNKNOWN). UNKNOWN means the adapter cannot observe the engine."
+          },
+          "profile_epoch": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Actual epoch of the runtime"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          }
+        },
+        "required": [
+          "state",
+          "profile_epoch",
+          "observed_at"
+        ],
+        "additionalProperties": false
+      },
+      "ToolCall": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "const": "function"
+          },
+          "function": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "arguments": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "arguments"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "function"
+        ],
+        "additionalProperties": false
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "system",
+              "user",
+              "assistant",
+              "tool"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tool_call_id": {
+            "type": "string"
+          },
+          "tool_calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToolCall"
+            }
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ],
+        "additionalProperties": false
+      },
+      "Tool": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "function"
+          },
+          "function": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "type",
+          "function"
+        ],
+        "additionalProperties": false
+      },
+      "ChatPayload": {
+        "type": "object",
+        "description": "Mirrors the admitted subset of the client ChatRequest after policy; the control plane has already resolved defaults and bounds.",
+        "properties": {
+          "kind": {
+            "const": "chat"
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "minItems": 1
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+          },
+          "top_p": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Required here (bounded payload); the worker must not exceed it"
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tool"
+            }
+          },
+          "tool_choice": {
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "none",
+                  "required"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "function"
+                  },
+                  "function": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "type",
+                  "function"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "profile_id",
+          "messages",
+          "max_tokens"
+        ],
+        "additionalProperties": false
+      },
+      "AsrPayload": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "asr"
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "artifact_grant_url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "description": "Time-bound, revocable read grant minted by PRP for this attempt only. The worker never receives a client key or storage credential."
+          },
+          "mime_type": {
+            "type": "string"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "th",
+              "en",
+              "auto"
+            ],
+            "default": "auto"
+          }
+        },
+        "required": [
+          "kind",
+          "profile_id",
+          "artifact_grant_url",
+          "mime_type",
+          "duration_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "TtsPayload": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "tts"
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "input": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          },
+          "voice": {
+            "type": "string",
+            "description": "Approved preset identifier; reference audio/text is server-side preset state, never part of the payload (API-PRP §4)"
+          },
+          "response_format": {
+            "type": "string",
+            "enum": [
+              "wav",
+              "mp3"
+            ]
+          },
+          "speed": {
+            "type": "number",
+            "minimum": 0.5,
+            "maximum": 2,
+            "default": 1
+          }
+        },
+        "required": [
+          "kind",
+          "profile_id",
+          "input",
+          "voice",
+          "response_format"
+        ],
+        "additionalProperties": false
+      },
+      "InvocationRequest": {
+        "type": "object",
+        "properties": {
+          "invocation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "attempt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "profile_epoch": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Epoch the reservation was made against; the worker rejects a mismatch with 409 EPOCH_MISMATCH"
+          },
+          "fence_token": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128,
+            "description": "Content fence for this attempt; required again on cancel"
+          },
+          "deadline_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Absolute deadline. The worker stops emitting at this instant; PRP treats the outcome as UNKNOWN until evidence"
+          },
+          "payload": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ChatPayload"
+              },
+              {
+                "$ref": "#/components/schemas/AsrPayload"
+              },
+              {
+                "$ref": "#/components/schemas/TtsPayload"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "chat": "#/components/schemas/ChatPayload",
+                "asr": "#/components/schemas/AsrPayload",
+                "tts": "#/components/schemas/TtsPayload"
+              }
+            }
+          }
+        },
+        "required": [
+          "invocation_id",
+          "attempt_id",
+          "profile_epoch",
+          "fence_token",
+          "deadline_at",
+          "payload"
+        ],
+        "additionalProperties": false
+      },
+      "Usage": {
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_tokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "audio_seconds": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      },
+      "Segment": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "number",
+            "minimum": 0
+          },
+          "end": {
+            "type": "number",
+            "minimum": 0
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "Transcript": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Segment"
+            }
+          }
+        },
+        "required": [
+          "text",
+          "language",
+          "duration_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "ChatChoice": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "const": 0
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          },
+          "finish_reason": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "length",
+              "tool_calls"
+            ]
+          }
+        },
+        "required": [
+          "index",
+          "message",
+          "finish_reason"
+        ],
+        "additionalProperties": false
+      },
+      "ChatChunk": {
+        "type": "object",
+        "description": "One SSE data payload of a chat stream",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "const": 0
+                },
+                "delta": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "assistant"
+                      ]
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "tool_calls": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ToolCall"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "finish_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "stop",
+                    "length",
+                    "tool_calls",
+                    null
+                  ]
+                }
+              },
+              "required": [
+                "index",
+                "delta",
+                "finish_reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          }
+        },
+        "required": [
+          "id",
+          "choices"
+        ],
+        "additionalProperties": false
+      },
+      "InvocationResult": {
+        "type": "object",
+        "properties": {
+          "invocation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "attempt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "runtime_uid": {
+            "type": "string"
+          },
+          "physical_resource_id": {
+            "type": "string"
+          },
+          "profile_epoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "chat",
+              "asr"
+            ],
+            "description": "tts results are returned as binary content with metadata headers"
+          },
+          "result": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "choices": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatChoice"
+                    },
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                },
+                "required": [
+                  "choices"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "$ref": "#/components/schemas/Transcript"
+              }
+            ]
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "usage_provenance": {
+            "type": "string",
+            "enum": [
+              "actual",
+              "estimated",
+              "unavailable"
+            ]
+          },
+          "execution_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Measured wall time on the runtime for this attempt"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "invocation_id",
+          "attempt_id",
+          "runtime_uid",
+          "physical_resource_id",
+          "profile_epoch",
+          "kind",
+          "result",
+          "usage_provenance",
+          "observed_at"
+        ],
+        "additionalProperties": false
+      },
+      "ExecutionEvidence": {
+        "type": "object",
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "runtime_epoch": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Actual runtime epoch at observation"
+          },
+          "evidence": {
+            "type": "string",
+            "enum": [
+              "RUNNING",
+              "FINISHED",
+              "UNKNOWN"
+            ]
+          },
+          "detail": {
+            "type": "object",
+            "description": "Fields are null when the adapter cannot observe them; never guessed",
+            "properties": {
+              "process_alive": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "terminated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "exit_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "attempt_id",
+          "runtime_epoch",
+          "evidence",
+          "observed_at"
+        ],
+        "additionalProperties": false
+      },
+      "CancelRequest": {
+        "type": "object",
+        "properties": {
+          "fence_token": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "fence_token"
+        ],
+        "additionalProperties": false
+      },
+      "CancelResult": {
+        "type": "object",
+        "properties": {
+          "attempt_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "ACK",
+              "UNSUPPORTED",
+              "ALREADY_FINISHED"
+            ]
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "attempt_id",
+          "disposition",
+          "observed_at"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

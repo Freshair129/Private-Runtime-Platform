@@ -59,27 +59,35 @@ def walk(node,stack,done):
     done.add(node)
 done=set()
 for w in wpids:walk(w,[],done)
-spec=json.loads((REPO/'contracts/openapi/prp-client.json').read_text(encoding='utf-8'))
-refs=[]
-def scan(o):
+# Every OpenAPI export under contracts/openapi (YAML is canonical; tools/contracts/export_json.py --check enforces equality).
+OPENAPI=REPO/'contracts/openapi';METHODS=['get','post','put','delete','patch','options','head']
+yaml_docs={p.stem for p in OPENAPI.glob('*.yaml')};json_docs={p.stem for p in OPENAPI.glob('*.json')}
+check(yaml_docs==json_docs and yaml_docs,f'OpenAPI YAML/JSON pairs mismatch: {sorted(yaml_docs^json_docs)}')
+refs=[];specs={}
+def scan(o,found):
     if isinstance(o,dict):
-        if '$ref' in o:refs.append(o['$ref'])
-        for v in o.values():scan(v)
+        if '$ref' in o:found.append(o['$ref'])
+        for v in o.values():scan(v,found)
     elif isinstance(o,list):
-        for v in o:scan(v)
-scan(spec)
-for ref in refs:
-    check(ref.startswith('#/'),'Unexpected external OpenAPI ref '+ref)
-    if ref.startswith('#/'):
-        obj=spec
-        try:
-            for key in ref[2:].split('/'):obj=obj[key.replace('~1','/').replace('~0','~')]
-        except (KeyError,TypeError):errors.append('Broken OpenAPI ref '+ref)
-ops=[o for item in spec['paths'].values() for method,o in item.items() if method in ['get','post','put','delete','patch','options','head']]
-check(len({o['operationId'] for o in ops})==len(ops),'Duplicate operationId')
+        for v in o:scan(v,found)
+for p in sorted(OPENAPI.glob('*.json')):
+    spec=json.loads(p.read_text(encoding='utf-8'));specs[p.stem]=spec;found=[];scan(spec,found);refs+=found
+    check(isinstance(spec.get('info',{}).get('version'),str),f'{p.name}: info.version missing')
+    for ref in found:
+        check(ref.startswith('#/'),f'{p.name}: unexpected external OpenAPI ref {ref}')
+        if ref.startswith('#/'):
+            obj=spec
+            try:
+                for key in ref[2:].split('/'):obj=obj[key.replace('~1','/').replace('~0','~')]
+            except (KeyError,TypeError):errors.append(f'{p.name}: broken OpenAPI ref {ref}')
+    ops=[o for item in spec['paths'].values() for method,o in item.items() if method in METHODS]
+    check(len({o['operationId'] for o in ops})==len(ops),f'{p.name}: duplicate operationId')
+    check(bool(spec.get('security')),f'{p.name}: auth not declared')
+    for o in ops:check(o.get('security',spec.get('security'))!=[],f'{p.name}: unauthenticated operation {o.get("operationId")}')
+    if p.stem!='prp-client':check(isinstance(spec.get('x-prp-status'),str),f'{p.name}: x-prp-status missing (DRAFT until freeze gate)')
+spec=specs.get('prp-client',{'paths':{}})
+ops=[o for item in spec['paths'].values() for method,o in item.items() if method in METHODS]
 check(len(spec['paths'])==12 and len(ops)==14,'Unexpected client contract inventory')
-check(bool(spec.get('security')),'Client auth not declared')
-for o in ops:check(o.get('security',spec.get('security'))!=[],'Unauthenticated client operation')
 # Verify one test per requirement and no reused acceptance anchors.
 test_anchors=re.findall(r'<a id="(PRP-AT-\d+)"',tests)
 check(len(test_anchors)==len(set(test_anchors))==92,'Repeated or missing test anchors')
@@ -103,5 +111,5 @@ for p in ROOT.rglob('*'):
     if 'releases' in p.relative_to(ROOT).parts:continue
     if p.is_file():
         check(p.suffix.lower() not in {'.ttf','.otf','.woff','.woff2'},'Font file must not be distributed: '+str(p))
-result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':92,'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN'}
+result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':92,'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_documents':len(specs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN'}
 print(json.dumps(result,ensure_ascii=False,indent=2));sys.exit(1 if errors else 0)
