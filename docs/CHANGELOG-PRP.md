@@ -87,6 +87,9 @@ repository_integration: NOT_PERFORMED
 - §7: `contract/` = `generated.py` + `base.py` + `models.py` (re-export); §9: เพิ่ม YAML → JSON / generated models → routes → conformance test เข้า traceability diagram, ข้อ 5 ระบุ `--check` ทุกตัว, ข้อ 6 ใหม่กำหนดสิ่งที่ conformance test ต้องตรวจและวิธีบันทึกข้อยกเว้น; §10: tier conformance ครอบคลุม voice และ `contracts.yml` ระบุ step จริง
 - header สถานะ: M1–M3 เสร็จ, ADR-PRP-013 ผสานแล้ว, M4 รอ WP24; ADR-PRP-013 action items ครบ 5/5; ไม่มี code เปลี่ยน
 
+### AGENTS.md cleanup (2026-09-20, C-1 / H2)
+- ลบส่วน "Mobile Testing Mindset (ARTEMIS Integration)" ออกจาก `AGENTS.md` (docs(agents): remove unrelated ARTEMIS section inherited from the initial commit) — เป็นกฎ Android UI-automation ที่ไม่เกี่ยวกับ PRP อยู่นอก R1–R10; ไม่มีไฟล์อื่นอ้างอิงส่วนนี้
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
