@@ -51,6 +51,12 @@
       "decided_by": "owner",
       "decided_on": "2026-09-20",
       "note": "EV07 BLOCKED until WP10 (speech extraction spike) delivers a licensed speech candidate; no stub is used as proof"
+    },
+    "candidate_B_engine": {
+      "engine": "vLLM",
+      "decided_by": "owner",
+      "decided_on": "2026-09-20",
+      "note": "Reconfirmed after considering Ollama/GGUF: candidate B stays vLLM with safetensors; Ollama may serve as a development target for the chatbot client only. A GGUF path in vLLM is experimental per vLLM docs and would change the engine under test in Xinference (llama.cpp)."
     }
   },
   "deviations": [
@@ -106,17 +112,46 @@
     "weights_cache_kept_between_candidates": null
   },
   "shared_revision": {
-    "llm_model": null,
-    "model_revision": null,
-    "tokenizer_revision": null,
-    "chat_template_hash": null,
+    "llm_model": "typhoon-ai/typhoon2.5-qwen3-4b",
+    "llm_model_requested_as": "scb10x/typhoon2.5-qwen3-4b",
+    "model_revision": "ce0a7416fe82d4404b2b4a253ce3ac095ab1252c",
+    "model_last_modified": "2026-06-11T21:42:38.000Z",
+    "tokenizer_revision": "ce0a7416fe82d4404b2b4a253ce3ac095ab1252c",
+    "tokenizer_json_sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+    "chat_template_file": "chat_template.jinja",
+    "chat_template_hash": "64f85b198065d0fba2a81f37e10ed68161ce2c19a754c7100e67e0ca2ee9c326",
+    "generation_config_sha256": null,
+    "architecture": [
+      "Qwen3ForCausalLM"
+    ],
+    "dtype": "bfloat16",
+    "weights": {
+      "format": "safetensors",
+      "files": [
+        {
+          "file": "model-00001-of-00002.safetensors",
+          "gib": 4.648
+        },
+        {
+          "file": "model-00002-of-00002.safetensors",
+          "gib": 2.844
+        }
+      ],
+      "total_gib": 7.49,
+      "note": "bf16 shards as published; no quantization for run1, so hosts A (12 GB) and B (16 GB) load the identical artifact"
+    },
     "context_length": null,
+    "context_length_note": "max_position_embeddings 262144 in config.json; the served --max-model-len is chosen at EV02 launch and recorded per candidate",
     "asr_model": null,
     "asr_revision": null,
     "tts_model": null,
     "tts_revision": null,
-    "licenses_checked_by": null,
-    "licenses_checked_on": null
+    "llm_license": "Apache-2.0 (Hugging Face license tag at this revision)",
+    "licenses_checked_by": "Freshair129 (owner, BYOM): model accepted 2026-09-20; the SEC-007 license receipt is still to be filed before activation",
+    "licenses_checked_on": "2026-09-20",
+    "decided_by": "owner",
+    "decided_on": "2026-09-20",
+    "pins_fetched_at": "2026-09-20T16:31:07+00:00"
   },
   "candidates": [
     {
