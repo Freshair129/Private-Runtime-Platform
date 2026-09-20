@@ -81,6 +81,12 @@ repository_integration: NOT_PERFORMED
 - contract: promote response inline ของ `listCapabilities` เป็น component `CapabilityList` (client 29→30) และเปลี่ยน `format: uri` เป็น `type: string` + `pattern: ^https://` ใน 4 field (`Grant.url`, `AsrPayload.artifact_grant_url`, `NodeRegistration.origin`, `NodeUpdate.origin`) เพราะ Pydantic `AnyUrl` รับ pattern ไม่ได้ทำให้ generator ทิ้ง https constraint; พิสูจน์ด้วย dereference ว่า wire format เท่าเดิม ต่างเฉพาะ metadata `format`
 - gates ผ่าน: pytest 50 / 22, mypy --strict 45 / 12, lint-imports 4 / 2, `gen_models --check` เสถียร; `code-trace.json` regenerate; ทุก AT ยัง NOT_RUN
 
+### ADR-PRP-013 action item 5 · SDD-PRP-REPO สะท้อน generated contract models (2026-09-20, C-1 / H2)
+- SDD-PRP-REPO §5: contract models เป็น derived code ที่ generate ด้วย `gen_models.py`; กติกาผู้เขียน YAML (named component ทุก object, URL ใช้ `pattern: ^https://`, ทุก JSON operation ผูก route กับ generated model, escape hatch `_manual.py`); inventory ระบุ 12 paths / 14 operations และอธิบายว่าจำนวน component เปลี่ยนได้เฉพาะแบบ wire-equivalent (21 → 30)
+- §6.1 / §6.3: เพิ่ม package `contracts/` ใน tree และ layer diagram (import Pydantic เท่านั้น; forbidden ไป core / platform / api / adapters); บันทึก W-Scale `src/prp` 5 → 6 = W3 พร้อมเหตุผลจาก ADR-PRP-013 item 2 ทั้งใน governance frontmatter และ §6.1; หัวข้อ §6.3 ระบุว่าใช้ import-linter ตั้งแต่ M3 (§12 ข้อ 6 ตัดสินแล้ว)
+- §7: `contract/` = `generated.py` + `base.py` + `models.py` (re-export); §9: เพิ่ม YAML → JSON / generated models → routes → conformance test เข้า traceability diagram, ข้อ 5 ระบุ `--check` ทุกตัว, ข้อ 6 ใหม่กำหนดสิ่งที่ conformance test ต้องตรวจและวิธีบันทึกข้อยกเว้น; §10: tier conformance ครอบคลุม voice และ `contracts.yml` ระบุ step จริง
+- header สถานะ: M1–M3 เสร็จ, ADR-PRP-013 ผสานแล้ว, M4 รอ WP24; ADR-PRP-013 action items ครบ 5/5; ไม่มี code เปลี่ยน
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

@@ -13,15 +13,15 @@ decision: ADR-PRP-012
 governance:
   complexity: C-3
   access_scope: H3
-  w_scale: "root W3 (6), docs/ W2 (5), src/prp W2 (5), core/ W3 (6), adapters/ W2 (5)"
+  w_scale: "root W3 (6), docs/ W2 (5), src/prp W3 (6, review recorded in ADR-PRP-013 item 2), core/ W3 (6), adapters/ W2 (5)"
   risk: HIGH
 ---
 
 # SDD | โครงสร้าง repository, เอกสาร และ code ของ PRP
 
-**PRP — Private Runtime Platform | v0.4.0-draft | 2026-09-20 | APPROVED 2026-09-20 โดย owner ทั้ง 6 ประเด็นใน §12 ตามข้อเสนอ; M1 กำลังดำเนินการ**
+**PRP — Private Runtime Platform | v0.4.0-draft | 2026-09-20 | APPROVED 2026-09-20 โดย owner ทั้ง 6 ประเด็นใน §12 ตามข้อเสนอ; M1–M3 เสร็จ 2026-09-20; ADR-PRP-013 (generated contract models) ผสานแล้ว; M4 รอ WP24**
 
-เอกสารที่เกี่ยวข้อง: [ADR-PRP-012](ADR-PRP.md#ADR-PRP-012) · ARCH-PRP §2/§13/§14 · Coding-Standards §2–§10 · STD-Execution-Governance §4–§9 · D30 · D32
+เอกสารที่เกี่ยวข้อง: [ADR-PRP-012](ADR-PRP.md#ADR-PRP-012) · [ADR-PRP-013](ADR-PRP.md#ADR-PRP-013) · ARCH-PRP §2/§13/§14 · Coding-Standards §2–§10 · STD-Execution-Governance §4–§9 · D30 · D32
 
 ## 1. ขอบเขตและ authority
 
@@ -110,14 +110,21 @@ contracts/
 ├── README.md                      # versioning policy (API-PRP §10); อะไรเป็น TEMPLATE / NOT_QUALIFIED
 ├── openapi/
 │   ├── prp-client.yaml            # canonical — public client subset (API-PRP §3–§6); เดิม openapi-prp-v0.3.0.yaml
-│   ├── prp-client.json            # generated จาก YAML โดย tools/contracts/export_json.py; CI ตรวจ equality
-│   ├── prp-worker.yaml            # worker adapter contract (API-PRP §7): describe / invoke / cancel / observe — draft ที่ WP03
-│   └── prp-management.yaml        # private management inventory (API-PRP §8) — freeze ที่ G0/WP03
+│   ├── prp-worker.yaml            # worker adapter contract (API-PRP §7): describe / readiness / invoke / cancel / execution evidence — DRAFT, freeze ที่ WP03
+│   ├── prp-management.yaml        # private management inventory (API-PRP §8) — DRAFT, freeze ที่ G0/WP03
+│   └── *.json                     # generated จาก YAML ทั้งสามโดย tools/contracts/export_json.py; CI ตรวจ equality
 ├── schemas/                       # JSON Schema เฉพาะสิ่งที่ไม่มีใน OpenAPI: runtime-environment-manifest (job payload และ describe/observe envelope อยู่ใน OpenAPI แล้ว ไม่ทำซ้ำ)
 └── examples/                      # job-asr / job-tts / runtime-environment-manifest examples + index.json (map ตัวอย่าง → schema สำหรับ tools/contracts/validate_examples.py)
 ```
 
-กติกา: version อยู่ใน `info.version` ไม่อยู่ในชื่อไฟล์ (การ rename เป็น owner decision §12); ทุก `$ref` เป็น local; ทุก operation มี security; inventory 12 paths / 14 operations / 21 schemas ของ client contract คงเดิมจนกว่าจะมี ADR แก้ Python project แต่ละตัว **validate** request/response model ของตนกับไฟล์นี้ใน test ไม่บังคับ import generated Python package ร่วมกัน (ARCH §14)
+กติกา: version อยู่ใน `info.version` ไม่อยู่ในชื่อไฟล์ (การ rename เป็น owner decision §12); ทุก `$ref` เป็น local; ทุก operation มี security; inventory 12 paths / 14 operations ของ client contract คงเดิมจนกว่าจะมี ADR แก้ (validator ตรวจ) จำนวน component เปลี่ยนได้เฉพาะแบบที่ wire format เท่าเดิม เช่น naming pass ของ ADR-PRP-013 (21 → 30)
+
+**Contract models เป็น derived code (ADR-PRP-013):** Python model ของแต่ละ contract ถูก **generate** จาก YAML ด้วย `tools/contracts/gen_models.py` (`datamodel-code-generator` pin ใน `tools/contracts/requirements.txt`, flags กำหนดใน ADR rule 3) ลง `apps/control-api/src/prp/contracts/{client_v1,worker_v1,management_v1}.py` และ `workers/voice/src/prp_voice/contract/generated.py` แต่ละ project มี base class `ContractModel` (`extra="forbid"`, `frozen=True`) ที่เขียนมือหนึ่งไฟล์ generated module ห้ามแก้ด้วยมือ (แก้ YAML → regenerate → commit ทั้งคู่; `gen_models.py --check` ใน `contracts.yml`) และห้าม import ข้าม project (ARCH §14) กติกาที่ตามมาสำหรับผู้เขียน YAML:
+
+- ทุก object schema ต้องเป็น named component (รวม response ระดับ path) เพราะชื่อ component คือชื่อ class; generator ห้ามตั้งชื่อเอง
+- URL field ใช้ `type: string` + `pattern: '^https://'` ไม่ใช้ `format: uri` เพราะ Pydantic `AnyUrl` รับ pattern ไม่ได้ constraint จะหายจาก model
+- ทุก operation ที่มี JSON body หรือ JSON success response ต้องผูก route กับ generated model; conformance test ของแต่ละ project (§9 ข้อ 6) เทียบ `app.openapi()` กับ YAML ต่อ operation หลัง normalize ข้อยกเว้นเดียวที่บันทึกใน test: multipart ของ `transcribeAudio` / `uploadArtifact` ผูกพร้อม upload path ที่ M4
+- shape ที่ generator แสดงไม่ได้ เขียนมือได้เฉพาะใน `_manual.py` คู่กับ test เทียบ `model_json_schema()` กับ component (ADR rule 6) ปัจจุบันไม่มี
 
 ## 6. Control plane (`apps/control-api`)
 
@@ -137,13 +144,14 @@ apps/control-api/
 │   │   ├── execution/             #   Execution & Jobs
 │   │   ├── content/               #   Artifact Service
 │   │   └── observability/         #   Observer & Audit (domain)
+│   ├── contracts/                 # generated Pydantic models ของ client / worker / management contract (ADR-PRP-013) + base.py ที่เขียนมือ; import Pydantic เท่านั้น; ห้ามแก้ *_v1.py
 │   ├── adapters/                  # port implementations; ที่เดียวที่ import vendor SDK / ORM / HTTP client ได้
 │   │   ├── persistence/           #   PostgreSQL repositories, transactions, leases/CAS, outbox claim, idempotency constraints
 │   │   ├── runtimes/              #   worker adapter protocol: vllm/, xinference/, speech/  ← seam A/B
 │   │   ├── gateway/               #   delegation ไป gateway/key framework ที่เลือก (เช่น LiteLLM) หลัง port ของ access/scheduling ← seam A/B
 │   │   ├── storage/               #   artifact object store: local_fs/, s3/
 │   │   └── telemetry/             #   observation collectors, audit sink, metrics exporter
-│   ├── api/                       # ASGI app (FastAPI = candidate แรกตาม ARCH §3): routers ตามกลุ่ม contract, models ผูกกับ prp-client.yaml, auth facade, error mapping
+│   ├── api/                       # ASGI app (FastAPI = candidate แรกตาม ARCH §3): routes ตาม operationId ของ prp-client.yaml ผูก body / parameters / response กับ contracts/client_v1, auth facade, error mapping
 │   └── entrypoints/               # composition root + process mains: api.py, dispatcher.py, observer.py
 └── tests/
     ├── unit/                      # core + platform, ไม่มี I/O
@@ -151,7 +159,7 @@ apps/control-api/
     └── integration/               # PostgreSQL จริง (race/concurrency), framework integration A/B — marked; skipped ≠ pass
 ```
 
-W-Scale: `src/prp` 5 directories = W2; `core/` 6 = W3 (ยอมรับเพราะตรงตาราง ARCH §2; การรวม context จะซ่อน ownership boundary ที่ SRS ตั้งชื่อไว้); `adapters/` 5 = W2
+W-Scale: `src/prp` 6 directories = W3 (เดิม 5; `contracts/` เพิ่มโดย ADR-PRP-013 action item 2 พร้อมบันทึกเหตุผล: base class เดียวต่อ project ต้องถูก import จากทั้ง `api` และ `adapters` ซึ่ง layer rule ห้าม import กัน จึงต้องเป็น layer ของตัวเอง); `core/` 6 = W3 (ยอมรับเพราะตรงตาราง ARCH §2; การรวม context จะซ่อน ownership boundary ที่ SRS ตั้งชื่อไว้); `adapters/` 5 = W2
 
 ### 6.2 Mapping logical module → code
 
@@ -168,21 +176,26 @@ W-Scale: `src/prp` 5 directories = W2; `core/` 6 = W3 (ยอมรับเพ�
 | Worker adapters | `adapters/runtimes/*` + `workers/voice` | — | implement `RuntimeInvoker`, `RuntimeDescriber` |
 | Console / Reference Client | `apps/console`, `apps/playground` | — | HTTP เท่านั้น |
 
-### 6.3 กติกา dependency (บังคับด้วย import-linter หรือเทียบเท่า — เลือก tool ที่ WP25)
+### 6.3 กติกา dependency (บังคับด้วย import-linter จาก `pyproject.toml` ตั้งแต่ M3; §12 ข้อ 6)
 
 ```mermaid
 flowchart TB
     EP[entrypoints<br/>composition root] --> API[api]
     EP --> AD[adapters]
+    API --> CT[contracts<br/>generated models · ADR-PRP-013]
+    AD --> CT
     API --> CORE[core/*]
     AD --> PORTS[core/*/ports]
     CORE --> PF[platform]
     AD --> PF
     API --> PF
+    CT -. Pydantic only .-> PYD[(pydantic)]
     AD -. vendor SDK / ORM / HTTP .-> EXT[(external)]
     classDef forbid stroke:#c0392b,stroke-dasharray:4 2
     CORE -. FORBIDDEN .-> AD
     CORE -. FORBIDDEN .-> API
+    CORE -. FORBIDDEN .-> CT
+    CT -. FORBIDDEN .-> CORE
     API -. FORBIDDEN .-> AD
     ALL[ทุก package] -. FORBIDDEN .-> ML[(torch / CUDA / weights)]
     class ML,AD forbid
@@ -191,7 +204,8 @@ flowchart TB
 - `core/*` import ได้เฉพาะ `platform` และ stdlib; ห้าม import Pydantic API model, ORM, vendor SDK; type ที่ข้าม boundary เป็น dataclass/Protocol/Enum ของ core เอง
 - **ข้าม context ภายใน core** ผ่าน port ที่ context เจ้าของประกาศเท่านั้น (เช่น `execution` เรียก `scheduling.Admission` ไม่แตะ repository ของ scheduling) ไม่มี shared table access
 - `adapters/*` implement port และเป็นที่เดียวที่มี framework/vendor code; error ของ vendor แปลงเป็น typed stable code ก่อนออกจาก adapter (Coding-Standards §5)
-- `api/` แปลงระหว่าง contract models กับ core types; ไม่ import adapters; ได้ instance ผ่าน composition root
+- `contracts/` คือ generated models (ADR-PRP-013) import ได้เฉพาะ Pydantic และ stdlib; ห้าม import `core`, `platform`, `api`, `adapters`, FastAPI (import-linter contract แยก); ทั้ง `api` (server side ของ client contract) และ `adapters/runtimes` (client side ของ worker contract) import จากที่นี่
+- `api/` แปลงระหว่าง generated contract models (`prp.contracts`) กับ core types; ไม่ import adapters; ได้ instance ผ่าน composition root
 - `entrypoints/` เป็นที่เดียวที่ wire adapters เข้า core; สาม process จาก code เดียว: **api** (ASGI, scale ตาม CPU โดยไม่เพิ่ม model), **dispatcher** (claim outbox → mark DISPATCHING → send; ARCH §6), **observer** (critical observer แยกจาก dashboard; ARCH §2)
 - ห้ามทุก package import torch/CUDA/whisper/TTS; test `test_no_ml_import` import ทุก module ใน `prp` แล้ว assert ว่า `sys.modules` ไม่มีชุด ML
 
@@ -203,7 +217,7 @@ workers/voice/
 ├── uv.lock  .python-version  README.md
 ├── src/prp_voice/
 │   ├── settings.py
-│   ├── contract/                  # models ฝั่ง worker ของ contracts/openapi/prp-worker.yaml — เฉพาะ ASR/TTS contract ที่อนุมัติ
+│   ├── contract/                  # generated.py = models ที่ generate จาก contracts/openapi/prp-worker.yaml (ADR-PRP-013, ห้ามแก้); base.py = ContractModel; models.py = re-export + Literal aliases ที่มี test กัน drift
 │   ├── engines/                   # asr/, tts/ wrappers; staging model assets ด้วย revision + checksum + license/voice record
 │   ├── lifecycle/                 # readiness gate, drain, epoch, physical identity, cancellation reporting (รายงาน UNKNOWN ตามจริง)
 │   └── server/                    # HTTP main; bounded concurrency; ไม่มี business credential, ไม่มี Brain/cloud config
@@ -262,6 +276,12 @@ flowchart LR
     REG --> VAL
     VAL -->|errors: []| CI[CI gate]
     ARCH[ARCH-PRP §2 · ADR-PRP] -.->|docstring cites| MOD[core/*/__init__.py]
+    YAML[contracts/openapi/*.yaml] -->|export_json| JSON[contracts/openapi/*.json]
+    YAML -->|gen_models| GEN[prp.contracts · prp_voice.contract.generated]
+    GEN --> ROUTES[api/routes.py · server/app.py]
+    ROUTES -->|app.openapi ≡ YAML| CONF[tests/contracts conformance]
+    CONF --> CI
+    JSON --> VAL
 ```
 
 กติกา:
@@ -270,20 +290,21 @@ flowchart LR
 2. Test ที่พิสูจน์ requirement ติด marker `@pytest.mark.req("PRP-FR-005")`; test ที่เป็น acceptance ติด `@pytest.mark.at("PRP-AT-005")` หนึ่ง AT อาจมีหลาย test แต่หนึ่ง test อ้าง AT ได้หนึ่งตัว
 3. `tools/trace/collect_trace.py` รัน `pytest --collect-only` ทุก project แล้วเขียน `registry/code-trace.json` (AT → test IDs → tier)
 4. Validator ขยาย: ทุก P1 requirement ต้องมี AT (มีอยู่แล้ว) **และ** เมื่อ AT ใดไม่ใช่ NOT_RUN ต้องมี test ที่ collect ได้ + receipt ใน `docs/evidence/` ที่ตรง environment; ห้าม PASS จาก mock เมื่อ AT ระบุ proof เป็น deployment/hardware/live
-5. Derived files ทุกตัว regenerate ใน CI แล้ว `git diff --exit-code`; diff = fail
+5. Derived files ทุกตัว regenerate ใน CI แล้วเทียบ (`export_json.py --check`, `gen_models.py --check`, `collect_trace.py --check`, validator เทียบ registry); diff = fail ครอบคลุม `contracts/openapi/*.json`, generated contract modules, `registry/code-trace.json`, `registry/document-validation.json`
+6. **Contract ↔ route:** generated model คือสะพานเดียวระหว่าง YAML กับ code (ADR-PRP-013) test `tests/contracts/test_openapi_conformance.py` (control-api) และ `tests/contracts/test_worker_conformance.py` (voice) ตรวจ (a) inventory ของ route เท่ากับ operationId ในไฟล์, (b) request body, parameters และ success response ของทุก operation ใน `app.openapi()` เท่ากับ contract หลัง normalize (`type`, property set, `required`, `enum`, `const`, `format`, bounds, `oneOf`/nullable), (c) ความเข้มของ validation บน HTTP path จริง: string number / bool และ unknown field → 400, UUID / date-time เป็น string → ผ่าน, naive datetime → 400 ข้อยกเว้นต้องเขียนเป็น set ใน test พร้อม gate ที่จะปลด (ปัจจุบัน: multipart สอง operation รอ upload path M4)
 
 ## 10. Test tiers และ CI
 
 | Tier (Coding-Standards §10) | ตำแหน่ง | CI job | Gate |
 |---|---|---|---|
 | Unit | `apps/*/tests/unit`, `workers/*/tests/unit` | control-api / voice-worker | required |
-| API conformance + no-ML import + API-worker multiplication | `apps/control-api/tests/contracts` | control-api | required |
+| API conformance (inventory + normalized schema + strictness, §9 ข้อ 6) + no-ML import + lock contents | `apps/control-api/tests/contracts`, `workers/voice/tests/contracts` | control-api / voice-worker | required |
 | Real DB concurrency | `apps/control-api/tests/integration` (service container) | control-api-integration | required ก่อน P1-A exit; รายงาน collected/executed/skipped; skipped ≠ pass |
 | Framework integration A/B | `apps/control-api/tests/integration/runtimes` | manual / nightly | หลักฐาน WP24 |
 | Physical GPU / voice quality | `workers/voice/tests/hardware` | self-hosted, manual | ไม่รันใน cloud CI |
 | Live external channel (LINE) | นอก core | gate แยก | ตาม ARCH §4 |
 
-Workflows ใน `.github/workflows/` (path-filtered): `docs.yml` (validate + build views + regen check), `contracts.yml` (lint + YAML≡JSON), `control-api.yml` (`uv sync --locked`, `ruff check`, `ruff format --check`, `mypy --strict src/prp`, pytest unit+contracts, import-linter), `voice-worker.yml` (แบบเดียวกัน lock ของตัวเอง ไม่มี hardware), `trace.yml` (collect_trace + validator) ไฟล์ workflow ของ GoVibe ใน `github-setting/` ไม่นำมาใช้
+Workflows ใน `.github/workflows/` (path-filtered): `docs.yml` (validate + build views + regen check), `contracts.yml` (`export_json.py --check`, `gen_models.py --check` หลัง sync ทั้งสอง project, `validate_examples.py`, validator), `control-api.yml` (`uv sync --locked`, `ruff check`, `ruff format --check`, `mypy --strict src/prp`, pytest unit+contracts, import-linter), `voice-worker.yml` (แบบเดียวกัน lock ของตัวเอง ไม่มี hardware), `trace.yml` (collect_trace + validator) ไฟล์ workflow ของ GoVibe ใน `github-setting/` ไม่นำมาใช้
 
 ## 11. Migration plan (แยก PR ต่อขั้น มี approval gate ทุกขั้น)
 
