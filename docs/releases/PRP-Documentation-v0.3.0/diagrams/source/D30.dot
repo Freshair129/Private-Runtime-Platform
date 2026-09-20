@@ -1,0 +1,38 @@
+digraph D30 {
+	bgcolor=white fontname="DejaVu Sans" fontsize=16 labelloc=t nodesep=0.4 pad=0.25 rankdir=LR ranksep=0.65 splines=spline
+	node [color="#536779" fillcolor="#E9F3F8" fontname="DejaVu Sans" fontsize=12 margin="0.18,0.12" penwidth=1.1 shape=box style="rounded,filled"]
+	edge [arrowsize=0.7 color="#5B6F81" fontname="DejaVu Sans" fontsize=10]
+	api [label="apps/control-api/src/prp
+Thin Python API / policy / ports" fillcolor="#E9F3F8" shape=box]
+	console [label="apps/console
+Independent operator UX" fillcolor="#F0F1F3" shape=box]
+	play [label="apps/playground
+Client-owned voice flow" fillcolor="#F0F1F3" shape=box]
+	contracts [label="packages/contracts
+Public/worker schemas" fillcolor="#ECE8F6" shape=box]
+	core [label="Python core contracts
+Reuse-first policy / admission" fillcolor="#E9F3F8" shape=box]
+	infra [label="Python adapters
+Manager / DB / secrets / worker" fillcolor="#E5F3ED" shape=box]
+	voice [label="workers/voice (Python)
+Separate locked environment" fillcolor="#E5F3ED" shape=box]
+	tests [label="tests/conformance + fault + hardware" fillcolor="#ECE8F6" shape=box]
+	docs [label="docs / registry / diagrams
+SRS -> derived views" fillcolor="#FFF4DB" shape=box]
+	external [label="External Zuri/FUNG/Lalin Studio
+HTTP clients only" fillcolor="#F0F1F3" shape=box]
+	api -> contracts [label="" style=solid]
+	api -> core [label="" style=solid]
+	api -> infra [label="" style=solid]
+	console -> contracts [label="" style=solid]
+	play -> contracts [label="" style=solid]
+	core -> contracts [label="" style=solid]
+	infra -> contracts [label="" style=solid]
+	voice -> contracts [label="" style=solid]
+	tests -> contracts [label="" style=solid]
+	docs -> tests [label="Requirement links" style=dashed]
+	external -> api [label="HTTP; no imports" style=solid]
+	rankdir=LR
+	rankdir=TB
+	rankdir=LR
+}

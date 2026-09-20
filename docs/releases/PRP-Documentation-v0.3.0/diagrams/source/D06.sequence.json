@@ -1,0 +1,92 @@
+{
+  "actors": [
+    [
+      "C",
+      "Client"
+    ],
+    [
+      "G",
+      "Gateway / Policy"
+    ],
+    [
+      "A",
+      "Admission / DB"
+    ],
+    [
+      "R",
+      "Router / Adapter"
+    ],
+    [
+      "W",
+      "vLLM worker"
+    ]
+  ],
+  "events": [
+    [
+      "C",
+      "G",
+      "POST chat + scoped key",
+      ""
+    ],
+    [
+      "G",
+      "R",
+      "Validate profile / context",
+      ""
+    ],
+    [
+      "R",
+      "A",
+      "Reserve candidate + quota",
+      ""
+    ],
+    [
+      "A",
+      "R",
+      "Committed attempt + fence",
+      "return"
+    ],
+    [
+      "R",
+      "W",
+      "Bounded invoke / deadline",
+      ""
+    ],
+    [
+      "W",
+      "R",
+      "Text chunks or full result",
+      "return"
+    ],
+    [
+      "R",
+      "G",
+      "Normalized response / chunks",
+      "return"
+    ],
+    [
+      "G",
+      "C",
+      "JSON or SSE chunks",
+      "return"
+    ],
+    [
+      "R",
+      "A",
+      "Settle usage / verified finish",
+      ""
+    ],
+    [
+      "G",
+      "C",
+      "Successful completion / DONE",
+      "return"
+    ],
+    [
+      "NOTE",
+      "",
+      "ALT: partial-stream failure -> error + close; never splice a new node into this stream",
+      ""
+    ]
+  ]
+}

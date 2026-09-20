@@ -1,0 +1,92 @@
+{
+  "actors": [
+    [
+      "L",
+      "LINE Platform"
+    ],
+    [
+      "A",
+      "External adapter"
+    ],
+    [
+      "P",
+      "PRP"
+    ],
+    [
+      "S",
+      "Artifact access"
+    ],
+    [
+      "U",
+      "LINE user"
+    ]
+  ],
+  "events": [
+    [
+      "L",
+      "A",
+      "Webhook event / raw signature",
+      ""
+    ],
+    [
+      "NOTE",
+      "",
+      "Adapter verifies, deduplicates and commits ingress before HTTP 200; DB failure is not acknowledged as success",
+      ""
+    ],
+    [
+      "A",
+      "L",
+      "200 webhook + optional reply ACK",
+      "return"
+    ],
+    [
+      "A",
+      "L",
+      "Get authorized audio content",
+      ""
+    ],
+    [
+      "A",
+      "P",
+      "ASR -> client context -> chat -> TTS",
+      ""
+    ],
+    [
+      "P",
+      "A",
+      "Text + artifact references",
+      "return"
+    ],
+    [
+      "A",
+      "S",
+      "Mint policy-approved audio grant",
+      ""
+    ],
+    [
+      "S",
+      "A",
+      "HTTPS URL / bounded TTL",
+      "return"
+    ],
+    [
+      "A",
+      "L",
+      "Push with first-request retry key",
+      ""
+    ],
+    [
+      "L",
+      "U",
+      "Deliver message / fetch media",
+      ""
+    ],
+    [
+      "NOTE",
+      "",
+      "ACK consumed reply token. Push policy/quota required. Unknown send is reconciled; no new inference to repair delivery",
+      ""
+    ]
+  ]
+}

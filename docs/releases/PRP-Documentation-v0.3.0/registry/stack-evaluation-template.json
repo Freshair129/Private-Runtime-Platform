@@ -1,0 +1,47 @@
+{
+  "product": "PRP",
+  "version": "0.3.0",
+  "kind": "EVALUATION_TEMPLATE_NOT_RESULTS",
+  "direction": "PYTHON_FIRST_REUSE_BEFORE_BUILD",
+  "selected_candidate": null,
+  "runtime_status": "NOT_RUN",
+  "candidates": [
+    {
+      "id": "A",
+      "name": "Xinference-managed runtimes",
+      "status": "NOT_RUN",
+      "version_manifest": null,
+      "evidence_ids": [],
+      "gate_failures": [],
+      "operator_cost_measurements": null
+    },
+    {
+      "id": "B",
+      "name": "Independent vLLM and speech services",
+      "status": "NOT_RUN",
+      "version_manifest": null,
+      "evidence_ids": [],
+      "gate_failures": [],
+      "operator_cost_measurements": null
+    },
+    {
+      "id": "C",
+      "name": "Ray Serve conditional alternative",
+      "status": "NOT_RUN",
+      "version_manifest": null,
+      "evidence_ids": [],
+      "gate_failures": [],
+      "operator_cost_measurements": null
+    }
+  ],
+  "known_source_only_gaps": [
+    {
+      "candidate": "A",
+      "requirement": "PRP-FR-005",
+      "source": "SRC-10",
+      "finding": "Documented recoverable/reveal-able native keys do not by themselves satisfy verifier-only client keys",
+      "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+    }
+  ],
+  "decision_receipt": null
+}

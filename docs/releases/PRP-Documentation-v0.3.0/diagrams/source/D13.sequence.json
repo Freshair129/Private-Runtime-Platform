@@ -1,0 +1,92 @@
+{
+  "actors": [
+    [
+      "C",
+      "Client"
+    ],
+    [
+      "J",
+      "PRP Jobs"
+    ],
+    [
+      "D",
+      "Lease / state DB"
+    ],
+    [
+      "W",
+      "Worker"
+    ],
+    [
+      "O",
+      "Observer / supervisor"
+    ]
+  ],
+  "events": [
+    [
+      "J",
+      "W",
+      "Dispatch reserved attempt",
+      ""
+    ],
+    [
+      "C",
+      "J",
+      "Cancel or connection closes",
+      ""
+    ],
+    [
+      "J",
+      "D",
+      "Record cancel request / fence",
+      ""
+    ],
+    [
+      "J",
+      "W",
+      "Best-effort abort",
+      ""
+    ],
+    [
+      "W",
+      "J",
+      "Unsupported / acknowledgement lost",
+      "return"
+    ],
+    [
+      "J",
+      "D",
+      "Execution UNKNOWN; quarantine",
+      ""
+    ],
+    [
+      "J",
+      "C",
+      "Outcome + uncertainty visible",
+      "return"
+    ],
+    [
+      "O",
+      "W",
+      "Obtain termination evidence",
+      ""
+    ],
+    [
+      "W",
+      "O",
+      "Verified finish / process stopped",
+      "return"
+    ],
+    [
+      "O",
+      "D",
+      "Reconcile usage; release invocation",
+      ""
+    ],
+    [
+      "NOTE",
+      "",
+      "Late output cannot reopen terminal job or erased content. Database TTL does not prove GPU stopped",
+      ""
+    ]
+  ]
+}

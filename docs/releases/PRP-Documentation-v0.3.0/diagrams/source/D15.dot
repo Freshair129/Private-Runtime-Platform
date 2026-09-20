@@ -1,0 +1,30 @@
+digraph D15 {
+	bgcolor=white fontname="DejaVu Sans" fontsize=16 labelloc=t nodesep=0.4 pad=0.25 rankdir=LR ranksep=0.65 splines=spline
+	node [color="#536779" fillcolor="#E9F3F8" fontname="DejaVu Sans" fontsize=12 margin="0.18,0.12" penwidth=1.1 shape=box style="rounded,filled"]
+	edge [arrowsize=0.7 color="#5B6F81" fontname="DejaVu Sans" fontsize=10]
+	nr [label=NOT_READY fillcolor="#F0F1F3" shape=box]
+	rd [label="READY
+Persist send intent" fillcolor="#E9F3F8" shape=box]
+	sg [label=SENDING fillcolor="#E9F3F8" shape=box]
+	ac [label="ACCEPTED
+Provider accepted request" fillcolor="#E5F3ED" shape=box]
+	unk [label="UNKNOWN
+Timeout / ambiguous reply" fillcolor="#FDECE6" shape=box]
+	ff [label="FAILED / EXPIRED" fillcolor="#FDECE6" shape=box]
+	rec [label="Reconcile same push intent
+Same payload + recipient + retry key" fillcolor="#FFF4DB" shape=box]
+	nr2 [label="NO blind reply-to-push fallback
+No model rerun" fillcolor="#FDECE6" shape=box]
+	nr -> rd [label="Text/audio available" style=solid]
+	rd -> sg [label="Policy / budget permits" style=solid]
+	sg -> ac [label="Accepted\nresponse" style=solid]
+	sg -> unk [label="Network uncertainty" style=solid]
+	sg -> ff [label="Definitive error" style=solid]
+	unk -> rec [label="Push retry\ncontract" style=solid]
+	rec -> ac [label="Accepted evidence" style=solid]
+	rd -> ff [label="Deadline / quota" style=solid]
+	unk -> nr2 [label="Reply uncertainty" style=solid]
+	rankdir=LR
+	rankdir=TB
+	rankdir=TB
+}

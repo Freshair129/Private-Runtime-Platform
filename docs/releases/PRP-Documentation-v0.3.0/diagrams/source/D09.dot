@@ -1,0 +1,40 @@
+digraph D09 {
+	bgcolor=white fontname="DejaVu Sans" fontsize=16 labelloc=t nodesep=0.4 pad=0.25 rankdir=TB ranksep=0.65 splines=spline
+	node [color="#536779" fillcolor="#E9F3F8" fontname="DejaVu Sans" fontsize=12 margin="0.18,0.12" penwidth=1.1 shape=box style="rounded,filled"]
+	edge [arrowsize=0.7 color="#5B6F81" fontname="DejaVu Sans" fontsize=10]
+	s [label=Request fillcolor="#F0F1F3" shape=ellipse]
+	auth [label="Identity / scope / limits valid?" fillcolor="#E9F3F8" shape=diamond]
+	reject [label="Reject 4xx
+No dispatch" fillcolor="#FDECE6" shape=box]
+	rank [label="PRP Router
+Filter current profiles / rank A then B" fillcolor="#E9F3F8" shape=box]
+	elig [label="Fresh qualified candidate?" fillcolor="#E9F3F8" shape=diamond]
+	q [label="Bounded queue or 503
+Within original deadline" fillcolor="#FDECE6" shape=box]
+	reserve [label="Atomic quota + physical reservation
+DB-backed across processes" fillcolor="#FFF4DB" shape=box]
+	ok [label="Reservation won?" fillcolor="#E9F3F8" shape=diamond]
+	out [label="Commit attempt / outbox" fillcolor="#FFF4DB" shape=box]
+	send [label="Dispatch once with epoch" fillcolor="#E5F3ED" shape=box]
+	done [label="Result and stop verified?" fillcolor="#E9F3F8" shape=diamond]
+	settle [label="Settle once + release invocation
+Keep model-residency hold" fillcolor="#E5F3ED" shape=box]
+	unknown [label="Fence result / quarantine resource
+No blind retry" fillcolor="#FDECE6" shape=box]
+	s -> auth [label="" style=solid]
+	auth -> reject [label=No style=solid]
+	auth -> rank [label=Yes style=solid]
+	rank -> elig [label="" style=solid]
+	elig -> q [label=No style=solid]
+	elig -> reserve [label=Yes style=solid]
+	reserve -> ok [label="" style=solid]
+	ok -> rank [label="Race lost; budget remains" style=solid]
+	ok -> out [label=Yes style=solid]
+	out -> send [label="" style=solid]
+	send -> done [label="" style=solid]
+	done -> settle [label=Yes style=solid]
+	done -> unknown [label=Unknown style=solid]
+	rankdir=TB
+	rankdir=LR
+	rankdir=TB
+}

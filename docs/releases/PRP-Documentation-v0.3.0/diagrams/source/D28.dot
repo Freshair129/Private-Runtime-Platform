@@ -1,0 +1,32 @@
+digraph D28 {
+	bgcolor=white fontname="DejaVu Sans" fontsize=16 labelloc=t nodesep=0.4 pad=0.25 rankdir=LR ranksep=0.65 splines=spline
+	node [color="#536779" fillcolor="#E9F3F8" fontname="DejaVu Sans" fontsize=12 margin="0.18,0.12" penwidth=1.1 shape=box style="rounded,filled"]
+	edge [arrowsize=0.7 color="#5B6F81" fontname="DejaVu Sans" fontsize=10]
+	login [label="Login / local bootstrap" fillcolor="#F0F1F3" shape=box]
+	home [label="Role-aware home" fillcolor="#E9F3F8" shape=box]
+	play [label="Playground
+Text / record-send / upload" fillcolor="#E9F3F8" shape=box]
+	own [label="My jobs / artifacts
+Status / cancel / erase" fillcolor="#E9F3F8" shape=box]
+	keys [label="Org keys / applications
+Scopes / quotas / rotation" fillcolor="#E9F3F8" shape=box]
+	pool [label="Operator pools / nodes
+Qualification / drain / resume" fillcolor="#E9F3F8" shape=box]
+	usage [label="Usage / health / alerts
+Redacted projections" fillcolor="#E9F3F8" shape=box]
+	result [label="Text answer + optional audio
+TTS-only retry" fillcolor="#E5F3ED" shape=box]
+	mic [label="Mic denied / unsupported
+Text or upload fallback" fillcolor="#FDECE6" shape=box]
+	login -> home [label="" style=solid]
+	home -> play [label=Member style=solid]
+	home -> own [label="Object grants" style=solid]
+	home -> keys [label="Org admin" style=solid]
+	home -> pool [label=Operator style=solid]
+	home -> usage [label="Scoped role" style=solid]
+	play -> result [label="" style=solid]
+	play -> mic [label="" style=solid]
+	rankdir=LR
+	rankdir=TB
+	rankdir=LR
+}

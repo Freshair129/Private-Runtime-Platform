@@ -1,4 +1,4 @@
-## Core principles (NON-NEGOTIABLE)
+# Core principles (NON-NEGOTIABLE)
 
 ### R1 — Think before action
 
@@ -21,6 +21,7 @@ When assumptions exist, use:
 
 If assumptions materially affect implementation,
 request clarification before proceeding
+
 ---
 
 ### R2 — Simplicity first
@@ -62,7 +63,7 @@ Transform tasks into verifiable goals:
 
 For multi-step tasks, state a brief plan upfront:
 
-```
+```text
 1. [Step] → verify: [check]
 2. [Step] → verify: [check]
 3. [Step] → verify: [check]
@@ -94,7 +95,7 @@ Never fix a bug without identifying its root cause.
 - Root cause must be supported by evidence.
 - Root cause must be documented in `{workspace}\.brain\rca\`
 
-See [RCA-Standard.md](./standards/RCA-Standard.md) for the required template (Symptom → Evidence → Root Cause → Escape Analysis → Prevention).
+See [RCA-Standard.md](./docs/standards/RCA-Standard.md) for the required template (Symptom → Evidence → Root Cause → Escape Analysis → Prevention).
 
 ---
 
@@ -102,7 +103,7 @@ See [RCA-Standard.md](./standards/RCA-Standard.md) for the required template (Sy
 
 A task is not complete until all 3 gates pass. Do not declare success before verification.
 
-See [Definition-of-Done.md](./standards/Definition-of-Done.md) for the full checklist (Acceptance → Success → Exit criteria).
+See [Definition-of-Done.md](./docs/standards/Definition-of-Done.md) for the full checklist (Acceptance → Success → Exit criteria).
 
 ---
 
@@ -110,7 +111,7 @@ See [Definition-of-Done.md](./standards/Definition-of-Done.md) for the full chec
 
 Every non-trivial change must be classified as **LOW / MEDIUM / HIGH**. State risk level before implementation.
 
-See [Risk-Assessment.md](./standards/Risk-Assessment.md) for classification criteria and required workflows per level.
+See [Risk-Assessment.md](./docs/standards/Risk-Assessment.md) for classification criteria and required workflows per level.
 
 ---
 
@@ -189,6 +190,7 @@ Split monolith into services
 
 C-3
 Text → Doc → Diagram → Code
+
 ---
 
 ## Exception — Hotfix rule
@@ -236,7 +238,7 @@ Output the corrected code directly. When in doubt — default to Doc first.
 
 Write executable tests based on device behavior verified with **ARTEMIS**. Before authoring a test, explore the target application and confirm its screens, transitions, and interactions. Use ARTEMIS device actions or ADB commands to investigate software and hardware behavior instead of assuming how an interaction works.
 
-### 1. The Runnable Code Principle & ARTEMIS Exploration
+## 1. The Runnable Code Principle & ARTEMIS Exploration
 
 - **When tasked with authoring tests**, deliver runnable test code with verified interactions and explicit wait conditions.
 - Before writing any test code, you must use the ARTEMIS MCP tools to interactively run and explore the target application. This allows you to discover the exact sequence of UI states, transitions, and required interactions.

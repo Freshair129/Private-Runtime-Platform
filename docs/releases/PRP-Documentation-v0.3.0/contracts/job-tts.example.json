@@ -1,0 +1,8 @@
+{
+  "kind": "tts",
+  "model": "tts-default",
+  "input": "สวัสดีครับ",
+  "voice": "thai-preset-01",
+  "response_format": "mp3",
+  "deadline_seconds": 180
+}

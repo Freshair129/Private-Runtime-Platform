@@ -1,0 +1,29 @@
+digraph D32 {
+graph [bgcolor="white",fontname="DejaVu Sans",fontsize=16,rankdir=TB,nodesep=0.48,ranksep=0.70,pad=0.32,splines=spline];
+node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,margin="0.19,0.13",color="#536779",fillcolor="#E9F3F8"];
+edge [fontname="DejaVu Sans",fontsize=10,color="#5B6F81",arrowsize=0.7];
+cli [label="HTTP clients / TypeScript UI",fillcolor="#F0F1F3"];
+api [label="Thin Python API workers\nTyped schemas / I-O / policy\nNo torch / weights / CUDA init",fillcolor="#E9F3F8"];
+auth [label="Selected auth + admission primitives\nOne authoritative chain\nDurable state and fences",fillcolor="#E9F3F8"];
+lm [label="Selected lifecycle manager\nor existing service supervisor",fillcolor="#E5F3ED"];
+a [label="LLM service A\nPinned vLLM environment\nResident model on GPU A",fillcolor="#E5F3ED"];
+b [label="LLM service B\nPinned vLLM environment\nResident model on GPU B",fillcolor="#E5F3ED"];
+sp [label="Speech service\nSeparate Python environment\nApproved CPU/GPU placement",fillcolor="#E5F3ED"];
+obs [label="Qualified physical observations\nPID / model count / epoch / residency",fillcolor="#FFF4DB"];
+rule [label="Scale API processes != scale models\nNo blocking ML in API event loop\nThread cancel != compute termination",fillcolor="#FDECE6"];
+cli -> api [label="",style=solid];
+api -> auth [label="validated identity",style=solid];
+auth -> a [label="reserved bound invocation",style=solid];
+auth -> b [label="reserved bound invocation",style=solid];
+auth -> sp [label="reserved speech invocation",style=solid];
+lm -> a [label="lifecycle",style=dashed];
+lm -> b [label="lifecycle",style=dashed];
+lm -> sp [label="supported lifecycle only",style=dashed];
+a -> obs [label="",style=solid];
+b -> obs [label="",style=solid];
+sp -> obs [label="",style=solid];
+obs -> auth [label="fresh evidence",style=dashed];
+api -> rule [label="invariant",style=dashed];
+subgraph cluster_0 {label="Control environment";fontname="DejaVu Sans";color="#BACBD7";style=rounded; api;auth; }
+subgraph cluster_1 {label="";fontname="DejaVu Sans";color="#BACBD7";style=rounded; a;b;sp; }
+}

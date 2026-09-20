@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant OP as Operator
+    participant PRP as PRP control Python adapter
+    participant MGR as Selected runtime manager
+    participant W as Bound runtime A or B
+    participant DB as PRP state and evidence
+    OP->>PRP: Request approved lifecycle/profile change
+    PRP->>DB: Persist intent, expected config epoch and authorization
+    PRP->>MGR: Delegate supported launch/list action; no arbitrary model path
+    MGR->>W: Start the approved full-model replica
+    MGR-->>PRP: Return manager UID and deployment binding
+    PRP->>W: Verify protected auth, profile and actual resource identity
+    PRP->>DB: Save qualification + residency; only now mark ready
+    Note over OP,DB: Invocation dispatch requires a matching committed lease. Opaque internal routing fails the binding gate.
+    PRP->>W: Send one attempt to the proven target; preserve deadline
+    Note over OP,DB: Manager relocation, unobserved retry or unknown termination: fence result and quarantine capacity.
+    PRP->>DB: Settle once with matching runtime epoch or retain UNKNOWN
+    OP->>PRP: Drain/unload through same lifecycle owner
+    PRP->>MGR: Terminate only when authorized and existing work reconciled
+    MGR-->>PRP: Report actual termination evidence, not merely timeout
+    PRP->>DB: Release residency only after verified stop

@@ -1,0 +1,28 @@
+{
+  "kind": "DOCUMENT_HTML_QA_ONLY",
+  "version": "0.3.0",
+  "results": {
+    "documentation": {
+      "sections": 15,
+      "filters": "PASS",
+      "hash_navigation": "PASS",
+      "in_memory_dom_load": "PASS"
+    },
+    "atlas": {
+      "cards": 34,
+      "search": "PASS",
+      "type_filter": "PASS",
+      "empty_result": "PASS",
+      "modal_open_close": "PASS",
+      "zoom_fit": "PASS",
+      "svg_download": "PASS",
+      "in_memory_dom_load": "PASS",
+      "mobile_overflow": false
+    }
+  },
+  "relative_html_links_checked": 522,
+  "javascript_page_errors": [],
+  "errors": [],
+  "runtime_tests": "NOT_RUN",
+  "navigation_limit": "file and loopback URL navigation blocked by browser administrator policy; HTML was loaded with set_content for DOM interaction tests; local links separately checked against filesystem"
+}

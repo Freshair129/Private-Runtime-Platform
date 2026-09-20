@@ -1,0 +1,26 @@
+digraph D31 {
+graph [bgcolor="white",fontname="DejaVu Sans",fontsize=16,rankdir=TB,nodesep=0.48,ranksep=0.70,pad=0.32,splines=spline];
+node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,margin="0.19,0.13",color="#536779",fillcolor="#E9F3F8"];
+edge [fontname="DejaVu Sans",fontsize=10,color="#5B6F81",arrowsize=0.7];
+scope [label="G0: PRP requirements + hardware\nPython-first direction",fillcolor="#E9F3F8"];
+a [label="Candidate A\nXinference-managed runtimes\nvLLM A/B + speech boundary",fillcolor="#E5F3ED"];
+b [label="Candidate B\nIndependent vLLM/speech services\nExisting process supervision",fillcolor="#E5F3ED"];
+c [label="Conditional C\nRay Serve / Serve LLM\nOnly with documented trigger",fillcolor="#ECE8F6"];
+proof [label="Common A/B evidence\nIdentity / binding / retry / cancellation\nResource counts / operator burden",fillcolor="#E9F3F8"];
+gap [label="Fit-gap for every P1 requirement\nREUSE / CONFIGURE / ADAPT\nBUILD-GAP / DEFER",fillcolor="#FFF4DB"];
+gate [label="Mandatory gates pass?\nNo score overrides a critical failure",fillcolor="#ECE8F6"];
+block [label="BLOCKED / revise candidate\nNo invented PASS or weaker security",fillcolor="#FDECE6"];
+select [label="WP03: selected composition\nOne key + admission authority\nExplicit gap-code ownership",fillcolor="#E9F3F8"];
+build [label="WP25 -> WP04\nLocked Python environments\nConfigure and integrate first",fillcolor="#E9F3F8"];
+scope -> a [label="same workload",style=solid];
+scope -> b [label="same workload",style=solid];
+scope -> c [label="optional only",style=dashed];
+a -> proof [label="",style=solid];
+b -> proof [label="",style=solid];
+c -> proof [label="when selected for evaluation",style=dashed];
+proof -> gap [label="",style=solid];
+gap -> gate [label="",style=solid];
+gate -> block [label="NO",style=solid];
+gate -> select [label="YES + reviewed evidence",style=solid];
+select -> build [label="",style=solid];
+}
