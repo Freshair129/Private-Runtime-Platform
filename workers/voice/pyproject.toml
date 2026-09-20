@@ -1,0 +1,83 @@
+[project]
+name = "prp-voice"
+version = "0.4.0a0"
+description = "PRP speech worker: ASR/TTS engines behind the worker adapter contract in an isolated environment (ADR-PRP-011, SDD-PRP-REPO §7). Engine dependencies are added at M4 once WP25 pins the compatible Python/engine/CUDA set."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "pydantic>=2.9,<3",
+    "uvicorn>=0.30,<1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<9",
+    "httpx>=0.27,<1",
+    "pyyaml>=6,<7",
+    "types-pyyaml>=6",
+    "ruff>=0.6",
+    "mypy>=1.11,<2",
+    "import-linter>=2,<3",
+]
+
+[project.scripts]
+prp-voice = "prp_voice.server.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prp_voice"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "N"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "req(id): PRP requirement ID this test provides evidence for (SDD-PRP-REPO §9)",
+    "at(id): PRP acceptance specification ID this test is collected under; status stays NOT_RUN until a receipt exists",
+    "hardware: needs a physical GPU or voice device; runs only on a self-hosted runner",
+]
+
+[tool.importlinter]
+root_package = "prp_voice"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layered worker (SDD-PRP-REPO 7): server -> lifecycle | engines -> contract"
+type = "layers"
+layers = [
+    "prp_voice.server",
+    "prp_voice.lifecycle | prp_voice.engines",
+    "prp_voice.contract",
+]
+
+[[tool.importlinter.contracts]]
+name = "Only engines/ may touch ML runtimes; contract, lifecycle and server stay engine-free"
+type = "forbidden"
+source_modules = ["prp_voice.contract", "prp_voice.lifecycle", "prp_voice.server"]
+forbidden_modules = [
+    "torch",
+    "torchaudio",
+    "transformers",
+    "whisper",
+    "faster_whisper",
+    "ctranslate2",
+    "TTS",
+    "onnxruntime",
+]

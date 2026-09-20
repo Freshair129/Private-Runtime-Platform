@@ -12,8 +12,8 @@ PRP คือ self-hosted inference platform สำหรับ chat / ASR / TTS
 | [`docs/releases/`](docs/releases/) | release package ที่ frozen พร้อม `MANIFEST.sha256` ห้ามแก้ | v0.3.0 |
 | [`contracts/`](contracts/README.md) | protocol source of truth: OpenAPI client / worker / management contracts, JSON Schema ของ runtime manifest, ตัวอย่าง payload | มีแล้ว (M1–M2); worker และ management เป็น DRAFT freeze ที่ WP03 |
 | [`tools/`](tools/) | repo tooling เท่านั้น: `docs/` validator, HTML builder, sequence renderer; `contracts/` YAML→JSON export และ example validation | มีแล้ว (M1–M2) |
-| `apps/control-api/` | Python control plane (`src/prp`) | M3 (= WP25) |
-| `workers/voice/` | Python ASR/TTS worker ใน environment แยก | M3 |
+| [`apps/control-api/`](apps/control-api/README.md) | Python control plane (`src/prp`): platform, 6 core contexts + ports, api ผูก 14 operations, 3 entrypoints | มีแล้ว (M3) skeleton fail closed; adapters ที่ M4 |
+| [`workers/voice/`](workers/voice/README.md) | Python ASR/TTS worker ใน environment แยก: contract, lifecycle, server 5 operations | มีแล้ว (M3) skeleton fail closed; engines ที่ M4 |
 | `deploy/` | host A/B composition templates, pinned vendor images | M4 |
 | [`.brain/`](.brain/README.md) | RCA และ proposal drafts ตาม AGENTS.md | มีแล้ว |
 

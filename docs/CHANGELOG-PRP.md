@@ -39,6 +39,15 @@ repository_integration: NOT_PERFORMED
 - API-PRP §1 ชี้ไปยัง draft contracts และ bump เป็น 0.4.0-draft
 - ค้างไว้ให้ WP03 ตัดสิน: Readiness เพิ่มค่า NOT_READY เกินตาราง API-PRP §7 (ระบุใน description); `PolicyUpdate.settings` ของ management ยังเป็น opaque object; security scheme ของ management (OperatorSession + OperatorKey) ต้องยืนยัน; TTS invocation คืน audio เป็น binary body พร้อม `X-PRP-*` headers
 
+### M3 · Python skeleton = WP25 baseline (2026-09-20, C-3 / H4)
+- คำตัดสิน owner: Python 3.12 สำหรับ control plane (speech ตาม engine compatibility ที่ M4), FastAPI + Pydantic เป็น candidate ของ `api/` ตาม ARCH §3, persistence/adapters เลื่อนไป M4 (skeleton มีเฉพาะ ports)
+- `apps/control-api` (`prp-control` 0.4.0a0, `uv.lock` 35 packages ไม่มี ML/CUDA): `platform/` (ids, UTC clock, error codes + envelope ตาม API-PRP §2, redacting logger), `core/` 6 bounded contexts ตรงตาราง ARCH §2 พร้อม ports และ state rules (settlement fence, deadline → UNKNOWN, cancel semantics, outbox claim, lease quarantine, eligibility, artifact grant TTL), `api/` ผูก route ครบ 14 operations ของ `prp-client.yaml` (verify ด้วย conformance test) ทุก request ตอบ envelope: ไม่มี bearer → 401, มี bearer แต่ไม่มี verifier → 503 fail closed, `entrypoints/` สาม process โดย dispatcher/observer ปฏิเสธ start (exit 3) เมื่อไม่มี adapter
+- `workers/voice` (`prp-voice` 0.4.0a0, lock แยก): contract models `extra="forbid"`, lifecycle (identity, epoch bump, readiness READY/NOT_READY/UNKNOWN ตามจริง), server ผูก 5 operations ของ `prp-worker.yaml`: describe/invoke 503, readiness NOT_READY, cancel UNSUPPORTED, evidence 501; service credential ตรวจ constant-time จาก env `PRP_VOICE_SERVICE_TOKEN` ไม่ตั้งค่า = 503
+- Gates ผ่านทั้งสอง project: `ruff check`, `ruff format --check`, `mypy --strict` (40 / 10 files), `pytest` (36 / 14 tests), `lint-imports` (3 / 2 contracts kept: layers, core ไม่ import framework, ห้าม ML ทุก package); test `test_no_ml_import` ตรวจทั้ง `sys.modules` และ `uv.lock`
+- Tests ติด marker `req(...)` ตาม SDD §9; `test_no_ml_import` ติด `at("PRP-AT-089")` เฉพาะส่วน import smoke; **ทุก acceptance ยัง NOT_RUN** ไม่มี receipt ใน `docs/evidence/`
+- เพิ่ม `.github/workflows/control-api.yml`, `voice-worker.yml` (uv, path-filtered; `tests/hardware` ไม่ถูก collect ใน cloud)
+- ค้างไว้: request/response Pydantic models ของ client API และคำตัดสิน generated-vs-handwritten ไป M4; ค่า `error.type` category ยัง draft (freeze WP03); `PYTHONUTF8=1` จำเป็นสำหรับ `lint-imports` บน Windows console cp874; `tools/trace/collect_trace.py` ยังไม่มี (SDD §9 ข้อ 3)
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

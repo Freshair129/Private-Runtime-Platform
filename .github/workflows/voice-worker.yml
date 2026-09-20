@@ -1,0 +1,52 @@
+name: Voice Worker
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "workers/voice/**"
+      - "contracts/openapi/prp-worker.*"
+      - ".github/workflows/voice-worker.yml"
+  pull_request:
+    paths:
+      - "workers/voice/**"
+      - "contracts/openapi/prp-worker.*"
+      - ".github/workflows/voice-worker.yml"
+  workflow_dispatch:
+
+jobs:
+  gates:
+    name: Coding-Standards 10 gates (no hardware tier in cloud CI)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: workers/voice
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "workers/voice/uv.lock"
+
+      - name: Install pinned Python
+        run: uv python install
+
+      - name: Sync locked environment
+        run: uv sync --locked --group dev
+
+      - name: Lint
+        run: uv run --locked ruff check .
+
+      - name: Format check
+        run: uv run --locked ruff format --check .
+
+      - name: Type check (strict)
+        run: uv run --locked mypy --strict src/prp_voice
+
+      - name: Import rules (layers, engines-only ML)
+        run: uv run --locked lint-imports
+
+      - name: Unit and contract tests (tests/hardware is never collected here)
+        run: uv run --locked pytest tests/unit tests/contracts -ra -q
