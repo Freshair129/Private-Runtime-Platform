@@ -65,10 +65,13 @@ Private-Runtime-Platform/
 └── tools/                         # repo tooling เท่านั้น ไม่ใช่ application code (§9)
     ├── docs/                      #   validate_docs, build_html_views, render_sequence, gen_registry
     ├── contracts/                 #   export_json, lint
-    └── trace/                     #   collect_trace
+    ├── trace/                     #   collect_trace
+    └── wp24/                      #   WP24 EV02 operator tooling; stdlib only; evidence inputs, not verdicts
 ```
 
 **W-Scale ที่ root:** directory ที่มองเห็น 6 รายการ (`docs`, `contracts`, `apps`, `workers`, `deploy`, `tools`) = W3 ขอบล่าง ทางเลือกลดเป็น W2 คือยุบ `deploy/` เข้า `apps/*/deploy` และ `workers/*/deploy` แต่จะแยก topology สองเครื่องที่อ้างทั้ง apps และ workers ออกจากกัน จึงเสนอคง `deploy/` และบันทึก lead review ใน ADR-012 (`.github`, `.brain` เป็น infrastructure ไม่นับเป็น peer)
+
+**W-Scale ใน `tools/`:** เพิ่ม `wp24/` แล้วมองเห็น 4 รายการ (`docs`, `contracts`, `trace`, `wp24`) = W2 ยังอยู่ในช่วง 3–5
 
 **การปรับจาก D30:** D30 เขียน `packages/contracts` ส่วน ARCH §14 เขียน `contracts/` — ใช้ `contracts/` ที่ root เป็น protocol source; `packages/` ยังไม่สร้างจนกว่าจะมี generated client ที่ผู้ใช้สองรายขึ้นไปต้อง import ร่วมกัน (เช่น console + playground)
 
