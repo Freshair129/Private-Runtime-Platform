@@ -1,0 +1,105 @@
+{
+  "kind": "WP24_HOST_INVENTORY",
+  "generated_at_utc": "2026-09-20T16:42:30Z",
+  "command_line": "tools/wp24/host_inventory.py --host-id control --weights-path F:/models --reference-time 2026-09-20T16:42:26Z --out <home>/AppData/Local/Temp/claude/F--Private-Runtime-Platform/a3b3a0aa-f227-4c02-9ad5-9e62668c4a90/scratchpad/inv",
+  "host_id": "control",
+  "gpu_list": [
+    {
+      "index": "0",
+      "name": "NVIDIA GeForce RTX 5060 Ti",
+      "uuid": "GPU-38430611-f42d-0296-a887-d75649b21f25"
+    }
+  ],
+  "gpu_query_rows": [
+    {
+      "name": "NVIDIA GeForce RTX 5060 Ti",
+      "memory.total": "16311 MiB",
+      "driver_version": "616.92",
+      "uuid": "GPU-38430611-f42d-0296-a887-d75649b21f25"
+    }
+  ],
+  "disk_free": {
+    "checked_path": "F:\\",
+    "requested_path": "F:\\models",
+    "path_existed": false,
+    "free_bytes": 233237598208,
+    "total_bytes": 512108785664
+  },
+  "clock_skew": {
+    "reference_time_utc": "2026-09-20T16:42:26+00:00",
+    "measured_at_utc": "2026-09-20T16:42:30.883469+00:00",
+    "skew_seconds": 4.883469
+  },
+  "container_runtime": {
+    "docker": {
+      "present": true,
+      "version_output": "Docker version 29.8.0, build 88096ef"
+    },
+    "systemctl": {
+      "present": false,
+      "version_output": ""
+    }
+  },
+  "measurements": [
+    {
+      "name": "os_system",
+      "value": "Windows"
+    },
+    {
+      "name": "os_release",
+      "value": "11"
+    },
+    {
+      "name": "os_version",
+      "value": "10.0.26200"
+    },
+    {
+      "name": "kernel_or_platform_release",
+      "value": "11"
+    },
+    {
+      "name": "machine",
+      "value": "AMD64"
+    },
+    {
+      "name": "python_version",
+      "value": "3.12.10"
+    },
+    {
+      "name": "python_implementation",
+      "value": "CPython"
+    },
+    {
+      "name": "gpu_driver_present",
+      "value": true
+    },
+    {
+      "name": "gpu_count",
+      "value": 1
+    },
+    {
+      "name": "weights_path_free_bytes",
+      "value": 233237598208
+    },
+    {
+      "name": "clock_skew_seconds",
+      "value": 4.883469
+    },
+    {
+      "name": "docker_present",
+      "value": true
+    },
+    {
+      "name": "systemctl_present",
+      "value": false
+    }
+  ],
+  "observations": [
+    "`nvidia-smi` header did not contain a 'CUDA Version:' field",
+    "systemctl not found on this host (version check only, nothing started)"
+  ],
+  "source_observations": [],
+  "artifacts": [
+    "host_inventory_control_20260920T164230Z.json"
+  ]
+}

@@ -73,14 +73,53 @@
   ],
   "environment": {
     "control_host": {
-      "host_id": "DESKTOP-VETATMQ",
+      "host_id": "control",
       "os": "Microsoft Windows 11 Pro 10.0.26200 build 26200",
       "kernel": "10.0.26200",
       "python": "3.12.10 (uv 0.12.8, git 2.55.0)",
       "cpu": "Intel Core i7-14700KF, 20 cores / 28 threads",
       "ram_gb": 31.8,
       "gpu_driver_present": true,
-      "gpu": "NVIDIA GeForce RTX 5060 Ti, driver 32.0.16.1692 (recorded; permitted by the two-host topology, see DEV-01 resolution)"
+      "gpu": "NVIDIA GeForce RTX 5060 Ti, 16311 MiB, driver 616.92 (nvidia-smi), UUID GPU-38430611-f42d-0296-a887-d75649b21f25 (recorded; permitted by the two-host topology, see DEV-01 resolution)",
+      "inventory_tool": "tools/wp24/host_inventory.py",
+      "inventory_generated_at_utc": "2026-09-20T16:42:30Z",
+      "inventory_artifacts": [
+        "docs/evidence/wp24/WP24-2026-09-20-run1/control/EV01/host_inventory_control_20260920T164230Z.json",
+        "docs/evidence/wp24/WP24-2026-09-20-run1/control/EV01/clock_skew_precise.json",
+        "docs/evidence/wp24/WP24-2026-09-20-run1/control/EV01/nvidia_smi_header.txt",
+        "docs/evidence/wp24/WP24-2026-09-20-run1/control/EV01/ntp_offset.json",
+        "docs/evidence/wp24/WP24-2026-09-20-run1/control/EV01/stripchart_raw.txt"
+      ],
+      "cuda_version": "13.4 (CUDA UMD Version from the nvidia-smi header on Windows)",
+      "cuda_version_note": "the header reads 'CUDA UMD Version:' on this Windows driver; host_inventory.py looks for 'CUDA Version:' and therefore recorded none; value taken from the saved header artifact",
+      "disk_free_gib_for_weights": 217.2,
+      "disk_checked_path": "F:\\",
+      "container_runtime": "Docker version 29.8.0, build 88096ef",
+      "clock_skew": {
+        "tool_reference_run_seconds": 4.883469,
+        "precise_samples": [
+          {
+            "rtt_seconds": 0.153,
+            "local_minus_reference_seconds": 15.126
+          },
+          {
+            "rtt_seconds": 0.104,
+            "local_minus_reference_seconds": 2.257
+          },
+          {
+            "rtt_seconds": 0.101,
+            "local_minus_reference_seconds": 3.36
+          }
+        ],
+        "method": "HTTP HEAD https://api.github.com; Date header (1 s resolution) vs local clock at mid-RTT; 3 samples",
+        "ntp_offsets_seconds": [
+          -0.6247612,
+          -0.625333,
+          -0.6253737
+        ],
+        "ntp_method": "w32tm /stripchart /computer:time.windows.com /samples:3 /period:2 /dataonly (read-only NTP query; offset = local - server; run via PowerShell)",
+        "note": "the tool figure includes the seconds between fetching the HTTP reference and the measurement; the HTTP Date samples were inconsistent (15.1 / 2.3 / 3.4 s) and are kept only as a record of that; the w32tm NTP offsets are the authoritative skew measurement"
+      }
     },
     "gpu_hosts": [
       {
