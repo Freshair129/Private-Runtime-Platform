@@ -62,6 +62,12 @@ repository_integration: NOT_PERFORMED
 - validator ตรวจ template: คอลัมน์ derived ต้องตรง requirements.json, `evaluation_experiments` ต้องตรง gate ของ EV01–EV08, ทุก `source_review.source` ต้องอยู่ใน SOURCES-PRP register, คอลัมน์ผลลัพธ์ต้องเป็น null, และ stack-evaluation ต้องไม่ประกาศผู้ชนะ; เพิ่ม `fitgap_source_findings` ใน document-validation.json
 - STACK-EVALUATION-PRP §5 เพิ่มย่อหน้า WP24 preparation และ bump เป็น 0.4.0-draft
 
+### ADR-PRP-013 ACCEPTED + contract naming pass (2026-09-20, C-2 / H2)
+- เพิ่ม ADR-PRP-013 ใน ADR-PRP.md: contract models ต้อง generate จาก OpenAPI YAML ด้วย `datamodel-code-generator` ที่ pin ไว้ (flags กำหนดใน ADR, base class `extra="forbid" + frozen`, `--strict-types int float bool`) เป็น derived file ที่ commit และ `--check` ใน CI ห้ามเขียนมือยกเว้น escape hatch ที่มี conformance test; owner อนุมัติพร้อมคำแนะนำทั้งสามข้อ (เก็บ description, frozen, generate management ตั้งแต่ DRAFT) หลักฐาน spike อยู่ใน ADR
+- Action item 1 ทำแล้ว: promote inline object schema เป็น named component ในทั้งสาม YAML (client 21→29, worker 22→32, management 16→19 components เช่น `ErrorBody`, `ChatChoice`, `NamedToolChoice`, `TtsJobResult`, `ChatDelta`, `EvidenceDetail`, `CancellationSupport`, `PolicyScope`, `AcceptanceTestId`) พิสูจน์ด้วย dereference ว่า paths, components เดิม และส่วนอื่นเท่ากันทุก byte เชิงความหมาย; inventory 12 paths / 14 operations เท่าเดิม; JSON regenerate; generator ไม่ตั้งชื่อเองอีก
+- test conformance ของ control-api resolve `$ref` ใน Error envelope แทนอ่าน inline
+- action items 2–5 ของ ADR-013 (gen_models tool, generate + wire, FastAPI binding, docs) รอ M4 kickoff
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

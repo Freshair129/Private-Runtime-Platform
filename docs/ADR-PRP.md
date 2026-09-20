@@ -172,3 +172,159 @@ Each item is its own PR and its own approval gate. Nothing below starts before t
 3. [x] **M3 — Python skeletons (C-3 / H4 for dependency resolution, = WP25)** — done 2026-09-20 with owner decisions (Python 3.12, FastAPI/Pydantic candidate, adapters deferred), see CHANGELOG-PRP.md "Unreleased". `apps/control-api` and `workers/voice` with pyproject, lock, `platform/`, `core/*` ports and domain types, `api/` bound to the client contract, entrypoint stubs, the no-ML-import and conformance tests, CI jobs. No adapters yet.
 4. [ ] **M4 — Adapters and deploy (after WP24 → WP03 → WP04).** Implement adapters according to fit-gap dispositions; `deploy/` host templates with pinned image digests (TEMPLATE / NOT_QUALIFIED).
 5. [x] **Trace tooling** — done 2026-09-20 (`tools/trace/collect_trace.py`, validator status gate, `docs/evidence/`), see CHANGELOG-PRP.md "Unreleased". `tools/trace/collect_trace.py` and the validator extension: an acceptance case may leave `NOT_RUN` only with a collected test *and* an evidence receipt.
+
+<a id="ADR-PRP-013"></a>
+
+## ADR-PRP-013 — Contract models: generated from the OpenAPI YAML, never hand-written
+
+**Status:** ACCEPTED — approved by the repository owner on 2026-09-20 as proposed, including the three recommendations in "Open questions" (keep descriptions, frozen models, generate the DRAFT management contract now); action item 1 starts immediately, items 2-5 at M4 kickoff
+**Date:** 2026-09-20
+**Deciders:** Repository owner
+**Related:** ADR-PRP-012 decision 3 (YAML canonical, JSON generated) · SDD-PRP-REPO §5, §6.3, §9 · API-PRP §1, §10 · Coding-Standards §3 · ARCH-PRP §14 · PRP-NFR-024 · CHANGELOG "M3" deferred item
+
+### Context
+
+M3 bound every client operation to `contracts/openapi/prp-client.yaml` by route inventory only; request and response bodies are not yet typed. M2 fixed the contract authority rule: the YAML is canonical and every `.json` beside it is generated and checked in CI. The voice worker already carries 110 lines of hand-written Pydantic models (`prp_voice.contract.models`) that duplicate `prp-worker.yaml` by hand, which is exactly the drift the M2 rule was written to prevent.
+
+Forces the models must satisfy, all already documented:
+
+- **Reject, do not drop.** Unsupported fields are rejected rather than silently dropped (API-PRP §1); field/extra handling must match the contract and there must be no silent coercion that changes quota or identity (Coding-Standards §3).
+- **Typed public boundary.** Public functions, adapters and message envelopes carry type hints; `mypy --strict` gates every project (Coding-Standards §3, §10).
+- **UTC-aware timestamps** in anything persisted (Coding-Standards §3).
+- **Per-boundary models, never cross-referenced.** Each contract copies shared shapes such as `Error` on purpose because the client, worker and management boundaries have different trust (ADR-PRP-012 decision 3, contracts/README).
+- **Portable binding.** The public contract must not embed vendor model IDs or manager schemas (PRP-NFR-024); models come from PRP's own YAML, not from a vendor SDK.
+- **Scale.** Three contracts with 21 + 22 + 16 component schemas today; the management contract keeps growing until the WP03 freeze.
+
+Non-goals: choosing the API framework (FastAPI remains the candidate per ADR-PRP-009), changing any wire format, or promoting any acceptance status.
+
+### Decision
+
+Adopt **Option B, generated models**: every contract's Python models are generated from its YAML by a pinned `datamodel-code-generator`, committed as derived files, regenerated and diffed in CI exactly like the JSON exports. Hand-written contract models are forbidden except through the narrow escape hatch in rule 6. Core domain types (`core/*/model.py` dataclasses) are unaffected; `api/` maps between contract models and core types as before.
+
+Rules:
+
+1. **Tool and pin.** `datamodel-code-generator` is pinned in `tools/contracts/requirements.txt` (spike used 0.82.0 against Pydantic 2.13.5, the version locked in `apps/control-api`). It is dev tooling only; generated files import nothing but Pydantic and the standard library.
+2. **Generator wrapper.** `tools/contracts/gen_models.py` holds a fixed table of (contract YAML → project → output module → base class) and the exact generator flags, runs the generator, then `ruff check --fix` (import order) and `ruff format` on the output, and supports `--check` (regenerate to memory, fail on any diff). `.github/workflows/contracts.yml` runs `--check`.
+3. **Flags fixed by this ADR.** `--output-model-type pydantic_v2.BaseModel --target-python-version 3.12 --use-annotated --field-constraints --strict-nullable --strict-types int float bool --use-union-operator --use-standard-collections --enum-field-as-literal all --use-double-quotes --disable-timestamp --collapse-root-models --base-class <project>.contract.base.ContractModel`. Descriptions stay in the output; generated modules get a per-file `E501` ignore in `pyproject.toml`.
+4. **Hand-written base class per project.** `ContractModel(BaseModel)` with `model_config = ConfigDict(extra="forbid", frozen=True)`. Numeric and boolean strictness comes from `--strict-types` (StrictInt / StrictFloat / StrictBool) rather than a global `strict=True`, because global strict mode also rejects string inputs for `UUID` and `date-time` fields in Python-mode validation, which is the path FastAPI uses after parsing a JSON body. This is a known Pydantic behaviour, not yet exercised through FastAPI in the spike; M4 adds a test for it (action 4).
+5. **Placement.** Control plane: `src/prp/api/contract/client_v1.py` (server side of the client contract) and `src/prp/adapters/runtimes/worker_v1.py` (client side of the worker contract, owned by the runtimes adapter); `src/prp/api/contract/management_v1.py` when the console work starts. Voice worker: `src/prp_voice/contract/generated.py` replaces the hand-written models, with `models.py` reduced to a re-export so M3 imports and tests keep working. Generated code is never imported across projects (ARCH-PRP §14).
+6. **Escape hatch.** A shape the generator cannot express may be hand-written in `<contract>/_manual.py` only together with a test that compares the model's `model_json_schema()` to the OpenAPI component after normalization (drop `title`, `description`, `$defs` names; compare `type`, `properties` keys, `required`, `enum`, `const`, bounds). No such shape exists in the three contracts today.
+7. **Contract hygiene first.** Before generation, every inline object schema in the three YAMLs is promoted to a named component so that no generator-invented name (`Error1`, `Result`, `Choice`, `Function1`, `ToolChoice`, `Delta`, `Detail`, `Cancellation`, `Scope`, `TestId`, `Limits`) reaches source code. Proposed names: `ErrorBody`, `TtsJobResult`, `ChatChoice`, `FunctionCall`, `ToolFunction`, `NamedToolChoice`, `ChatDelta`, `EvidenceDetail`, `CancellationSupport`, `PolicyScope`, `AcceptanceTestId`, `CapabilityLimits`. This changes component counts (client 21 → about 26) but not a single wire byte; the operation inventory 12 paths / 14 operations stays as the validator requires, and the change is recorded in CHANGELOG as a naming-only revision.
+8. **FastAPI binding.** Routes take the generated models as body and response types. The M3 inventory test stays; a new conformance test compares each operation's request-body and success-response schema in `app.openapi()` with the contract after the same normalization as rule 6.
+
+### Options Considered
+
+#### Option A: Hand-written Pydantic models plus a schema-conformance test
+
+| Dimension | Assessment |
+|-----------|------------|
+| Complexity | Medium code, High test complexity (normalizing two JSON-Schema dialects) |
+| Cost | About 59 models now, every contract edit made twice; conformance test is the only drift guard and it is brittle |
+| Scalability | Linear human effort per schema; management contract still growing |
+| Team familiarity | Highest readability; idiomatic Pydantic; no extra tool |
+
+**Pros:** full control over names, docstrings and validators; nothing to install.
+**Cons:** duplicates the canonical YAML by hand, which the M2 rule forbids for JSON and should forbid here for the same reason; the drift guard depends on a normalization layer that the spike shows is non-trivial (`anyOf` vs `type: [x, null]`, `$defs`, titles).
+
+#### Option B: Generated models from the YAML, committed and CI-checked (recommended)
+
+| Dimension | Assessment |
+|-----------|------------|
+| Complexity | Low code (one wrapper tool, one base class per project), Medium one-off contract cleanup |
+| Cost | One pinned dev tool in `tools/contracts`; regenerate on every YAML change; zero hand maintenance of models |
+| Scalability | Constant effort per schema; management growth is free |
+| Team familiarity | Same pattern as `export_json.py`; generated code is plain Pydantic, readable if verbose |
+
+**Pros:** drift is impossible by construction; `extra="forbid"`, `Literal` enums, discriminated unions and `AwareDatetime` come out of the box; passes `mypy --strict` unchanged.
+**Cons:** verbose output (about 4x the hand-written line count, mostly descriptions); generator names inline schemas itself, so the YAML must name them (rule 7); default generation coerces `"64"` to an int, so strictness must be configured (rule 3, 4); one more pinned tool to upgrade deliberately.
+
+#### Option C: Build models at import time from the OpenAPI document
+
+| Dimension | Assessment |
+|-----------|------------|
+| Complexity | Low to write, High to reason about |
+| Cost | Runtime dependency on the YAML loader; opaque types |
+| Scalability | Fine mechanically |
+| Team familiarity | Poor: no static types, `mypy --strict` cannot see fields |
+
+**Rejected:** violates the typed-boundary rule (Coding-Standards §3) and makes the API's OpenAPI output depend on runtime parsing.
+
+### Spike evidence (dev tooling only, 2026-09-20)
+
+Run in an isolated scratch virtualenv, never inside the repository; it qualifies nothing at runtime and changes no acceptance status.
+
+| Check | Default flags | Flags of rule 3 |
+|---|---|---|
+| `mypy --strict` on generated client / worker / management | pass / pass / pass | pass / pass (with base class) |
+| `ruff check` (E, F, I, B, UP, SIM, N) | client clean; worker 12 × E501; management 5 × E501 | worker 10 × E501 + 1 × I001; client 1 × I001 (both fixable by the post-step) |
+| `additionalProperties: false` → `extra="forbid"` | yes, all 28 client classes | yes |
+| `JobRequest` discriminated union (`kind`) | `RootModel` with `Field(discriminator="kind")`; examples validate; `kind: video` rejected | same |
+| `type: [string, 'null']` → `str \| None`, `format: date-time` → `AwareDatetime` | yes; naive `2026-09-20T12:00:00` rejected | same |
+| Unknown field `shell` on a job request | rejected (`extra_forbidden`) | rejected |
+| `max_tokens: "64"` (string) | **accepted** (lax coercion) | rejected (`int_type`); `ge=1` still enforced |
+| `cancellation_requested: "false"` | not tested | rejected |
+| Frozen instances | no | yes (`frozen=True` from base class) |
+| Generator-invented class names | client 8, worker 10, management 3 | unchanged (must be fixed in YAML, rule 7) |
+| Output size | client 296 / worker 459 / management 275 lines | client 307 / worker 449 lines; hand-written worker models are 110 lines but omit descriptions and six models |
+
+Reproduction: `datamodel-codegen --input contracts/openapi/prp-<c>.yaml --input-file-type openapi` plus the flags in rule 3; validation smoke with `model_validate` on `contracts/examples/job-*.example.json`.
+
+#### Comparison example — `Readiness` from `prp-worker.yaml`
+
+Hand-written today (`prp_voice/contract/models.py`):
+
+```python
+class Readiness(StrictModel):
+    state: ReadinessValue
+    profile_epoch: int = Field(ge=0)
+    observed_at: datetime
+    limits: Limits | None = None
+```
+
+Generated with the flags of rule 3:
+
+```python
+class Readiness(ContractModel):
+    state: Annotated[
+        Literal["READY", "NOT_READY", "UNKNOWN"],
+        Field(description="NOT_READY covers loading/draining ..."),
+    ]
+    profile_epoch: Annotated[StrictInt, Field(description="Actual epoch of the runtime", ge=0)]
+    observed_at: AwareDatetime
+    limits: Limits | None = None
+```
+
+Differences that matter: the generated version rejects a naive `observed_at` and a string `profile_epoch`, carries the contract's own description, and cannot drift from the YAML; the hand-written version is shorter and happens to be correct today only because it was copied from the YAML by hand.
+
+### Trade-off Analysis
+
+- **Drift vs readability.** B trades verbose files for a structural guarantee. The repository already accepted this trade for JSON exports, registry files and `code-trace.json`; models are the same kind of derived artifact.
+- **Strictness.** Both options need the same care about coercion; B makes it a generator flag plus a five-line base class, A makes it a convention every author must remember.
+- **Naming.** B forces the YAML to name every object, which improves the contract for every other consumer (TypeScript clients, docs) rather than being a cost specific to Python.
+- **Escape hatch.** Keeping rule 6 means Option A's machinery still exists, but only for exceptions with a test attached, so the default path stays drift-free.
+
+### Consequences
+
+- **Easier:** contract changes are one YAML edit plus regeneration; reviewers diff the YAML, not 59 models; the voice worker loses its hand-copied models.
+- **Harder:** one more pinned dev tool and a `--check` step; generated files must never be edited by hand (header marker plus CI diff); descriptions make files long.
+- **Revisit when:** the generator cannot express a contract construct (use rule 6, then reconsider); a TypeScript client needs models (generate them from the same YAML, do not share Python); the management contract freezes at WP03 (regenerate, no design change).
+
+### Verification
+
+- Generated modules pass `ruff check`, `ruff format --check`, `mypy --strict` and `lint-imports` in each project; `gen_models.py --check` and `export_json.py --check` pass in `contracts.yml`.
+- Contract tests: examples validate; unknown fields, string numbers and naive datetimes are rejected; FastAPI body and response schemas conform after normalization (rule 8).
+- Validator: client inventory 12 / 14 unchanged after the component-naming pass; all acceptance cases remain NOT_RUN.
+
+### Action Items (all at M4 kickoff, one PR each)
+
+1. [x] **Contract naming pass (C-2 / H2)** — done 2026-09-20: client 21→29, worker 22→32, management 16→19 components; wire equivalence proven by dereferenced comparison; see CHANGELOG-PRP.md "Unreleased". Promote inline schemas to named components in all three YAMLs (rule 7); regenerate JSON; CHANGELOG entry; validator green.
+2. [ ] **Generator wrapper (C-2 / H2).** `tools/contracts/gen_models.py`, pin in `tools/contracts/requirements.txt`, `--check` step in `contracts.yml`, per-file `E501` ignore for generated modules.
+3. [ ] **Generate and wire (C-2 / H2).** `ContractModel` base per project; generated client and worker modules in `apps/control-api`, generated worker module in `workers/voice` replacing the hand-written models; M3 tests unchanged and green.
+4. [ ] **FastAPI binding and conformance (C-2 / H2).** Body/response types on the 14 client routes and 5 worker routes; schema conformance test; explicit test that JSON string inputs for `UUID` and `date-time` fields are accepted while string numbers and booleans are rejected.
+5. [ ] **Docs.** SDD-PRP-REPO §5 and §9, CLAUDE.md commands, contracts/README.
+
+### Open questions for the owner
+
+1. Keep field descriptions in generated code (long lines, `E501` ignored) or strip them (`--use-field-description` off) to keep files short. Recommendation: keep; the contract text next to the type is what reviewers read.
+2. `frozen=True` on contract models (recommended: yes; contract payloads are values, and mutation of a validated request is never intended).
+3. Generate the management contract now while it is DRAFT (recommended: yes, to exercise the pipeline) or wait for the WP03 freeze.

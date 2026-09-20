@@ -32,11 +32,20 @@ def test_route_inventory_equals_client_contract(app: FastAPI, contract: dict[str
     assert len(contract["paths"]) == 12 and len(expected) == 14
 
 
+def resolve(schema: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any]:
+    """Follow a local component reference (contracts keep every $ref inside the same document)."""
+    if "$ref" in schema:
+        target: dict[str, Any] = contract["components"]["schemas"][schema["$ref"].rsplit("/", 1)[1]]
+        return target
+    return schema
+
+
 def assert_envelope(body: dict[str, Any], contract: dict[str, Any]) -> None:
     schema = contract["components"]["schemas"]["Error"]
+    error_schema = resolve(schema["properties"]["error"], contract)
     assert set(body) == set(schema["properties"])
-    assert set(body["error"]) <= set(schema["properties"]["error"]["properties"])
-    assert set(schema["properties"]["error"]["required"]) <= set(body["error"])
+    assert set(body["error"]) <= set(error_schema["properties"])
+    assert set(error_schema["required"]) <= set(body["error"])
     assert isinstance(body["request_id"], str) and body["request_id"]
     assert isinstance(body["safe_to_retry"], bool)
 

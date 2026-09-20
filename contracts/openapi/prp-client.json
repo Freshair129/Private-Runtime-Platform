@@ -2233,30 +2233,7 @@
         "type": "object",
         "properties": {
           "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "message": {
-                "type": "string"
-              },
-              "param": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            },
-            "required": [
-              "code",
-              "type",
-              "message"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/ErrorBody"
           },
           "request_id": {
             "type": "string"
@@ -2269,6 +2246,32 @@
           "error",
           "request_id",
           "safe_to_retry"
+        ],
+        "additionalProperties": false
+      },
+      "ErrorBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "param": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "type",
+          "message"
         ],
         "additionalProperties": false
       },
@@ -2347,23 +2350,7 @@
             }
           },
           "limits": {
-            "type": "object",
-            "properties": {
-              "max_context_tokens": {
-                "type": "integer"
-              },
-              "max_audio_seconds": {
-                "type": "number"
-              },
-              "max_input_bytes": {
-                "type": "integer"
-              },
-              "max_tts_codepoints": {
-                "type": "integer"
-              }
-            },
-            "required": [],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/CapabilityLimits"
           },
           "status": {
             "type": "string",
@@ -2381,6 +2368,25 @@
         ],
         "additionalProperties": false
       },
+      "CapabilityLimits": {
+        "type": "object",
+        "properties": {
+          "max_context_tokens": {
+            "type": "integer"
+          },
+          "max_audio_seconds": {
+            "type": "number"
+          },
+          "max_input_bytes": {
+            "type": "integer"
+          },
+          "max_tts_codepoints": {
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
       "Tool": {
         "type": "object",
         "properties": {
@@ -2388,31 +2394,34 @@
             "const": "function"
           },
           "function": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "maxLength": 64
-              },
-              "description": {
-                "type": "string"
-              },
-              "parameters": {
-                "type": "object"
-              },
-              "strict": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "name"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/ToolFunction"
           }
         },
         "required": [
           "type",
           "function"
+        ],
+        "additionalProperties": false
+      },
+      "ToolFunction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "description": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object"
+          },
+          "strict": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name"
         ],
         "additionalProperties": false
       },
@@ -2426,26 +2435,29 @@
             "const": "function"
           },
           "function": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "arguments": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "arguments"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/FunctionCall"
           }
         },
         "required": [
           "id",
           "type",
           "function"
+        ],
+        "additionalProperties": false
+      },
+      "FunctionCall": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "arguments"
         ],
         "additionalProperties": false
       },
@@ -2532,29 +2544,7 @@
                 ]
               },
               {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "const": "function"
-                  },
-                  "function": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "name"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "required": [
-                  "type",
-                  "function"
-                ],
-                "additionalProperties": false
+                "$ref": "#/components/schemas/NamedToolChoice"
               }
             ]
           },
@@ -2566,6 +2556,34 @@
         "required": [
           "model",
           "messages"
+        ],
+        "additionalProperties": false
+      },
+      "NamedToolChoice": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "function"
+          },
+          "function": {
+            "$ref": "#/components/schemas/FunctionName"
+          }
+        },
+        "required": [
+          "type",
+          "function"
+        ],
+        "additionalProperties": false
+      },
+      "FunctionName": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
         ],
         "additionalProperties": false
       },
@@ -2610,29 +2628,7 @@
           "choices": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "index": {
-                  "type": "integer"
-                },
-                "message": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "finish_reason": {
-                  "type": "string",
-                  "enum": [
-                    "stop",
-                    "length",
-                    "tool_calls"
-                  ]
-                }
-              },
-              "required": [
-                "index",
-                "message",
-                "finish_reason"
-              ],
-              "additionalProperties": false
+              "$ref": "#/components/schemas/ChatChoice"
             }
           },
           "usage": {
@@ -2645,6 +2641,31 @@
           "created",
           "model",
           "choices"
+        ],
+        "additionalProperties": false
+      },
+      "ChatChoice": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          },
+          "finish_reason": {
+            "type": "string",
+            "enum": [
+              "stop",
+              "length",
+              "tool_calls"
+            ]
+          }
+        },
+        "required": [
+          "index",
+          "message",
+          "finish_reason"
         ],
         "additionalProperties": false
       },
@@ -2926,17 +2947,7 @@
                 "$ref": "#/components/schemas/Transcript"
               },
               {
-                "type": "object",
-                "properties": {
-                  "artifact_id": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                },
-                "required": [
-                  "artifact_id"
-                ],
-                "additionalProperties": false
+                "$ref": "#/components/schemas/TtsJobResult"
               }
             ]
           },
@@ -2962,6 +2973,19 @@
           "status_path",
           "created_at",
           "deadline_at"
+        ],
+        "additionalProperties": false
+      },
+      "TtsJobResult": {
+        "type": "object",
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "artifact_id"
         ],
         "additionalProperties": false
       },

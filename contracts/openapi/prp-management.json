@@ -2411,43 +2411,7 @@
         "type": "object",
         "properties": {
           "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "enum": [
-                  "INVALID_REQUEST",
-                  "UNSUPPORTED_PARAMETER",
-                  "INVALID_KEY",
-                  "EXPIRED_KEY",
-                  "SCOPE_DENIED",
-                  "POLICY_DENIED",
-                  "NOT_FOUND",
-                  "IDEMPOTENCY_CONFLICT",
-                  "VERSION_CONFLICT",
-                  "QUALIFICATION_REQUIRED",
-                  "STATE_STORE_UNAVAILABLE"
-                ]
-              },
-              "type": {
-                "type": "string"
-              },
-              "message": {
-                "type": "string"
-              },
-              "param": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            },
-            "required": [
-              "code",
-              "type",
-              "message"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/ErrorBody"
           },
           "request_id": {
             "type": "string"
@@ -2460,6 +2424,45 @@
           "error",
           "request_id",
           "safe_to_retry"
+        ],
+        "additionalProperties": false
+      },
+      "ErrorBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INVALID_REQUEST",
+              "UNSUPPORTED_PARAMETER",
+              "INVALID_KEY",
+              "EXPIRED_KEY",
+              "SCOPE_DENIED",
+              "POLICY_DENIED",
+              "NOT_FOUND",
+              "IDEMPOTENCY_CONFLICT",
+              "VERSION_CONFLICT",
+              "QUALIFICATION_REQUIRED",
+              "STATE_STORE_UNAVAILABLE"
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "param": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "type",
+          "message"
         ],
         "additionalProperties": false
       },
@@ -2717,8 +2720,7 @@
           "test_ids": {
             "type": "array",
             "items": {
-              "type": "string",
-              "pattern": "^PRP-AT-[0-9]{3}$"
+              "$ref": "#/components/schemas/AcceptanceTestId"
             },
             "minItems": 1
           },
@@ -2796,6 +2798,10 @@
         ],
         "additionalProperties": false
       },
+      "AcceptanceTestId": {
+        "type": "string",
+        "pattern": "^PRP-AT-[0-9]{3}$"
+      },
       "StateChangeRequest": {
         "type": "object",
         "properties": {
@@ -2843,16 +2849,7 @@
         "description": "Policy field schemas are frozen at G0; until then settings is an opaque object validated server-side against the frozen schema.",
         "properties": {
           "scope": {
-            "type": "object",
-            "properties": {
-              "organization_id": {
-                "type": "string"
-              },
-              "application_id": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": false
+            "$ref": "#/components/schemas/PolicyScope"
           },
           "settings": {
             "type": "object"
@@ -2861,6 +2858,18 @@
         "required": [
           "settings"
         ],
+        "additionalProperties": false
+      },
+      "PolicyScope": {
+        "type": "object",
+        "properties": {
+          "organization_id": {
+            "type": "string"
+          },
+          "application_id": {
+            "type": "string"
+          }
+        },
         "additionalProperties": false
       },
       "ExportRequest": {

@@ -2,10 +2,7 @@ openapi: 3.1.0
 info:
   title: PRP - Private Runtime Platform
   version: 0.3.0
-  description: DRAFT client API contract. Not implemented/tested by this document
-    delivery. No mandatory Zuri/LINE dependency. Native P1 jobs are atomic ASR/TTS;
-    apps own voice-turn orchestration. Keys/scopes required on all routes. Limits
-    also depend on qualified profile.
+  description: DRAFT client API contract. Not implemented/tested by this document delivery. No mandatory Zuri/LINE dependency. Native P1 jobs are atomic ASR/TTS; apps own voice-turn orchestration. Keys/scopes required on all routes. Limits also depend on qualified profile.
 servers:
 - url: https://prp.example.invalid
   description: Documentation placeholder; replace with approved private ingress
@@ -87,8 +84,7 @@ paths:
             text/event-stream:
               schema:
                 type: string
-              description: Compatible data chunks. On success [DONE]; terminal event:error
-                on failure, never resume partial stream on another node.
+              description: Compatible data chunks. On success [DONE]; terminal event:error on failure, never resume partial stream on another node.
         '400': &id005
           description: Invalid or unsupported request
           headers: *id001
@@ -306,8 +302,7 @@ paths:
           type: string
           minLength: 8
           maxLength: 128
-        description: Scoped to org + principal + route + canonical payload. Same payload
-          returns same job.
+        description: Scoped to org + principal + route + canonical payload. Same payload returns same job.
     get:
       operationId: listJobs
       summary: Paginated authorized jobs
@@ -470,30 +465,13 @@ components:
     ClientKey:
       type: http
       scheme: bearer
-      description: PRP-scoped human or application key. Inference credentials never
-        grant administrative rights.
+      description: PRP-scoped human or application key. Inference credentials never grant administrative rights.
   schemas:
     Error:
       type: object
       properties:
         error:
-          type: object
-          properties:
-            code:
-              type: string
-            type:
-              type: string
-            message:
-              type: string
-            param:
-              type:
-              - string
-              - 'null'
-          required:
-          - code
-          - type
-          - message
-          additionalProperties: false
+          $ref: '#/components/schemas/ErrorBody'
         request_id:
           type: string
         safe_to_retry:
@@ -502,6 +480,24 @@ components:
       - error
       - request_id
       - safe_to_retry
+      additionalProperties: false
+    ErrorBody:
+      type: object
+      properties:
+        code:
+          type: string
+        type:
+          type: string
+        message:
+          type: string
+        param:
+          type:
+          - string
+          - 'null'
+      required:
+      - code
+      - type
+      - message
       additionalProperties: false
     Model:
       type: object
@@ -556,18 +552,7 @@ components:
           items:
             type: string
         limits:
-          type: object
-          properties:
-            max_context_tokens:
-              type: integer
-            max_audio_seconds:
-              type: number
-            max_input_bytes:
-              type: integer
-            max_tts_codepoints:
-              type: integer
-          required: []
-          additionalProperties: false
+          $ref: '#/components/schemas/CapabilityLimits'
         status:
           type: string
           enum:
@@ -579,29 +564,44 @@ components:
       - capabilities
       - status
       additionalProperties: false
+    CapabilityLimits:
+      type: object
+      properties:
+        max_context_tokens:
+          type: integer
+        max_audio_seconds:
+          type: number
+        max_input_bytes:
+          type: integer
+        max_tts_codepoints:
+          type: integer
+      required: []
+      additionalProperties: false
     Tool:
       type: object
       properties:
         type:
           const: function
         function:
-          type: object
-          properties:
-            name:
-              type: string
-              maxLength: 64
-            description:
-              type: string
-            parameters:
-              type: object
-            strict:
-              type: boolean
-          required:
-          - name
-          additionalProperties: false
+          $ref: '#/components/schemas/ToolFunction'
       required:
       - type
       - function
+      additionalProperties: false
+    ToolFunction:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 64
+        description:
+          type: string
+        parameters:
+          type: object
+        strict:
+          type: boolean
+      required:
+      - name
       additionalProperties: false
     ToolCall:
       type: object
@@ -611,20 +611,22 @@ components:
         type:
           const: function
         function:
-          type: object
-          properties:
-            name:
-              type: string
-            arguments:
-              type: string
-          required:
-          - name
-          - arguments
-          additionalProperties: false
+          $ref: '#/components/schemas/FunctionCall'
       required:
       - id
       - type
       - function
+      additionalProperties: false
+    FunctionCall:
+      type: object
+      properties:
+        name:
+          type: string
+        arguments:
+          type: string
+      required:
+      - name
+      - arguments
       additionalProperties: false
     Message:
       type: object
@@ -686,28 +688,32 @@ components:
             - auto
             - none
             - required
-          - type: object
-            properties:
-              type:
-                const: function
-              function:
-                type: object
-                properties:
-                  name:
-                    type: string
-                required:
-                - name
-                additionalProperties: false
-            required:
-            - type
-            - function
-            additionalProperties: false
+          - $ref: '#/components/schemas/NamedToolChoice'
         n:
           type: integer
           const: 1
       required:
       - model
       - messages
+      additionalProperties: false
+    NamedToolChoice:
+      type: object
+      properties:
+        type:
+          const: function
+        function:
+          $ref: '#/components/schemas/FunctionName'
+      required:
+      - type
+      - function
+      additionalProperties: false
+    FunctionName:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
       additionalProperties: false
     Usage:
       type: object
@@ -740,23 +746,7 @@ components:
         choices:
           type: array
           items:
-            type: object
-            properties:
-              index:
-                type: integer
-              message:
-                $ref: '#/components/schemas/Message'
-              finish_reason:
-                type: string
-                enum:
-                - stop
-                - length
-                - tool_calls
-            required:
-            - index
-            - message
-            - finish_reason
-            additionalProperties: false
+            $ref: '#/components/schemas/ChatChoice'
         usage:
           $ref: '#/components/schemas/Usage'
       required:
@@ -765,6 +755,24 @@ components:
       - created
       - model
       - choices
+      additionalProperties: false
+    ChatChoice:
+      type: object
+      properties:
+        index:
+          type: integer
+        message:
+          $ref: '#/components/schemas/Message'
+        finish_reason:
+          type: string
+          enum:
+          - stop
+          - length
+          - tool_calls
+      required:
+      - index
+      - message
+      - finish_reason
       additionalProperties: false
     Segment:
       type: object
@@ -958,12 +966,7 @@ components:
         result:
           oneOf:
           - $ref: '#/components/schemas/Transcript'
-          - type: object
-            properties:
-              artifact_id: *id014
-            required:
-            - artifact_id
-            additionalProperties: false
+          - $ref: '#/components/schemas/TtsJobResult'
         error:
           $ref: '#/components/schemas/Error'
         usage_provenance:
@@ -982,6 +985,13 @@ components:
       - status_path
       - created_at
       - deadline_at
+      additionalProperties: false
+    TtsJobResult:
+      type: object
+      properties:
+        artifact_id: *id014
+      required:
+      - artifact_id
       additionalProperties: false
     JobList:
       type: object

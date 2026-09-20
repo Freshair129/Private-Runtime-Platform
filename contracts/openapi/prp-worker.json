@@ -624,45 +624,7 @@
         "type": "object",
         "properties": {
           "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "enum": [
-                  "INVALID_REQUEST",
-                  "UNSUPPORTED_PARAMETER",
-                  "PAYLOAD_TOO_LARGE",
-                  "EPOCH_MISMATCH",
-                  "FENCE_REJECTED",
-                  "NOT_FOUND",
-                  "UNSUPPORTED",
-                  "CONTEXT_LIMIT",
-                  "NO_SPEECH",
-                  "AUDIO_UNINTELLIGIBLE",
-                  "RUNTIME_UNAVAILABLE",
-                  "DEADLINE_EXCEEDED"
-                ]
-              },
-              "type": {
-                "type": "string"
-              },
-              "message": {
-                "type": "string",
-                "description": "Sanitized; never an upstream body or stack trace (Coding-Standards §5)"
-              },
-              "param": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            },
-            "required": [
-              "code",
-              "type",
-              "message"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/ErrorBody"
           },
           "request_id": {
             "type": "string"
@@ -676,6 +638,47 @@
           "error",
           "request_id",
           "safe_to_retry"
+        ],
+        "additionalProperties": false
+      },
+      "ErrorBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INVALID_REQUEST",
+              "UNSUPPORTED_PARAMETER",
+              "PAYLOAD_TOO_LARGE",
+              "EPOCH_MISMATCH",
+              "FENCE_REJECTED",
+              "NOT_FOUND",
+              "UNSUPPORTED",
+              "CONTEXT_LIMIT",
+              "NO_SPEECH",
+              "AUDIO_UNINTELLIGIBLE",
+              "RUNTIME_UNAVAILABLE",
+              "DEADLINE_EXCEEDED"
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "description": "Sanitized; never an upstream body or stack trace (Coding-Standards §5)"
+          },
+          "param": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "type",
+          "message"
         ],
         "additionalProperties": false
       },
@@ -812,21 +815,7 @@
             "minItems": 1
           },
           "cancellation": {
-            "type": "object",
-            "properties": {
-              "supported": {
-                "type": "boolean"
-              },
-              "termination_evidence": {
-                "type": "boolean",
-                "description": "true when getExecutionEvidence can distinguish FINISHED from UNKNOWN"
-              }
-            },
-            "required": [
-              "supported",
-              "termination_evidence"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/CancellationSupport"
           },
           "observed_at": {
             "type": "string",
@@ -838,6 +827,23 @@
           "capabilities",
           "cancellation",
           "observed_at"
+        ],
+        "additionalProperties": false
+      },
+      "CancellationSupport": {
+        "type": "object",
+        "properties": {
+          "supported": {
+            "type": "boolean"
+          },
+          "termination_evidence": {
+            "type": "boolean",
+            "description": "true when getExecutionEvidence can distinguish FINISHED from UNKNOWN"
+          }
+        },
+        "required": [
+          "supported",
+          "termination_evidence"
         ],
         "additionalProperties": false
       },
@@ -883,26 +889,29 @@
             "const": "function"
           },
           "function": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "arguments": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "arguments"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/FunctionCall"
           }
         },
         "required": [
           "id",
           "type",
           "function"
+        ],
+        "additionalProperties": false
+      },
+      "FunctionCall": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "arguments"
         ],
         "additionalProperties": false
       },
@@ -947,27 +956,30 @@
             "const": "function"
           },
           "function": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "parameters": {
-                "type": "object"
-              }
-            },
-            "required": [
-              "name"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/ToolFunction"
           }
         },
         "required": [
           "type",
           "function"
+        ],
+        "additionalProperties": false
+      },
+      "ToolFunction": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "name"
         ],
         "additionalProperties": false
       },
@@ -1024,29 +1036,7 @@
                 ]
               },
               {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "const": "function"
-                  },
-                  "function": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "name"
-                    ],
-                    "additionalProperties": false
-                  }
-                },
-                "required": [
-                  "type",
-                  "function"
-                ],
-                "additionalProperties": false
+                "$ref": "#/components/schemas/NamedToolChoice"
               }
             ]
           }
@@ -1056,6 +1046,34 @@
           "profile_id",
           "messages",
           "max_tokens"
+        ],
+        "additionalProperties": false
+      },
+      "NamedToolChoice": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "const": "function"
+          },
+          "function": {
+            "$ref": "#/components/schemas/FunctionName"
+          }
+        },
+        "required": [
+          "type",
+          "function"
+        ],
+        "additionalProperties": false
+      },
+      "FunctionName": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
         ],
         "additionalProperties": false
       },
@@ -1307,52 +1325,7 @@
           "choices": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "index": {
-                  "type": "integer",
-                  "const": 0
-                },
-                "delta": {
-                  "type": "object",
-                  "properties": {
-                    "role": {
-                      "type": "string",
-                      "enum": [
-                        "assistant"
-                      ]
-                    },
-                    "content": {
-                      "type": "string"
-                    },
-                    "tool_calls": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/ToolCall"
-                      }
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "finish_reason": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "enum": [
-                    "stop",
-                    "length",
-                    "tool_calls",
-                    null
-                  ]
-                }
-              },
-              "required": [
-                "index",
-                "delta",
-                "finish_reason"
-              ],
-              "additionalProperties": false
+              "$ref": "#/components/schemas/ChatChunkChoice"
             }
           },
           "usage": {
@@ -1363,6 +1336,57 @@
           "id",
           "choices"
         ],
+        "additionalProperties": false
+      },
+      "ChatChunkChoice": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "const": 0
+          },
+          "delta": {
+            "$ref": "#/components/schemas/ChatDelta"
+          },
+          "finish_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "stop",
+              "length",
+              "tool_calls",
+              null
+            ]
+          }
+        },
+        "required": [
+          "index",
+          "delta",
+          "finish_reason"
+        ],
+        "additionalProperties": false
+      },
+      "ChatDelta": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "assistant"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "tool_calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToolCall"
+            }
+          }
+        },
         "additionalProperties": false
       },
       "InvocationResult": {
@@ -1397,21 +1421,7 @@
           "result": {
             "oneOf": [
               {
-                "type": "object",
-                "properties": {
-                  "choices": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ChatChoice"
-                    },
-                    "minItems": 1,
-                    "maxItems": 1
-                  }
-                },
-                "required": [
-                  "choices"
-                ],
-                "additionalProperties": false
+                "$ref": "#/components/schemas/ChatResult"
               },
               {
                 "$ref": "#/components/schemas/Transcript"
@@ -1452,6 +1462,23 @@
         ],
         "additionalProperties": false
       },
+      "ChatResult": {
+        "type": "object",
+        "properties": {
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatChoice"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          }
+        },
+        "required": [
+          "choices"
+        ],
+        "additionalProperties": false
+      },
       "ExecutionEvidence": {
         "type": "object",
         "properties": {
@@ -1473,30 +1500,7 @@
             ]
           },
           "detail": {
-            "type": "object",
-            "description": "Fields are null when the adapter cannot observe them; never guessed",
-            "properties": {
-              "process_alive": {
-                "type": [
-                  "boolean",
-                  "null"
-                ]
-              },
-              "terminated_at": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "format": "date-time"
-              },
-              "exit_reason": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            },
-            "additionalProperties": false
+            "$ref": "#/components/schemas/EvidenceDetail"
           },
           "observed_at": {
             "type": "string",
@@ -1509,6 +1513,32 @@
           "evidence",
           "observed_at"
         ],
+        "additionalProperties": false
+      },
+      "EvidenceDetail": {
+        "type": "object",
+        "description": "Fields are null when the adapter cannot observe them; never guessed",
+        "properties": {
+          "process_alive": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "terminated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "exit_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
         "additionalProperties": false
       },
       "CancelRequest": {
