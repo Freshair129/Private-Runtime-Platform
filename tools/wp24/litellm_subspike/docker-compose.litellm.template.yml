@@ -1,0 +1,98 @@
+# TEMPLATE / NOT_QUALIFIED -- WP24 LiteLLM sub-spike kit (EV04 key semantics + EV03 retry-off).
+# Not a deployable configuration and not a dependency lock: every credential below is a variable
+# NAME with a placeholder value, never a real secret (README.md "No secrets"). Labelling convention
+# matches contracts/examples/runtime-environment-manifest.example.yaml (header comment + explicit
+# "TEMPLATE ONLY" / "status: NOT_QUALIFIED" marker in that file's own format).
+#
+# Scope (owner decision 2026-09-20, docs/WP24-EXPERIMENT-PROCEDURE.md section 5 EV04 "LiteLLM
+# sub-spike"; docs/registry/wp24-run-record-template.json scope_decisions.litellm): LiteLLM is
+# evaluated ONLY as the key/proxy layer of candidate B (STACK-EVALUATION-PRP.md section 2;
+# SOURCES-PRP.md SRC-03). Its routing never replaces the PRP Router (NFR-023).
+#
+# Two services: the LiteLLM proxy, and the PostgreSQL database the proxy requires to store virtual
+# keys. Confirmed against the docs, not assumed: "Setup ... Requirements: - Need a postgres database
+# (e.g. Supabase, Neon, etc) - Set DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<dbname>
+# in your env" -- https://docs.litellm.ai/docs/proxy/virtual_keys#setup . The table that actually
+# stores virtual keys is LiteLLM_VerificationToken (see ev04_readback_checklist.md for its columns):
+# https://docs.litellm.ai/docs/proxy/db_info
+#
+# Both services are bound to 127.0.0.1 only. That binding is this kit's own choice for a
+# single-operator, time-boxed sub-spike (not a documented LiteLLM requirement) -- do not publish
+# either port beyond localhost.
+
+services:
+  litellm:
+    # Official images are published to ghcr.io/berriai and mirrored at docker.litellm.ai/berriai.
+    # "pin a version tag rather than :latest or a moving tag, so rollbacks are deterministic" --
+    # https://docs.litellm.ai/docs/proxy/deploy#core-configuration . The image tag below is a
+    # placeholder to replace with whatever release the operator actually verifies at run time; the
+    # litellm repo's own reference compose file defaults to the moving tag :main-stable, which this
+    # template deliberately does not use:
+    # https://github.com/BerriAI/litellm/blob/main/docker-compose.yml
+    image: ghcr.io/berriai/litellm:v1.90.2 # PIN: replace with the tag verified at run time
+    # digest: <fill from docker inspect at run time>
+    # Record the resolved digest in candidates[B].version_manifest.images of the WP24 run record
+    # (docs/registry/wp24-run-record-template.json) -- see README.md.
+    restart: "no" # time-boxed sub-spike run, not a standing service
+    ports:
+      - "127.0.0.1:4000:4000"
+    volumes:
+      - ./litellm_config.template.yaml:/app/config.yaml:ro
+    command:
+      - "--config=/app/config.yaml"
+    environment:
+      # Variable NAMES only below; every value is a placeholder (README.md "No secrets" -- never
+      # commit or paste a real value into docs/evidence/wp24/<record_id>/).
+      # Master key ("Proxy Admin key"; must start with sk-) and the env var LiteLLM itself reads for
+      # it: https://docs.litellm.ai/docs/proxy/virtual_keys#setup
+      LITELLM_MASTER_KEY: "<set-at-run-time>"
+      # Postgres connection string LiteLLM reads to store virtual keys:
+      # https://docs.litellm.ai/docs/proxy/virtual_keys#setup
+      DATABASE_URL: "<set-at-run-time>"
+      # vLLM OpenAI-compatible base URLs for the two hosts under test (SRS host topology: host A /
+      # host B). Read by litellm_config.template.yaml via os.environ/<NAME>; the hosted_vllm/ provider
+      # route and api_base placement are documented at https://docs.litellm.ai/docs/providers/vllm
+      VLLM_HOST_A_BASE_URL: "<set-at-run-time>" # e.g. http://host-a.lan:8000/v1
+      VLLM_HOST_B_BASE_URL: "<set-at-run-time>" # e.g. http://host-b.lan:8000/v1
+      # Optional: only needed if the operator's vLLM OpenAI server was started with --api-key.
+      VLLM_HOST_A_API_KEY: "<set-at-run-time>"
+      VLLM_HOST_B_API_KEY: "<set-at-run-time>"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      # /health/liveliness is the endpoint the litellm repo's own reference compose file health-checks:
+      # https://github.com/BerriAI/litellm/blob/main/docker-compose.yml
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    # postgres:16 is the version pinned by the litellm repo's own reference compose file:
+    # https://github.com/BerriAI/litellm/blob/main/docker-compose.yml
+    image: postgres:16
+    restart: "no"
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      # Variable NAMES only; placeholders, never real credentials (README.md "No secrets").
+      POSTGRES_DB: "<set-at-run-time>"
+      POSTGRES_USER: "<set-at-run-time>"
+      POSTGRES_PASSWORD: "<set-at-run-time>"
+    volumes:
+      - litellm_subspike_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # Same probe shape as the litellm repo's own reference compose file:
+      # https://github.com/BerriAI/litellm/blob/main/docker-compose.yml
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  litellm_subspike_pgdata:
+    driver: local

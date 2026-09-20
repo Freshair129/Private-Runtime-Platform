@@ -1,0 +1,103 @@
+# TEMPLATE / NOT_QUALIFIED -- WP24 LiteLLM sub-spike kit (EV04 key semantics + EV03 retry-off).
+# Not a deployable configuration: base URLs are placeholders read from env vars (README.md "No
+# secrets"). Labelling convention matches
+# contracts/examples/runtime-environment-manifest.example.yaml.
+#
+# Two deployments, ONE per host, each its OWN model_name alias (not two deployments sharing one
+# alias). This is deliberate for EV03 target binding: calling "wp24-litellm-subspike-host-a" can only
+# ever resolve to the single litellm_params entry below it, so there is no model-group-level
+# shuffle/failover DECISION to make in the first place -- the router_settings below still disable
+# every documented reroute switch, as defense in depth and because EV03 step 3 requires finding and
+# recording each one regardless (WP24-EXPERIMENT-PROCEDURE.md section 5 EV03 step 3).
+#
+# hosted_vllm/ is the documented LiteLLM provider route for an OpenAI-compatible vLLM server (the
+# `vllm/` SDK route is marked [DEPRECATED] on the same page):
+# https://docs.litellm.ai/docs/providers/vllm
+model_list:
+  - model_name: wp24-litellm-subspike-host-a
+    litellm_params:
+      model: hosted_vllm/<served-model-name> # vLLM OpenAI-compatible; replace <served-model-name>
+      api_base: os.environ/VLLM_HOST_A_BASE_URL
+      api_key: os.environ/VLLM_HOST_A_API_KEY # optional: only if vLLM was started with --api-key
+    model_info:
+      # Explicit id so x-litellm-model-id correlates unambiguously to "host A" in ev03_retry_probe.py
+      # output, instead of relying on an auto-generated id:
+      # https://docs.litellm.ai/docs/proxy/response_headers#example (model_info.id example)
+      id: wp24-host-a
+  - model_name: wp24-litellm-subspike-host-b
+    litellm_params:
+      model: hosted_vllm/<served-model-name>
+      api_base: os.environ/VLLM_HOST_B_BASE_URL
+      api_key: os.environ/VLLM_HOST_B_API_KEY
+    model_info:
+      id: wp24-host-b
+
+general_settings:
+  # https://docs.litellm.ai/docs/proxy/virtual_keys#setup
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+
+# router_settings takes precedence over the same key under litellm_settings when both are set:
+# "Most values can also be set via litellm_settings. If you see overlapping values, settings on
+# router_settings will override those on litellm_settings." --
+# https://docs.litellm.ai/docs/proxy/config_settings#router_settings---reference
+# Every value below is the documented value that DISABLES the corresponding behaviour; defaults and
+# field descriptions are quoted from that same reference table unless a more specific page is cited.
+router_settings:
+  # Retries. num_retries default is 2 on this table; 0 means no retry attempts.
+  # "num_retries | int | 2 | Number of retries for a request." A per-request or per-deployment value
+  # would still win over this if either were set (routing.md "Where num_retries can be set, and which
+  # one wins"), but neither is set anywhere in this template.
+  # https://docs.litellm.ai/docs/proxy/config_settings#router_settings---reference
+  # https://docs.litellm.ai/docs/routing#where-num_retries-can-be-set-and-which-one-wins
+  num_retries: 0
+
+  # Fallbacks (cross-model-group). Default is already [] (none configured); set explicitly for
+  # clarity. Content-policy and context-window fallbacks have their own lists, also left empty.
+  # https://docs.litellm.ai/docs/proxy/config_settings#router_settings---reference
+  fallbacks: []
+  content_policy_fallbacks: []
+  context_window_fallbacks: []
+
+  # Weighted failover: re-picks a different deployment IN THE SAME model group on a retryable
+  # failure, only when routing_strategy is simple-shuffle. Default is already false; set explicitly.
+  # With one deployment per alias (above) there is no peer to re-pick anyway, but this is the
+  # documented switch for "automatic redirection" between deployments in a group.
+  # "enable_weighted_failover | boolean | false | If true and routing_strategy is simple-shuffle, a
+  # retryable failure on one deployment re-picks (weighted) across other deployments in the same
+  # model group before cross-group fallbacks. Default: false."
+  # https://docs.litellm.ai/docs/proxy/config_settings#router_settings---reference
+  # https://docs.litellm.ai/docs/routing#weighted-failover
+  enable_weighted_failover: false
+
+  # Routing strategy: simple-shuffle is the documented default and is what enable_weighted_failover
+  # above is scoped to. Kept at its default and set explicitly for clarity; moot in this template
+  # since every model_name has exactly one deployment, so there is nothing for any strategy to choose
+  # between.
+  # https://docs.litellm.ai/docs/proxy/config_settings#router_settings---reference
+  routing_strategy: simple-shuffle
+
+  # Cooldowns: disable_cooldowns is the documented global switch. "disable_cooldowns | boolean |
+  # false | If true, disables cooldowns for all models." allowed_fails / cooldown_time (defaults 3
+  # and 5s respectively) are moot once cooldowns are disabled, so they are not also set here.
+  # https://docs.litellm.ai/docs/proxy/config_settings#router_settings---reference
+  # https://docs.litellm.ai/docs/routing#disable-cooldowns
+  disable_cooldowns: true
+
+  # Parallel-request limiting. default_max_parallel_requests defaults to null (no limit); this is a
+  # per-deployment concurrency CAP, not something that fans one logical request out to multiple
+  # deployments, so there is nothing to "disable" here for EV03/EV04 purposes. Left at its default.
+  # https://docs.litellm.ai/docs/proxy/config_settings#router_settings---reference
+
+  # Hedging / speculative parallel requests (one logical request answered by racing multiple
+  # deployments): no documented switch found. Searched docs.litellm.ai/docs/routing,
+  # docs.litellm.ai/docs/proxy/config_settings and docs.litellm.ai/docs/proxy/reliability on
+  # 2026-09-20; "hedging" appears nowhere in those pages as a config feature (one unrelated incident
+  # postmortem blog post uses the word in passing). unverified; observe at run time whether any
+  # provider-level behaviour (e.g. parallel tool calls) produces more than one upstream request per
+  # client call.
+
+# Per-request disable_fallbacks (used by ev03_retry_probe.py on every request, belt-and-suspenders on
+# top of router_settings.fallbacks: [] above) and per-key disable_fallbacks (settable via
+# /key/generate metadata) are both documented but are request/key-scoped, not a config.yaml setting:
+# https://docs.litellm.ai/docs/proxy/reliability#disable-fallbacks-per-requestkey
