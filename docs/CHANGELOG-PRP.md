@@ -100,6 +100,7 @@ repository_integration: NOT_PERFORMED
 - เพิ่ม `registry/wp24-run-record-template.json` สร้างจาก gate EV01–EV08 ใน `reuse-fit-gap-template.json` โดยตรง: environment, `shared_revision`, candidates ตามโครง `stack-evaluation-template.json` + `operator_cost_measurements` (STACK §7), `gate_verdicts` ต่อ requirement ต่อ candidate, `source_observations` แยกจาก `measurements`, `decision_receipt` ครบ field ตาม STACK §8; run record จริงจะอยู่ที่ `docs/evidence/wp24/<record_id>.json` และ fit-gap copy ที่ `registry/reuse-fit-gap.<record_id>.json` (template เดิมไม่แก้)
 - Lalin-AI [SRC-07] จัดเป็น reuse candidate ระดับ engine ของ speech worker ตาม FR-043 / WP10 ไม่ใช่ผู้ส่งมอบ worker ทั้งตัว; EV07 เป็น BLOCKED จน speech candidate ผ่าน license / voice-rights gate
 - STACK-EVALUATION §6 ชี้ไปยัง procedure; `docs/README.md` เพิ่มแถว; `evidence/README.md` อธิบายโฟลเดอร์ `wp24/` ว่าไม่ใช่ acceptance receipt; HTML builder ORDER เพิ่มเอกสารหลัง STACK-EVALUATION; ทุก AT ยัง NOT_RUN
+- owner ตัดสิน 2026-09-20 (บันทึกใน procedure §2 / EV03 / EV04 / §9 และ `scope_decisions` ของ template): LiteLLM อยู่ใน WP24 เฉพาะ EV04 + EV03 ในฐานะ key / proxy layer ของ candidate B time box รวมไม่เกิน 1 วันทำงาน routing ของมันไม่แทน PRP Router; โมเดลเป็น BYOM โดย license receipt ตาม SEC-007 ยังต้องมีก่อน activation; C และ speech ยังไม่ตัดสิน
 
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน

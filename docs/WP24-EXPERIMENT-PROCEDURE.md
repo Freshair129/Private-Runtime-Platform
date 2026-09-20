@@ -41,12 +41,12 @@ governance:
 | Host A (nominal VRAM 12 GB) และ Host B (16 GB) ใน LAN เดียวกัน พร้อม driver / CUDA ที่ติดตั้งแล้ว และ control host ที่ **ไม่มี GPU driver** | ops | `environment.gpu_hosts[]`, `environment.control_host` |
 | Network boundary: LAN เท่านั้น ไม่ expose สู่ public, egress policy ระบุชัด (ARCH §1 ไม่มี automatic public-cloud) | ops | `environment.network_boundary` |
 | Test corpus: ข้อความและเสียงที่เตรียมไว้เพื่อทดสอบเท่านั้น ห้ามใช้ข้อมูลหรือเสียงลูกค้า (Coding-Standards §10) พร้อม data-retention rule | owner | `environment.test_corpus`, `environment.data_retention` |
-| LLM model ที่จะใช้ทดลอง: ชื่อ, revision, tokenizer, chat template, context length, license ตรวจแล้ว **ชุดเดียวใช้กับทั้ง A และ B** (STACK §6) | owner | `shared_revision` |
+| LLM model ที่จะใช้ทดลอง: ชื่อ, revision, tokenizer, chat template, context length, license ตรวจแล้ว **ชุดเดียวใช้กับทั้ง A และ B** (STACK §6) โมเดลเป็น BYOM: owner นำมาเองและรับผิดชอบสิทธิ์ แต่ license receipt ตาม SEC-007 / SECURITY-DATA §8 ยังต้องมีก่อน activation | owner | `shared_revision` |
 | Speech candidate (ถ้าจะรวมใน WP24): faster-whisper รุ่นใด, TTS ใด (F5-TTS-THAI ต้องผ่าน license/voice-rights gate [SRC-08]) หรือตัดสินว่า EV07 เป็น BLOCKED โดยตั้งใจจน WP10 | owner | `shared_revision.asr_model`, `shared_revision.tts_model`, `experiments.EV07` |
 | Version pin ของ candidate ก่อนเริ่ม: image digest หรือ package lock ของ Xinference / vLLM / LiteLLM / Ray ที่จะทดลอง | operator | `candidates[].version_manifest` |
 | PRP repository ที่ commit ใดใช้เป็น reference สำหรับ EV01 และ contract | operator | `prepared_from.prp_commit` |
 | ผู้ทดลอง 1 คน ผู้ตรวจ 1 คน (คนเดียวกันไม่ได้) และ time box ต่อ candidate | owner | `people`, `run_window` |
-| ตัดสินว่า candidate C (Ray Serve) อยู่ใน scope หรือไม่ (STACK §7: ไม่บังคับเพิ่ม C เมื่อ A/B ยังไม่ผ่าน) และ LiteLLM อยู่ใน composition ของ A/B หรือไม่ | owner | `candidates[].in_scope` |
+| ตัดสินว่า candidate C (Ray Serve) อยู่ใน scope หรือไม่ (STACK §7: ไม่บังคับเพิ่ม C เมื่อ A/B ยังไม่ผ่าน) LiteLLM **ตัดสินแล้ว 2026-09-20**: อยู่ใน scope เฉพาะ EV04 + EV03 ภายใน candidate B, time box รวมไม่เกิน 1 วันทำงาน (ดู EV04) | owner | `candidates[].in_scope`, `scope_decisions` |
 
 ถ้ารายการใดยังไม่มี ให้เริ่มเฉพาะ EV01 (ไม่ต้องใช้ GPU) และบันทึกส่วนที่เหลือเป็น `BLOCKED` พร้อมชื่อรายการที่ขาด
 
@@ -118,6 +118,8 @@ EV04 ขึ้นก่อน EV03 ในลำดับปฏิบัติเ
 
 **เกณฑ์:** `PASS` เมื่อ binding ตรงทุกครั้งและ retry ปิดได้ครบด้วย config; `PASS + CONFIGURE` เมื่อต้องตั้งค่าเฉพาะ; `FAIL` เมื่อยังมี implicit retry ที่ปิดไม่ได้ ซึ่งเป็น known gap SRC-03 / SRC-09 ที่ต้องได้คำตอบจากการรัน
 
+ส่วนของ LiteLLM ในข้อ 2–4 รันเฉพาะภายใน sub-spike ที่กำหนดใน EV04 (time box ร่วมกัน)
+
 ### EV04 Identity / key semantics — gate PRP-FR-003..009
 
 **คำถาม:** ระบบ key ของ candidate เป็น verifier-only (เก็บ hash เท่านั้น, เปิดดูภายหลังไม่ได้) และ scope key ตาม org / app / capability / model / expiry / quota / revoke ได้ครบตาม FR-003..009 หรือไม่ หรือ PRP ต้องเป็น key authority เอง
@@ -131,6 +133,8 @@ EV04 ขึ้นก่อน EV03 ในลำดับปฏิบัติเ
 **บันทึก:** ทุกช่องทางที่ key ถูกอ่านกลับได้, ตาราง scope ที่รองรับ / ไม่รองรับต่อ FR, เวลา revoke ที่วัด
 
 **เกณฑ์:** FR-005 `FAIL` ทันทีถ้า key อ่านกลับได้หลังออก (นี่คือ known gap ของ A ตาม SRC-10 ที่ต้องยืนยันด้วยการรัน); ผลรวมของ EV04 ตัดสินว่า key authority เป็น REUSE / CONFIGURE ของ candidate หรือ BUILD-GAP ที่ PRP เป็น verifier เอง (ADR-PRP: exactly one client-key authority)
+
+**LiteLLM sub-spike (owner ตัดสิน 2026-09-20):** LiteLLM [SRC-03] อยู่ใน WP24 เฉพาะในฐานะ key / proxy layer ของ candidate B และรันเฉพาะ EV04 ข้อ 1–3 กับ EV03 ข้อ 2–4 รวมกัน **ไม่เกิน 1 วันทำงาน** หมดเวลาแล้วส่วนที่ไม่เสร็จลง `BLOCKED` ไม่ต่อเวลา ต้องได้คำตอบสามข้อ: (1) key เก็บเป็น hash และอ่านกลับไม่ได้จากทุกช่องทางหรือไม่ (2) revoke มีผลภายในเวลาเท่าใด (3) retry / fallback / smart routing ปิดได้ครบด้วย config หรือไม่ ผ่านครบ → `CONFIGURE` พร้อม operator cost ที่วัดได้ (service + datastore ที่เพิ่ม); ไม่ผ่านข้อใด → `BUILD-GAP` ที่ PRP เป็น verifier และ router เองพร้อมหลักฐาน ไม่รัน LiteLLM ใน EV05–EV08 และไม่ใช้ routing ของมันแทน PRP Router ในทุกกรณี (NFR-023)
 
 ### EV05 Atomic multi-process load — gate PRP-FR-017 / 018
 
@@ -228,5 +232,5 @@ EV04 ขึ้นก่อน EV03 ในลำดับปฏิบัติเ
 
 1. รายการ LLM model และ license ที่จะใช้เป็น `shared_revision`
 2. speech อยู่ใน WP24 หรือให้ EV07 เป็น BLOCKED จน WP10 (ถ้ารวม ต้องอนุมัติ voice rights ของ TTS ก่อน)
-3. C อยู่ใน scope หรือไม่; LiteLLM อยู่ใน composition ใด
+3. C อยู่ใน scope หรือไม่ (LiteLLM ตัดสินแล้ว 2026-09-20: เฉพาะ EV04 + EV03 ภายใน B, time box ไม่เกิน 1 วันทำงาน)
 4. time box ต่อ candidate และชื่อ operator / reviewer
