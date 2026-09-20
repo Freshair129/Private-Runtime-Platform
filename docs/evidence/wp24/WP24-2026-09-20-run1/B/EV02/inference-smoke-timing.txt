@@ -1,0 +1,6 @@
+endpoint=POST /v1/chat/completions (bearer credential required)
+wall_clock_latency_ms=254
+prompt_tokens=25 completion_tokens=5 total_tokens=30
+finish_reason=stop
+response_content_codepoints=U+0E01 U+0E23 U+0E38 U+0E07 U+0E40 U+0E17 U+0E1E U+0E2F
+note=console codepage cp874 garbles Thai on stdout; the JSON artifact is valid UTF-8

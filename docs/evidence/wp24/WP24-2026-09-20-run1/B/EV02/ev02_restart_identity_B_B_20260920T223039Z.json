@@ -1,0 +1,67 @@
+{
+  "kind": "WP24_EV02_RESTART_IDENTITY_DIFF",
+  "generated_at_utc": "2026-09-20T22:30:39Z",
+  "command_line": "tools/wp24/ev02_restart_identity.py --before docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/before/ev02_probe_B_B_20260920T222651Z.json --after docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/after/ev02_probe_B_B_20260920T223029Z.json --out <home>/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/wp24-out",
+  "candidate": "B",
+  "host_id": "B",
+  "before_file": "ev02_probe_B_B_20260920T222651Z.json",
+  "after_file": "ev02_probe_B_B_20260920T223029Z.json",
+  "diff": {
+    "added": {},
+    "removed": {},
+    "changed": {
+      "list_models.with_credential.data[0].created": {
+        "before": "1789943211",
+        "after": "1789943429"
+      },
+      "list_models.with_credential.data[0].permission[0].created": {
+        "before": "1789943211",
+        "after": "1789943429"
+      },
+      "list_models.with_credential.data[0].permission[0].id": {
+        "before": "modelperm-a277672e50ed4504",
+        "after": "modelperm-97a9fce28fb68ea6"
+      }
+    },
+    "unchanged": {
+      "list_models.with_credential.data[0].id": "typhoon2.5-qwen3-4b",
+      "list_models.with_credential.data[0].object": "model",
+      "list_models.with_credential.data[0].owned_by": "vllm",
+      "list_models.with_credential.data[0].permission[0].object": "model_permission",
+      "list_models.with_credential.object": "list"
+    }
+  },
+  "measurements": [
+    {
+      "name": "identifiers_before_count",
+      "value": 8
+    },
+    {
+      "name": "identifiers_after_count",
+      "value": 8
+    },
+    {
+      "name": "identifiers_added_count",
+      "value": 0
+    },
+    {
+      "name": "identifiers_removed_count",
+      "value": 0
+    },
+    {
+      "name": "identifiers_changed_count",
+      "value": 3
+    },
+    {
+      "name": "identifiers_unchanged_count",
+      "value": 5
+    }
+  ],
+  "observations": [
+    "identifiers differ between the before/after snapshots; review WP24-EXPERIMENT-PROCEDURE.md EV02 step 2 / EV06 for whether this is a restart epoch the candidate exposes or something else"
+  ],
+  "source_observations": [],
+  "artifacts": [
+    "ev02_restart_identity_B_B_20260920T223039Z.json"
+  ]
+}

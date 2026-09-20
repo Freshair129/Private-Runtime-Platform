@@ -1,7 +1,7 @@
 {
   "kind": "WP24_RUN_RECORD",
   "version": "0.4.0-draft",
-  "template_note": "Run record derived from registry/wp24-run-record-template.json. Only EV01 has been executed so far; every other experiment stays NOT_RUN. Values come from the artifacts listed next to them.",
+  "template_note": "Run record derived from registry/wp24-run-record-template.json. EV01 (all candidates) and EV02 for candidate B have been executed; every other experiment stays NOT_RUN. The EV02 status and gate_verdicts remain NOT_RUN because procedure section 3 item 4 reserves the verdict for the reviewer; the evidence to decide on is in experiments.EV02.per_candidate.B. Values come from the artifacts listed next to them.",
   "procedure": "docs/WP24-EXPERIMENT-PROCEDURE.md",
   "record_id": "WP24-2026-09-20-run1",
   "prepared_from": {
@@ -69,6 +69,36 @@
       "reviewer_action": "Accept as sufficient for NFR-021, or require a repeat of EV01 steps 1-2 on a driver-less host before the fit-gap row leaves UNASSESSED.",
       "resolution": "2026-09-20: procedure defect, not a requirement deviation. SRS host topology and ARCH-PRP section 3 place control on the CPU of a GPU host; NFR-021/022 demand process and dependency isolation only. The procedure was corrected (see .brain/rca/RCA-2026-09-20-ev01-host-precondition.md); the EV01 verdicts and artifacts stand unchanged. The reviewer no longer has to decide on a rerun for this reason.",
       "status": "RESOLVED_PROCEDURE_CORRECTED"
+    },
+    {
+      "id": "DEV-02",
+      "experiment": "EV02",
+      "requirement": "procedure section 4: candidate A runs every EV before candidate B",
+      "observed": "Candidate B (vLLM) was run first; candidate A (Xinference) has not been run.",
+      "mitigation": "No host reset was owed because A never ran, so the two candidates' environments are not cross-contaminated. The A versus B comparison required by section 8 item 1 stays incomplete until A runs.",
+      "reviewer_action": "Accept the reordering, or require the B evidence to be retaken after A for comparability.",
+      "resolution": null,
+      "status": "OPEN"
+    },
+    {
+      "id": "DEV-03",
+      "experiment": "EV02",
+      "requirement": "EV02 question: runtimes on host A and host B as independent replicas",
+      "observed": "Only one GPU host existed in this run window, so no A/B replica pair was launched. Every EV02 measurement comes from a single runtime on host B.",
+      "mitigation": "Steps 2, 3 and 4 were executed in full against the single runtime and produced findings that do not depend on a second host. The two-host part of step 1 and the cross-host portion of the step 3 capacity test remain unrun. Procedure section 8 item 1 permits an EV that cannot run to carry BLOCKED with a blocker.",
+      "reviewer_action": "Record the FR-010..015 rows as partially evidenced and decide whether the two-host portion blocks the WP24 exit or is deferred.",
+      "resolution": null,
+      "status": "OPEN"
+    },
+    {
+      "id": "DEV-04",
+      "experiment": "EV02",
+      "requirement": "procedure section 3: candidate evidence taken on a controlled host",
+      "observed": "Host B was not a clean host during EV02: an unrelated Zuri AI docker stack (web, genesis worker, line worker, minio, ngrok), an Ollama server on port 11434 and the Windows desktop shell were running. The desktop shell alone held about 3596 MiB of the 16311 MiB of VRAM before launch.",
+      "mitigation": "gpu_memory_utilization was set to 0.70 rather than the 0.9 default so the runtime fits the free VRAM. The EV02 findings are qualitative API and identity properties that do not depend on free VRAM; the timing and capacity figures (cold start, restart, KV cache size, concurrency) do, and must be read as measured on a shared machine.",
+      "reviewer_action": "Accept the qualitative findings; require a repeat on a quiet host before any timing or capacity number is carried into the fit-gap.",
+      "resolution": null,
+      "status": "OPEN"
     }
   ],
   "environment": {
@@ -131,21 +161,23 @@
         "cuda": null,
         "os": null,
         "kernel": null,
-        "container_runtime": null
+        "container_runtime": null,
+        "note": "Not reachable in this run window; owner deferred worker setup (decision 2026-09-21). The 12 GB nominal VRAM is a planned value, not a measurement."
       },
       {
         "host_id": "B",
         "nominal_vram_gb": 16,
-        "gpu_model": null,
-        "gpu_uuid": null,
-        "driver": null,
-        "cuda": null,
-        "os": null,
-        "kernel": null,
-        "container_runtime": null
+        "gpu_model": "NVIDIA GeForce RTX 5060 Ti, 16311 MiB",
+        "gpu_uuid": "GPU-38430611-f42d-0296-a887-d75649b21f25",
+        "driver": "616.92 (nvidia-smi)",
+        "cuda": "13.4 CUDA UMD on the host; the container torch build is cu130 and its arch list includes sm_120",
+        "os": "Microsoft Windows 11 Pro 10.0.26200; the runtime executes inside WSL2 under Docker Desktop",
+        "kernel": "6.18.33.2-microsoft-standard-WSL2 (container); 10.0.26200 (Windows host)",
+        "container_runtime": "Docker Desktop 29.8.0 with nvidia-container-runtime",
+        "note": "Host B is DESKTOP-VETATMQ, the same machine as environment.control_host (identical GPU UUID). Owner decision 2026-09-21: this machine is the control/main host and the second machine DESKTOP-8UR61U8 is the worker that receives jobs first; the worker was not set up in this run window."
       }
     ],
-    "network_boundary": "EV01 only: prp-api bound to 127.0.0.1:8080 (settings default); no LAN or public exposure; no GPU host contacted.",
+    "network_boundary": "EV01: prp-api bound to 127.0.0.1:8080 (settings default), no LAN exposure. EV02 candidate B: the vLLM container was published to 127.0.0.1:8000 only, and additionally to 127.0.0.1:8001 during the step 3 negative test; no LAN or public exposure; no second GPU host was contacted.",
     "data_retention": "EV01 uses no corpus; request bodies were fixed test strings.",
     "test_corpus": "none required for EV01",
     "weights_cache_kept_between_candidates": null
@@ -260,9 +292,17 @@
         "SRC-15"
       ],
       "version_manifest": {
-        "images": [],
+        "images": [
+          "vllm/vllm-openai:latest @ sha256:c2914767605584b6d8f45686b82de173ecc99e781897aa3d0a66dacd72c51ae1 (30.5 GB, image id c29147676055; vllm 0.29.0, torch 2.13.0+cu130, CUDA build 13.0, python 3.12.3, torch arch list sm_75/sm_80/sm_86/sm_90/sm_100/sm_120)",
+          "nvidia/cuda:12.8.1-base-ubuntu24.04 (GPU passthrough check only, not part of the runtime)"
+        ],
         "python_packages": [],
-        "config_files": []
+        "config_files": [
+          "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/launch-command.txt",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative-test-launch-command.txt",
+          "launch env: VLLM_API_KEY set (value never recorded); VLLM_WSL2_ENABLE_PIN_MEMORY=1, required on WSL2 per .brain/rca/RCA-2026-09-21-vllm-wsl2-uva.md",
+          "launch flags: --model /models --served-model-name typhoon2.5-qwen3-4b --max-model-len 8192 (baseline) or 4096 (step 3 negative test) --gpu-memory-utilization 0.70"
+        ]
       },
       "status": "NOT_RUN",
       "gate_failures": [],
@@ -542,15 +582,147 @@
         },
         "B": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-20T22:21:57+00:00",
+          "finished_at": "2026-09-20T23:30:54+00:00",
+          "cold_or_warm": "Cold for the first launch (no image, no weights, no compile cache); warm for the restart and for the step 3 relaunch, except that changing --max-model-len invalidated the compile cache.",
+          "sample_count": "probe runs: 4 (baseline, post-restart, step 3 origin :8000, step 3 origin :8001); repeated /v1/models calls against one origin: 3; inference smoke requests: 1; runtime restarts: 2",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/launch-command.txt and docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative-test-launch-command.txt",
+          "source_observations": [
+            "SRC-02: the STACK-EVALUATION-PRP section 4 finding that a vLLM api-key alone is not sufficient protection is confirmed here by execution (/metrics served without a credential).",
+            "SRC-01: vLLM as candidate B's LLM engine served as the source describes; the identity and registry limitations recorded above are not covered by that source review."
+          ],
+          "measurements": [
+            {
+              "name": "cold_start_to_health_200_seconds",
+              "value": 280
+            },
+            {
+              "name": "warm_restart_to_health_200_seconds",
+              "value": 130
+            },
+            {
+              "name": "load_weights_seconds",
+              "value": 64.72
+            },
+            {
+              "name": "model_loading_seconds",
+              "value": 71.57
+            },
+            {
+              "name": "model_loading_gib",
+              "value": 7.64
+            },
+            {
+              "name": "init_engine_seconds",
+              "value": 171.0
+            },
+            {
+              "name": "torch_compile_seconds",
+              "value": 27.73
+            },
+            {
+              "name": "recompile_after_max_model_len_change_seconds",
+              "value": 22.13
+            },
+            {
+              "name": "gpu_kv_cache_size_tokens",
+              "value": 10576
+            },
+            {
+              "name": "num_gpu_blocks",
+              "value": 661
+            },
+            {
+              "name": "max_concurrency_at_max_model_len_8192",
+              "value": 1.29
+            },
+            {
+              "name": "max_concurrency_at_max_model_len_4096",
+              "value": 2.58
+            },
+            {
+              "name": "vram_free_mib_before_launch",
+              "value": 12447
+            },
+            {
+              "name": "vram_held_by_desktop_shell_mib",
+              "value": 3596
+            },
+            {
+              "name": "vram_used_mib_when_ready",
+              "value": 14249
+            },
+            {
+              "name": "list_models.no_credential.status_code",
+              "value": 401
+            },
+            {
+              "name": "list_models.with_credential.status_code",
+              "value": 200
+            },
+            {
+              "name": "metrics.no_credential.status_code",
+              "value": 200
+            },
+            {
+              "name": "metrics.no_credential.response_size_bytes",
+              "value": 52294
+            },
+            {
+              "name": "gpu_binding.matched_process_count_from_windows_host",
+              "value": 0
+            },
+            {
+              "name": "inference_smoke.wall_clock_latency_ms",
+              "value": 254
+            },
+            {
+              "name": "inference_smoke.prompt_tokens",
+              "value": 25
+            },
+            {
+              "name": "inference_smoke.completion_tokens",
+              "value": 5
+            }
+          ],
+          "observations": [
+            "Step 1. The runtime would not start at all under Docker Desktop / WSL2 until VLLM_WSL2_ENABLE_PIN_MEMORY=1 was set: vLLM 0.29.0 disables pinned host memory on WSL2 by default while its V2 GPU model runner requires UVA buffers, so the engine core died with 'UVA is not available'. Root cause and fix in .brain/rca/RCA-2026-09-21-vllm-wsl2-uva.md.",
+            "Step 2. No probed endpoint exposed a physical GPU UUID. nvidia-smi on the Windows host matched zero runtime processes because WSL2 GPU paravirtualisation hides them; nvidia-smi inside the container reported GPU-38430611-f42d-0296-a887-d75649b21f25, which equals the UUID already recorded for environment.control_host, and listed the EngineCore pid 131 with process_name '[Not Found]' and used memory '[N/A]'. PRP can therefore join a runtime to a physical GPU only from inside the container, and cannot obtain per-process GPU memory on this substrate.",
+            "Step 2. The authenticated model listing exposes no model revision: it returns id, root, max_model_len, owned_by, created and a permission block, so PRP cannot verify from the API that the runtime serves shared_revision ce0a741. The served artifact was instead verified out of band before launch: tokenizer.json sha256 aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4 and chat_template.jinja sha256 64f85b198065d0fba2a81f37e10ed68161ce2c19a754c7100e67e0ca2ee9c326 both match the pinned values, and the two safetensors shards total 8044982000 bytes (7.49 GiB).",
+            "Step 2 and step 3, corrected reading. data[0].created and permission[0].id are NOT a restart epoch and NOT runtime identity: three consecutive /v1/models calls against one origin returned three different modelperm-* values, and created tracks the wall clock at request time. The three identifiers that differ in ev02_restart_identity_B_B_20260920T223039Z.json reflect elapsed time between the two snapshots, not the restart.",
+            "Step 2. The only stable runtime identity observed is /metrics process_start_time_seconds: identical (1.78994622059e+09) across two origins served by one process, and changed to 1.78994655054e+09 after a deliberate restart. /metrics vllm:cache_config_info also carries the resolved profile (kv_cache_size_tokens, kv_cache_max_concurrency, num_gpu_blocks, gpu_memory_utilization, block_size).",
+            "Step 3 case 1, same alias with a different profile. Relaunching the same served-model-name with --max-model-len 4096 instead of 8192 is visible in the listing (max_model_len changes under the same id) and in /metrics. vLLM has no cross-process model registry, so two instances of one alias are never merged or compared by the candidate; distinguishing them is entirely PRP's responsibility.",
+            "Step 3 case 2, two origins onto one runtime. With 127.0.0.1:8000 and 127.0.0.1:8001 published to the same container port, the model listing gives a different created and a different permission[0].id per origin, which would lead a consumer that trusts the listing to count one runtime as two capacities. Only /metrics process_start_time_seconds reveals that the two origins are one process.",
+            "Step 4. /v1/models returns 401 without a credential but sends no WWW-Authenticate (or equivalent) challenge header. /metrics returns 200 and 52294 bytes of telemetry with no credential at all: --api-key does not cover it, as vLLM's own security documentation states. This confirms the known gap SRC-02 by execution.",
+            "Consequence of the previous two observations taken together: the only source of stable runtime identity and of the resolved profile is the one endpoint the candidate's own credential mechanism does not protect. Any PRP design on candidate B must put a network policy or reverse proxy in front of /metrics rather than rely on --api-key.",
+            "Operator cost. Weights were mounted from a Windows path through 9P: vLLM logged 'Filesystem type for checkpoints: 9P', disabled auto-prefetch because 9P is not a recognised network filesystem, and took 64.72 s to load the 7.49 GiB checkpoint. Changing --max-model-len invalidated the AOT compile cache and cost 22.13 s of recompilation. Both are properties of running candidate B on Windows, not of vLLM in general.",
+            "Inference works end to end: a Thai chat completion returned U+0E01 U+0E23 U+0E38 U+0E07 U+0E40 U+0E17 U+0E1E U+0E2F with finish_reason stop in 254 ms of wall clock."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative-test-launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/vllm-startup-success.log",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/launch-attempt1-failed-pathconv.log",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/launch-attempt2-failed-engine-init.log",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/nvidia-smi-L-inside-container.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/nvidia-smi-compute-apps-inside-container.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/ev02_gpu_binding_B_20260920T222717Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/ev02_restart_identity_B_B_20260920T223039Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/restart-timing.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/inference-smoke-request.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/inference-smoke-response.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/inference-smoke-timing.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/before/ev02_probe_B_B_20260920T222651Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/after/ev02_probe_B_B_20260920T223029Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/two-origins-v1-models.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/same-origin-repeated-calls.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/metrics-process-identity.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/metrics-before-restart.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/metrics-after-restart.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/ev02_probe_B_B_20260920T232134Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative/ev02_probe_B_B_20260920T232143Z.json"
+          ],
           "gate_verdicts": {
             "PRP-FR-010": "NOT_RUN",
             "PRP-FR-011": "NOT_RUN",
@@ -559,8 +731,8 @@
             "PRP-FR-014": "NOT_RUN",
             "PRP-FR-015": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "ADAPT. The candidate reports neither the physical GPU nor a stable runtime identity through its authenticated API; PRP must join the GPU UUID itself from inside the container and must derive node identity and profile from /metrics, which the candidate does not protect. Operator suggestion only; the verdict is the reviewer's.",
+          "blocker": "The two-host portion of step 1 and the cross-host capacity check are unrun because only one GPU host exists in this run window (DEV-03). status and gate_verdicts are left NOT_RUN pending the reviewer's decision."
         },
         "C": {
           "status": "BLOCKED",

@@ -1,0 +1,34 @@
+{
+  "kind": "WP24_EV02_GPU_BINDING",
+  "generated_at_utc": "2026-09-20T22:27:17Z",
+  "command_line": "tools/wp24/ev02_gpu_binding.py --host-id B --process-pattern vllm|python --out <home>/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/wp24-out",
+  "host_id": "B",
+  "process_pattern": "vllm|python",
+  "gpu_list": [
+    {
+      "uuid": "GPU-38430611-f42d-0296-a887-d75649b21f25",
+      "index": "0"
+    }
+  ],
+  "matched_processes": [],
+  "unrelated_process_count": 21,
+  "measurements": [
+    {
+      "name": "gpu_count",
+      "value": 1
+    },
+    {
+      "name": "matched_process_count",
+      "value": 0
+    },
+    {
+      "name": "unrelated_process_count",
+      "value": 21
+    }
+  ],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev02_gpu_binding_B_20260920T222717Z.json"
+  ]
+}

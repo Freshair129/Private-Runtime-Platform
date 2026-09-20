@@ -1,0 +1,10 @@
+# WP24 EV02 step 3 (negative tests) - candidate B relaunch, API key redacted
+# same served-model-name alias as the baseline run, DIFFERENT profile (--max-model-len 4096 instead of 8192)
+# and TWO host origins published to the SAME container port, to test capacity double-counting
+docker run -d --name prp-wp24-vllm-b --gpus all --ipc=host \
+  -p 127.0.0.1:8000:8000 -p 127.0.0.1:8001:8000 \
+  -v "F:/prp-models/typhoon2.5-qwen3-4b@ce0a741:/models:ro" \
+  -e VLLM_API_KEY=<REDACTED> -e VLLM_WSL2_ENABLE_PIN_MEMORY=1 \
+  vllm/vllm-openai:latest \
+  --model /models --served-model-name typhoon2.5-qwen3-4b \
+  --max-model-len 4096 --gpu-memory-utilization 0.70
