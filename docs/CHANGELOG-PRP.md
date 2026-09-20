@@ -55,6 +55,13 @@ repository_integration: NOT_PERFORMED
 - เพิ่ม `docs/evidence/README.md` (รูปแบบ receipt, ชื่อไฟล์, ขั้นตอนเปลี่ยนสถานะ) และ `.github/workflows/trace.yml` (sync ทุก project → `collect_trace.py --check` → validator)
 - สถานะยังคง NOT_RUN ทั้ง 92 กรณี ไม่มี receipt
 
+### WP24 fit-gap preparation (2026-09-20, C-2 / H2)
+- `registry/reuse-fit-gap-template.json` เติมคอลัมน์ derived ต่อแถว: `title`, `srs_section`, `phase`, `epic`, `acceptance_test`, `proof` (จาก requirements registry), `stack_eval_reuse_rows` (STACK-EVALUATION §3 ตาม SRS section 5.x), `evaluation_experiments` (gate ของ EV01–EV08 จาก §6) และ `source_review` (finding ที่เอกสารระบุไว้แล้วพร้อม SRC ID, `doc_ref`, สถานะ SOURCE_REVIEWED_NOT_RUNTIME_TESTED) รวม 21 requirements / 37 findings; เพิ่มคอลัมน์ผลลัพธ์ตาม §5 ที่ยังเป็น null (`observed_capability`, `limitation`, `maintenance_exit_risk`) และ `experiments` + `record_fields_required_at_wp24` ระดับไฟล์
+- ทุกแถวคง `disposition: UNASSESSED`, `runtime_test_status: NOT_RUN`; ไม่มี version pin, คะแนน หรือผล runtime; version template เป็น 0.4.0-draft
+- `registry/stack-evaluation-template.json` เพิ่ม known source-only gaps: SRC-09 (A, NFR-023 bound routing untested), SRC-03 (A/B, NFR-023 gateway retries ต้อง readmit), SRC-12 (C, FR-044 logical fraction ไม่ใช่ VRAM cap) ตาม STACK §4
+- validator ตรวจ template: คอลัมน์ derived ต้องตรง requirements.json, `evaluation_experiments` ต้องตรง gate ของ EV01–EV08, ทุก `source_review.source` ต้องอยู่ใน SOURCES-PRP register, คอลัมน์ผลลัพธ์ต้องเป็น null, และ stack-evaluation ต้องไม่ประกาศผู้ชนะ; เพิ่ม `fitgap_source_findings` ใน document-validation.json
+- STACK-EVALUATION-PRP §5 เพิ่มย่อหน้า WP24 preparation และ bump เป็น 0.4.0-draft
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

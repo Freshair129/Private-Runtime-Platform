@@ -1,6 +1,6 @@
 {
   "product": "PRP",
-  "version": "0.3.0",
+  "version": "0.4.0-draft",
   "kind": "EVALUATION_TEMPLATE_NOT_RESULTS",
   "direction": "PYTHON_FIRST_REUSE_BEFORE_BUILD",
   "selected_candidate": null,
@@ -40,6 +40,27 @@
       "requirement": "PRP-FR-005",
       "source": "SRC-10",
       "finding": "Documented recoverable/reveal-able native keys do not by themselves satisfy verifier-only client keys",
+      "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+    },
+    {
+      "candidate": "A",
+      "requirement": "PRP-NFR-023",
+      "source": "SRC-09",
+      "finding": "Lifecycle and supervisor/worker topology are documented, but PRP-safe bound routing of a reserved lease to the actual worker is untested",
+      "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+    },
+    {
+      "candidate": "A_OR_B",
+      "requirement": "PRP-NFR-023",
+      "source": "SRC-03",
+      "finding": "Gateway implicit retries, failover or hedging must be disabled unless every extra attempt is readmitted with the original deadline",
+      "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+    },
+    {
+      "candidate": "C",
+      "requirement": "PRP-FR-044",
+      "source": "SRC-12",
+      "finding": "Logical fractional GPU resources are scheduling tokens, not VRAM caps; residency must still be measured and physical admission enforced",
       "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
     }
   ],

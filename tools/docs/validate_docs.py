@@ -98,6 +98,20 @@ for r in requirements:
 fitgap=read_json('registry/reuse-fit-gap-template.json')['rows']
 check({r['requirement_id'] for r in fitgap}==set(ids) and len(fitgap)==92,'Fit-gap template coverage mismatch')
 check(all(r['runtime_test_status']=='NOT_RUN' and r['disposition']=='UNASSESSED' for r in fitgap),'Template contains invented evidence')
+# WP24 preparation columns must stay derived (SDD-PRP-REPO 4: derived files never drift from their canonical source).
+fgdoc=read_json('registry/reuse-fit-gap-template.json');experiments=fgdoc.get('experiments',{});byid={r['id']:r for r in requirements}
+check(set(experiments)=={f'EV0{i}' for i in range(1,9)},'Fit-gap experiments must be exactly EV01..EV08 (STACK-EVALUATION-PRP 6)')
+for k,e in experiments.items():check(bool(e.get('gate')) and set(e.get('gate',[]))<=set(ids),f'Fit-gap experiment {k} gate lists unknown requirement')
+source_ids=set(re.findall(r'\| (SRC-[A-Z]?\d+) \|',(ROOT/'SOURCES-PRP.md').read_text(encoding='utf-8')))
+for r in fitgap:
+    req=byid[r['requirement_id']]
+    check(r.get('acceptance_test')==req['test'] and r.get('proof')==req.get('proof') and r.get('phase')==req['phase'] and r.get('epic')==req['epic'] and r.get('title')==req['title'],f'Fit-gap row {r["requirement_id"]} drifted from requirements.json')
+    check(all(r.get(f) is None for f in ('evidence','pinned_version','observed_capability','limitation','custom_gap','maintenance_exit_risk','upstream_source')),f'Fit-gap template row {r["requirement_id"]} carries runtime evidence')
+    check(set(r.get('evaluation_experiments',[]))=={k for k,e in experiments.items() if r['requirement_id'] in e['gate']},f'Fit-gap row {r["requirement_id"]} experiments do not match section 6 gates')
+    for s in r.get('source_review',[]):check(s.get('source') in source_ids and s.get('status')=='SOURCE_REVIEWED_NOT_RUNTIME_TESTED' and bool(s.get('finding')) and bool(s.get('doc_ref')),f'Fit-gap row {r["requirement_id"]} has an unregistered or unlabelled source finding')
+stackeval=read_json('registry/stack-evaluation-template.json')
+check(stackeval.get('selected_candidate') is None and all(c.get('status')=='NOT_RUN' for c in stackeval.get('candidates',[])),'Stack evaluation template claims a result')
+for g in stackeval.get('known_source_only_gaps',[]):check(g.get('source') in source_ids and g.get('requirement') in ids and g.get('status')=='SOURCE_REVIEWED_NOT_RUNTIME_TESTED',f'Stack evaluation gap {g} is not source-reviewed')
 # Acceptance status gate (SDD-PRP-REPO 9 item 4; ADR-PRP-012 action 5): leaving NOT_RUN needs a collected test and a complete receipt.
 trace_path=ROOT/'registry/code-trace.json'
 check(trace_path.exists(),'Missing registry/code-trace.json (run: python tools/trace/collect_trace.py)')
@@ -135,5 +149,5 @@ for p in ROOT.rglob('*'):
     if 'releases' in p.relative_to(ROOT).parts:continue
     if p.is_file():
         check(p.suffix.lower() not in {'.ttf','.otf','.woff','.woff2'},'Font file must not be distributed: '+str(p))
-result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':92,'acceptance_status':dict(status_counts),'evidence_receipts':sum(len(v) for v in receipts.values()),'code_trace_tests':sum(int(p.get('tests_collected',0)) for p in trace.get('projects',{}).values()),'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_documents':len(specs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN' if status_counts.get('NOT_RUN')==92 else 'PARTIAL'}
+result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':92,'acceptance_status':dict(status_counts),'evidence_receipts':sum(len(v) for v in receipts.values()),'fitgap_source_findings':sum(len(r.get('source_review',[])) for r in fitgap),'code_trace_tests':sum(int(p.get('tests_collected',0)) for p in trace.get('projects',{}).values()),'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_documents':len(specs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN' if status_counts.get('NOT_RUN')==92 else 'PARTIAL'}
 print(json.dumps(result,ensure_ascii=False,indent=2));sys.exit(1 if errors else 0)

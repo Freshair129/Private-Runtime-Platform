@@ -2,7 +2,7 @@
 document_id: STACK-EVALUATION-PRP
 title: "Stack Evaluation | Python-first & Reuse-before-build"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0-draft
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -60,6 +60,8 @@ FastAPI multiple processes มี memory แยก; จึงไม่วาง 
 Disposition: REUSE = ใช้ได้ผ่าน test; CONFIGURE = ตั้งค่าให้ผ่าน; ADAPT = wrapper/protocol glue; BUILD-GAP = ช่องว่างที่อนุมัติพร้อมเหตุผล; DEFER = อยู่นอก phase หรือ blocker ที่ยังรับมอบไม่ได้ ไม่ใช้ DEFER กับ P1 Must แล้วประกาศ P1 ผ่าน
 
 `registry/reuse-fit-gap-template.json` มีแถวครบทุก P1 requirement แต่ยัง UNASSESSED / NOT_RUN ส่วน `registry/stack-evaluation-template.json` เก็บ candidate-level evidence templates ไม่มีคะแนนหรือเวลาที่แต่งขึ้น
+
+**WP24 preparation (2026-09-20):** template เติมคอลัมน์ที่เป็น derived แล้วเพื่อให้ผู้ประเมินเริ่มงานได้ทันที: `srs_section`, `acceptance_test`, `proof`, `phase`, `epic` จาก requirements registry; `stack_eval_reuse_rows` จากตาราง §3 ตาม SRS section; `evaluation_experiments` จาก gate ของ EV01–EV08 ใน §6; และ `source_review` ที่รวม finding ซึ่งเอกสารชุดนี้ระบุไว้แล้วพร้อม SRC ID และ `doc_ref` (21 requirements, 37 findings, สถานะ SOURCE_REVIEWED_NOT_RUNTIME_TESTED) ทุกแถวยังคง `disposition: UNASSESSED`, `runtime_test_status: NOT_RUN` และคอลัมน์ผลลัพธ์ (`pinned_version`, `observed_capability`, `evidence`, `limitation`, `maintenance_exit_risk`) เป็น null; validator ปฏิเสธ drift จาก registry และปฏิเสธ template ที่มี runtime evidence `stack-evaluation-template.json` เพิ่ม known source-only gaps ของ SRC-09 (A), SRC-03 (A/B) และ SRC-12 (C) ตาม §4
 
 ## 6. A/B experiment protocol
 ใช้ model/tokenizer/template/context revision และฮาร์ดแวร์ชุดเดียวกัน กำหนด traffic/data-retention และ network boundary เหมือนกัน แยก warm/cold และ source observations ออกจากตัวเลขจริง

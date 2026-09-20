@@ -1,1019 +1,2625 @@
 {
   "kind": "TEMPLATE_NOT_RESULTS",
-  "version": "0.3.0",
+  "version": "0.4.0-draft",
   "canonical_requirements": "docs/SRS-PRP.md",
+  "prepared_for": "WP24",
+  "prepared_on": "2026-09-20",
+  "preparation_note": "Every row keeps disposition UNASSESSED and runtime_test_status NOT_RUN. Added columns are derived: acceptance_test/proof/phase/epic/title from registry/requirements.json, srs_section from SRS-PRP.md headings, stack_eval_reuse_rows from STACK-EVALUATION-PRP section 3, evaluation_experiments from section 6 gates, and source_review from findings already stated in the documents with their SOURCES-PRP IDs. No runtime observation, version pin, score or disposition was added; tools/docs/validate_docs.py rejects drift and any runtime evidence in this template.",
+  "record_fields_required_at_wp24": [
+    "candidate",
+    "pinned_version",
+    "upstream_source",
+    "observed_capability",
+    "acceptance_test",
+    "runtime_test_status",
+    "limitation",
+    "disposition",
+    "custom_gap",
+    "owner",
+    "maintenance_exit_risk"
+  ],
+  "experiments": {
+    "EV01": {
+      "title": "Clean control install",
+      "expected_evidence": "Python version/lock, no desktop dependency, control import without ML/GPU",
+      "gate": [
+        "PRP-NFR-019",
+        "PRP-NFR-021",
+        "PRP-NFR-022"
+      ]
+    },
+    "EV02": {
+      "title": "Real A/B registration",
+      "expected_evidence": "protected endpoint auth, model profile, distinct physical GPUs and epochs",
+      "gate": [
+        "PRP-FR-010",
+        "PRP-FR-011",
+        "PRP-FR-012",
+        "PRP-FR-013",
+        "PRP-FR-014",
+        "PRP-FR-015"
+      ]
+    },
+    "EV03": {
+      "title": "Target binding",
+      "expected_evidence": "request lease matches actual node, including framework routing/retry",
+      "gate": [
+        "PRP-NFR-023"
+      ]
+    },
+    "EV04": {
+      "title": "Identity/key semantics",
+      "expected_evidence": "hash/verifier or conforming authority, no reveal, scoped listing/jobs/files/revoke",
+      "gate": [
+        "PRP-FR-003",
+        "PRP-FR-004",
+        "PRP-FR-005",
+        "PRP-FR-006",
+        "PRP-FR-007",
+        "PRP-FR-008",
+        "PRP-FR-009"
+      ]
+    },
+    "EV05": {
+      "title": "Atomic multi-process load",
+      "expected_evidence": "no duplicated capacity/quota holds; no bypass direct worker",
+      "gate": [
+        "PRP-FR-017",
+        "PRP-FR-018"
+      ]
+    },
+    "EV06": {
+      "title": "Timeout/restart",
+      "expected_evidence": "UNKNOWN/QUARANTINED evidence, no blind inference replay",
+      "gate": [
+        "PRP-FR-020",
+        "PRP-FR-021",
+        "PRP-FR-022"
+      ]
+    },
+    "EV07": {
+      "title": "Mixed chat/speech",
+      "expected_evidence": "resident profile + actual placement, no silent unload or OOM under admitted load",
+      "gate": [
+        "PRP-FR-018",
+        "PRP-FR-044"
+      ]
+    },
+    "EV08": {
+      "title": "Adapter/exit",
+      "expected_evidence": "public schemas unchanged; config export; key rotation plan; deletion fences preserved",
+      "gate": [
+        "PRP-NFR-024"
+      ]
+    }
+  },
   "rows": [
     {
       "requirement_id": "PRP-FR-001",
+      "title": "Independent bootstrap",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-001",
+      "proof": "deployment",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Core"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-002",
+      "title": "Application-neutral boundary",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-002",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Core"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-003",
+      "title": "PRP-owned organization isolation",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-003",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Identity"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-004",
+      "title": "Roles and delegated management",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-004",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Identity"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-005",
+      "title": "Scoped key issuance",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-005",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-10",
+          "finding": "Documented recoverable/reveal-able native keys do not by themselves satisfy verifier-only client keys (PRP-FR-005); Xinference may still be evaluated for internal lifecycle under separately protected service credentials.",
+          "doc_ref": "ADR-PRP-004; ARCH-PRP 3; STACK-EVALUATION-PRP 4; SECURITY-DATA-PRP 9. Framework delegation and Python isolation",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-03",
+          "finding": "LiteLLM virtual keys/routing are an optional key or router layer for A or B, not a mandatory dependency and not a reason for a second user-key store; implicit retries, failover or hedging must not bypass admission or the original deadline.",
+          "doc_ref": "STACK-EVALUATION-PRP 2; ARCH-PRP 3; API-PRP addendum",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Identity"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-006",
+      "title": "Key rotation and revocation",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-006",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Identity"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-007",
+      "title": "Capability and model grants",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-007",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Identity"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-008",
+      "title": "Atomic quotas and honest usage",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-008",
+      "proof": "real PostgreSQL",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Admission"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-009",
+      "title": "Service-account accountability",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-009",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Identity"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-010",
+      "title": "Controlled node enrollment",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-010",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Registry"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-011",
+      "title": "Qualification receipt",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-011",
+      "proof": "pinned runtime + hardware",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Registry"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-012",
+      "title": "Pinned capability profiles",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-012",
+      "proof": "pinned runtime",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Registry"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-013",
+      "title": "Physical resource deduplication",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-013",
+      "proof": "real PostgreSQL",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Admission"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-014",
+      "title": "Fresh health observations",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Observability",
+      "acceptance_test": "PRP-AT-014",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Observability"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-015",
+      "title": "Safe runtime lifecycle",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-015",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Registry"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-016",
+      "title": "PRP Router selection",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Router",
+      "acceptance_test": "PRP-AT-016",
+      "proof": "integration + hardware",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Router"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-017",
+      "title": "Durable admission transaction",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-017",
+      "proof": "real PostgreSQL + fault injection",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV05"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Admission"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-018",
+      "title": "Shared GPU reservation authority",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-B",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-018",
+      "proof": "hardware + concurrency",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV05",
+        "EV07"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-12",
+          "finding": "Ray logical resources are scheduling tokens, not VRAM caps; candidate C must still measure residency and enforce physical admission.",
+          "doc_ref": "ARCH-PRP 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Admission"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-019",
+      "title": "Bounded fair queues",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-019",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Admission"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-020",
+      "title": "Uncertain execution fencing",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Execution",
+      "acceptance_test": "PRP-AT-020",
+      "proof": "fault injection + hardware",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV06"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Execution"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-021",
+      "title": "Absolute deadlines and cancellation",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Execution",
+      "acceptance_test": "PRP-AT-021",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV06"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Execution"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-022",
+      "title": "Retry classification",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Execution",
+      "acceptance_test": "PRP-AT-022",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV06"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Execution"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-023",
+      "title": "Model catalog",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "API",
+      "acceptance_test": "PRP-AT-023",
+      "proof": "contract",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "API"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-024",
+      "title": "Chat completion and context budget",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Chat Adapter",
+      "acceptance_test": "PRP-AT-024",
+      "proof": "contract + runtime",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Chat Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-025",
+      "title": "Streaming honesty",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Chat Adapter",
+      "acceptance_test": "PRP-AT-025",
+      "proof": "contract + fault injection",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Chat Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-026",
+      "title": "Tools as data only",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Chat Adapter",
+      "acceptance_test": "PRP-AT-026",
+      "proof": "contract",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Chat Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-027",
+      "title": "Usage receipts",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Accounting",
+      "acceptance_test": "PRP-AT-027",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Accounting"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-028",
+      "title": "Stateless inference default",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-028",
+      "proof": "privacy integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Core"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-029",
+      "title": "Bounded audio upload",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-029",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Artifact"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-030",
+      "title": "Sandboxed media decoding",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-030",
+      "proof": "sandbox + fault injection",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Speech Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-031",
+      "title": "ASR contract",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-031",
+      "proof": "runtime + audio corpus",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-07",
+          "finding": "Lalin-AI asr/tts pipelines at commit 512e5c4 are a reuse candidate from a prior source review, not a certified current production backend; only a headless voice-worker profile may be reused.",
+          "doc_ref": "SOURCES-PRP register; ARCH-PRP 3 speech runtime row",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Speech Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-032",
+      "title": "No-speech and unclear outcome",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-032",
+      "proof": "audio corpus",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Speech Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-033",
+      "title": "Approved TTS voices",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-033",
+      "proof": "runtime + policy",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-07",
+          "finding": "Lalin-AI asr/tts pipelines at commit 512e5c4 are a reuse candidate from a prior source review, not a certified current production backend; only a headless voice-worker profile may be reused.",
+          "doc_ref": "SOURCES-PRP register; ARCH-PRP 3 speech runtime row",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-08",
+          "finding": "The F5-TTS-THAI model card describes Thai/English support and limitations on long or some words; model and voice licensing remain an approval gate and do not waive quality or voice-rights tests.",
+          "doc_ref": "SECURITY-DATA-PRP 8. License/provenance gate; SRS-PRP 11 qualification workloads",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Speech Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-034",
+      "title": "Speech text fidelity",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-034",
+      "proof": "audio corpus",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Speech Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-035",
+      "title": "Speech response contracts",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "API",
+      "acceptance_test": "PRP-AT-035",
+      "proof": "contract + runtime",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "API"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-036",
+      "title": "Native asynchronous operations",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Jobs",
+      "acceptance_test": "PRP-AT-036",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Jobs"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-037",
+      "title": "Idempotent job creation",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Jobs",
+      "acceptance_test": "PRP-AT-037",
+      "proof": "real PostgreSQL",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Jobs"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-038",
+      "title": "Job visibility and control",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Jobs",
+      "acceptance_test": "PRP-AT-038",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Jobs"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-039",
+      "title": "Artifact ownership",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-039",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Artifact"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-040",
+      "title": "Controlled delivery grants",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-040",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Artifact"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-041",
+      "title": "Retention and erasure",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-041",
+      "proof": "fault injection + restore",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Artifact"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-042",
+      "title": "Worker adapter contract",
+      "srs_section": "5.7 Worker contract และ residency",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Worker Adapter",
+      "acceptance_test": "PRP-AT-042",
+      "proof": "contract",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "ASR/TTS",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Worker Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-043",
+      "title": "Lalin-derived voice isolation",
+      "srs_section": "5.7 Worker contract และ residency",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-043",
+      "proof": "contract + packaging",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "ASR/TTS",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-07",
+          "finding": "Lalin-AI asr/tts pipelines at commit 512e5c4 are a reuse candidate from a prior source review, not a certified current production backend; only a headless voice-worker profile may be reused.",
+          "doc_ref": "SOURCES-PRP register; ARCH-PRP 3 speech runtime row",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Speech Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-044",
+      "title": "Safe model residency",
+      "srs_section": "5.7 Worker contract และ residency",
+      "phase": "P1-B",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-044",
+      "proof": "hardware",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "ASR/TTS",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV07"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-12",
+          "finding": "Ray logical resources are scheduling tokens, not VRAM caps; candidate C must still measure residency and enforce physical admission.",
+          "doc_ref": "ARCH-PRP 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Admission"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-045",
+      "title": "Operational telemetry",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Observability",
+      "acceptance_test": "PRP-AT-045",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Observability"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-046",
+      "title": "Actionable alerts",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Observability",
+      "acceptance_test": "PRP-AT-046",
+      "proof": "integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Observability"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-047",
+      "title": "Auditable management",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Audit",
+      "acceptance_test": "PRP-AT-047",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Audit"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-048",
+      "title": "Independent operator console",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Console",
+      "acceptance_test": "PRP-AT-048",
+      "proof": "browser e2e",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Console"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-049",
+      "title": "Minimal independent playground",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-B",
+      "epic": "E07",
+      "owner": "Reference Client",
+      "acceptance_test": "PRP-AT-049",
+      "proof": "browser e2e",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Reference Client"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-050",
+      "title": "Reproducible independent deployment",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Operations",
+      "acceptance_test": "PRP-AT-050",
+      "proof": "deployment",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Operations"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-051",
+      "title": "Backup and recovery",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Operations",
+      "acceptance_test": "PRP-AT-051",
+      "proof": "restore rehearsal",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Operations"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-052",
+      "title": "Canary and rollback",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Operations",
+      "acceptance_test": "PRP-AT-052",
+      "proof": "rehearsal",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Operations"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-053",
+      "title": "Compatibility and exit path",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E07",
+      "owner": "API",
+      "acceptance_test": "PRP-AT-053",
+      "proof": "contract + portability",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "API"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-054",
+      "title": "No mandatory LINE dependency",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-A",
+      "epic": "E07",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-054",
+      "proof": "deployment + contract",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Core"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-055",
+      "title": "External LINE integration contract",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E07",
+      "owner": "Integration Adapter",
+      "acceptance_test": "PRP-AT-055",
+      "proof": "integration + authorized live LINE",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-04",
+          "finding": "LINE webhook ingress (raw-body signature verification, event dedupe, durable ingress before HTTP 200) is owned by the external adapter outside PRP.",
+          "doc_ref": "API-PRP 9",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-05",
+          "finding": "LINE reply tokens are single-use and time-bounded; audio delivery needs HTTPS-accessible MP3/M4A with duration in milliseconds.",
+          "doc_ref": "API-PRP 9",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-06",
+          "finding": "LINE push retry key applies only to the same payload and recipient; acceptance does not prove user read or delivery.",
+          "doc_ref": "API-PRP 9",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Integration Adapter"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-FR-056",
+      "title": "Phase-boundary enforcement",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-A",
+      "epic": "E08",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-056",
+      "proof": "contract",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Core"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-001",
+      "title": "Isolation correctness",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-057",
+      "proof": "SECURITY",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-002",
+      "title": "Revocation bound",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-058",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-003",
+      "title": "Admission overhead",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-059",
+      "proof": "load mock",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-004",
+      "title": "Warm chat latency",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-060",
+      "proof": "hardware W1",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-005",
+      "title": "Voice pipeline latency",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-061",
+      "proof": "hardware W2",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-006",
+      "title": "Mixed-workload protection",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-062",
+      "proof": "hardware W3",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-007",
+      "title": "Durability and settlement",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-063",
+      "proof": "fault injection",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-008",
+      "title": "ASR quality",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-064",
+      "proof": "audio quality",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-009",
+      "title": "TTS quality",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-065",
+      "proof": "audio quality",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-08",
+          "finding": "The F5-TTS-THAI model card describes Thai/English support and limitations on long or some words; model and voice licensing remain an approval gate and do not waive quality or voice-rights tests.",
+          "doc_ref": "SECURITY-DATA-PRP 8. License/provenance gate; SRS-PRP 11 qualification workloads",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-010",
+      "title": "No-speech gate",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-066",
+      "proof": "audio quality",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-011",
+      "title": "Observability freshness",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-067",
+      "proof": "fault injection",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-012",
+      "title": "Recovery objectives",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-068",
+      "proof": "restore rehearsal",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-013",
+      "title": "Accessible client flow",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-069",
+      "proof": "browser manual + e2e",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-014",
+      "title": "Bounded resource use",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-070",
+      "proof": "adversarial load",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-015",
+      "title": "Reproducible configuration",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-071",
+      "proof": "release rehearsal",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-016",
+      "title": "Independent operation",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-072",
+      "proof": "portability",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-017",
+      "title": "No hidden content egress",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-073",
+      "proof": "egress capture",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-018",
+      "title": "Service honesty",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-074",
+      "proof": "operations review",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Quality"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-001",
+      "title": "Private transport",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-075",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-02",
+          "finding": "vLLM endpoint API-key protection alone is insufficient; private TLS or an authenticated tunnel and permitted callers are still required.",
+          "doc_ref": "SRS-PRP PRP-SEC-001",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-002",
+      "title": "Secret custody",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-076",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-003",
+      "title": "SSRF and egress",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-077",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-004",
+      "title": "Object authorization",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-078",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-005",
+      "title": "Untrusted input",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-079",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-006",
+      "title": "Secure administration",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-080",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-007",
+      "title": "Voice rights and model provenance",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-B",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-081",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-08",
+          "finding": "The F5-TTS-THAI model card describes Thai/English support and limitations on long or some words; model and voice licensing remain an approval gate and do not waive quality or voice-rights tests.",
+          "doc_ref": "SECURITY-DATA-PRP 8. License/provenance gate; SRS-PRP 11 qualification workloads",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-008",
+      "title": "Content minimization",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-082",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-009",
+      "title": "Deletion and cache boundary",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-B",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-083",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-010",
+      "title": "Supply-chain pinning",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-084",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-16",
+          "finding": "uv distinguishes locked from frozen installs; verify lock freshness before install and never auto-upgrade at startup.",
+          "doc_ref": "OPS-PRP 14. RB11 Python environment and launch boundaries; Coding-Standards 7",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-011",
+      "title": "Trust-owner limitation",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-085",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-SEC-012",
+      "title": "Service credential boundary",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-086",
+      "proof": "security integration",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-019",
+      "title": "Python-first control plane",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-087",
+      "proof": "build + dependency isolation",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV01"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-13",
+          "finding": "FastAPI/Pydantic are the first evaluation candidate for typed request validation and OpenAPI on the thin API; API processes never load models.",
+          "doc_ref": "ARCH-PRP 3; ADR-PRP-009",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-14",
+          "finding": "FastAPI worker processes have separate memory; model globals must not live in web workers and adding workers must not multiply resident models.",
+          "doc_ref": "STACK-EVALUATION-PRP 4; ARCH-PRP 13",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-16",
+          "finding": "uv distinguishes locked from frozen installs; verify lock freshness before install and never auto-upgrade at startup.",
+          "doc_ref": "OPS-PRP 14. RB11 Python environment and launch boundaries; Coding-Standards 7",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-17",
+          "finding": "Ruff is the proposed lint/format tool; exact toolchain pins are set at WP25.",
+          "doc_ref": "Coding-Standards 10",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Core"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-020",
+      "title": "Evidence-based reuse before build",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "G0",
+      "epic": "E02",
+      "owner": "Architecture + QA",
+      "acceptance_test": "PRP-AT-088",
+      "proof": "design evidence + isolated spikes",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-03",
+          "finding": "LiteLLM virtual keys/routing are an optional key or router layer for A or B, not a mandatory dependency and not a reason for a second user-key store; implicit retries, failover or hedging must not bypass admission or the original deadline.",
+          "doc_ref": "STACK-EVALUATION-PRP 2; ARCH-PRP 3; API-PRP addendum",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-11",
+          "finding": "Ray Serve LLM is conditional candidate C for replica orchestration, not an automatic requirement and not stacked on Xinference by default.",
+          "doc_ref": "ARCH-PRP 3; STACK-EVALUATION-PRP 2",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-13",
+          "finding": "FastAPI/Pydantic are the first evaluation candidate for typed request validation and OpenAPI on the thin API; API processes never load models.",
+          "doc_ref": "ARCH-PRP 3; ADR-PRP-009",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Architecture + QA"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-021",
+      "title": "API and model process isolation",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Core + Runtime",
+      "acceptance_test": "PRP-AT-089",
+      "proof": "process integration + real runtime",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV01"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-14",
+          "finding": "FastAPI worker processes have separate memory; model globals must not live in web workers and adding workers must not multiply resident models.",
+          "doc_ref": "STACK-EVALUATION-PRP 4; ARCH-PRP 13",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-15",
+          "finding": "vLLM engine/native process behaviour and start-method constraints are version-sensitive; verify against the selected release and keep the engine in its own environment.",
+          "doc_ref": "ARCH-PRP 13; SOURCES-PRP register",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Core + Runtime"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-022",
+      "title": "Reproducible isolated Python environments",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Build + Operations",
+      "acceptance_test": "PRP-AT-090",
+      "proof": "build + supply-chain review",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV01"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-16",
+          "finding": "uv distinguishes locked from frozen installs; verify lock freshness before install and never auto-upgrade at startup.",
+          "doc_ref": "OPS-PRP 14. RB11 Python environment and launch boundaries; Coding-Standards 7",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-15",
+          "finding": "vLLM engine/native process behaviour and start-method constraints are version-sensitive; verify against the selected release and keep the engine in its own environment.",
+          "doc_ref": "ARCH-PRP 13; SOURCES-PRP register",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Build + Operations"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-023",
+      "title": "Delegated framework authority conformance",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Security + Admission",
+      "acceptance_test": "PRP-AT-091",
+      "proof": "framework contract + race + fault",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV03"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-03",
+          "finding": "LiteLLM virtual keys/routing are an optional key or router layer for A or B, not a mandatory dependency and not a reason for a second user-key store; implicit retries, failover or hedging must not bypass admission or the original deadline.",
+          "doc_ref": "STACK-EVALUATION-PRP 2; ARCH-PRP 3; API-PRP addendum",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-12",
+          "finding": "Ray logical resources are scheduling tokens, not VRAM caps; candidate C must still measure residency and enforce physical admission.",
+          "doc_ref": "ARCH-PRP 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "Security + Admission"
+      "maintenance_exit_risk": null
     },
     {
       "requirement_id": "PRP-NFR-024",
+      "title": "Portable framework binding and exit",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-C",
+      "epic": "E08",
+      "owner": "API + Operations",
+      "acceptance_test": "PRP-AT-092",
+      "proof": "portability + migration rehearsal",
       "candidate": "A_OR_B",
-      "disposition": "UNASSESSED",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV08"
+      ],
+      "source_review": [],
       "upstream_source": null,
       "pinned_version": null,
+      "observed_capability": null,
       "evidence": null,
       "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
       "custom_gap": null,
-      "owner": "API + Operations"
+      "maintenance_exit_risk": null
     }
   ]
 }
