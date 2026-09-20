@@ -9,11 +9,7 @@ on:
       - "tools/**"
       - ".github/workflows/docs.yml"
   pull_request:
-    paths:
-      - "docs/**"
-      - "contracts/**"
-      - "tools/**"
-      - ".github/workflows/docs.yml"
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:

@@ -90,7 +90,7 @@ python tools/docs/render_sequence.py docs/diagrams/source/D07.sequence.json --ou
 cd docs/releases/PRP-Documentation-v0.3.0 && sha256sum -c MANIFEST.sha256 --quiet
 ```
 
-CI: `.github/workflows/docs.yml` runs the validator, the manifest check and the HTML build on changes under `docs/`, `contracts/`, `tools/`. `.github/workflows/contracts.yml` runs the export check, example validation and the validator on contract changes.
+CI: five workflows in `.github/workflows/` (`docs.yml` validator + manifest + HTML build, `contracts.yml` export/gen_models checks + examples + validator, `control-api.yml` and `voice-worker.yml` Coding-Standards §10 gates, `trace.yml` collect_trace + validator). Their job names are the **required status checks** on `main`, so every pull request runs all five regardless of the paths it touches; the `paths:` filters apply to `push` only. Renaming a job breaks the protection rule until the rule is updated.
 
 ## How the documentation fits together
 

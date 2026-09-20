@@ -87,6 +87,11 @@ repository_integration: NOT_PERFORMED
 - §7: `contract/` = `generated.py` + `base.py` + `models.py` (re-export); §9: เพิ่ม YAML → JSON / generated models → routes → conformance test เข้า traceability diagram, ข้อ 5 ระบุ `--check` ทุกตัว, ข้อ 6 ใหม่กำหนดสิ่งที่ conformance test ต้องตรวจและวิธีบันทึกข้อยกเว้น; §10: tier conformance ครอบคลุม voice และ `contracts.yml` ระบุ step จริง
 - header สถานะ: M1–M3 เสร็จ, ADR-PRP-013 ผสานแล้ว, M4 รอ WP24; ADR-PRP-013 action items ครบ 5/5; ไม่มี code เปลี่ยน
 
+### CI · required status checks บน `main` (2026-09-20, C-1 / H4)
+- owner สั่งหลัง merge PR #1: branch protection ของ `main` กำหนด job ทั้งห้า (`Validate documentation structure`, `YAML is canonical, JSON is derived, examples conform`, `Coding-Standards 10 gates (no-ML control plane)`, `Coding-Standards 10 gates (no hardware tier in cloud CI)`, `Markers -> code-trace.json -> acceptance status gate`) เป็น required status checks; ไม่บังคับ up-to-date (`strict: false`), ไม่บังคับ review (owner คนเดียว), admin bypass ได้ตาม Hotfix rule ใน AGENTS.md, ห้าม force-push และห้ามลบ branch
+- ทั้งห้า workflows เปลี่ยน trigger `pull_request` จาก `paths` เป็น `branches: [main, develop]` เพื่อให้รันทุก PR (required check ที่ไม่รันจะทำให้ PR ค้าง "Expected" ตลอดไป); `push` ยังใช้ path filter เดิม; ต้นทุนเพิ่มราว 20 วินาทีต่อ job ต่อ PR
+- CLAUDE.md และ SDD-PRP-REPO §10 อธิบายกติกานี้และเตือนว่าการเปลี่ยนชื่อ job ต้องอัปเดต protection rule คู่กัน
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

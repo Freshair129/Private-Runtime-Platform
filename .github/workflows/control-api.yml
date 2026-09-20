@@ -8,10 +8,7 @@ on:
       - "contracts/openapi/prp-client.*"
       - ".github/workflows/control-api.yml"
   pull_request:
-    paths:
-      - "apps/control-api/**"
-      - "contracts/openapi/prp-client.*"
-      - ".github/workflows/control-api.yml"
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
