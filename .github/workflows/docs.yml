@@ -1,0 +1,50 @@
+name: Docs
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "docs/**"
+      - "contracts/**"
+      - "tools/**"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "contracts/**"
+      - "tools/**"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate documentation structure
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate living docs, registry, diagrams and contracts
+        run: python tools/docs/validate_docs.py
+
+      - name: Verify frozen release manifest
+        working-directory: docs/releases/PRP-Documentation-v0.3.0
+        run: sha256sum -c MANIFEST.sha256 --quiet
+
+      - name: Build reading views
+        run: |
+          python -m pip install --quiet markdown-it-py beautifulsoup4
+          python tools/docs/build_html_views.py
+
+      - name: Upload reading views
+        uses: actions/upload-artifact@v4
+        with:
+          name: prp-docs-html
+          path: |
+            docs/PRP-Documentation.html
+            docs/PRP-Diagram-Atlas.html
+          retention-days: 14

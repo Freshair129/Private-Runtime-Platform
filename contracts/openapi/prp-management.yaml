@@ -1,0 +1,845 @@
+openapi: 3.1.0
+info:
+  title: PRP - Private Management Contract
+  version: 0.4.0-draft
+  description: >-
+    DRAFT machine-readable form of the management operation inventory in API-PRP §8. The inventory is
+    fixed by that document; field-level schemas remain to be frozen at G0 (WP03) and are therefore
+    minimal here. Every mutation requires role + scope, a current version (If-Match), an idempotent
+    operation identity where retryable (Idempotency-Key) and produces a redacted audit event.
+    Inference client keys never authorize these routes. No operation here may run a host reboot,
+    kill or model load in response to a user inference request. Not implemented or tested.
+x-prp-status: DRAFT
+x-prp-freeze-gate: WP03
+x-prp-consumers:
+  - apps/console (operator UX over these routes only)
+  - apps/control-api api/ (implements)
+servers:
+  - url: https://prp.example.invalid
+    description: Documentation placeholder. Management routes are reachable only through the approved private ingress / VPN (ARCH-PRP §4).
+security:
+  - OperatorSession: []
+  - OperatorKey: []
+paths:
+  /prp/admin/v1/grants:
+    post:
+      operationId: createAccessGrant
+      summary: Grant an organization, principal or application access to a pool with scopes
+      parameters:
+        - &p_idem
+          name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+          description: Scoped to operator + route + canonical payload; the same payload returns the same result
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessGrantRequest'
+      responses:
+        '201':
+          description: Grant created
+          headers: &hdr
+            X-Request-ID:
+              description: Server-assigned correlation identifier
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MutationReceipt'
+        '400': &e400
+          description: INVALID_REQUEST / UNSUPPORTED_PARAMETER
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401': &e401
+          description: INVALID_KEY / EXPIRED_KEY / invalid session
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403': &e403
+          description: SCOPE_DENIED / POLICY_DENIED; no privilege escalation
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409': &e409
+          description: IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /prp/admin/v1/grants/{grant_id}:
+    parameters:
+      - name: grant_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: revokeAccessGrant
+      summary: Revoke an access grant
+      parameters:
+        - &p_ifmatch
+          name: If-Match
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Current resource version; a stale version is rejected with 409 VERSION_CONFLICT
+      responses:
+        '200': &r_receipt
+          description: Mutation applied
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MutationReceipt'
+        '401': *e401
+        '403': *e403
+        '404': &e404
+          description: NOT_FOUND; missing or unauthorized object, no existence leak
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409': *e409
+  /prp/admin/v1/keys:
+    post:
+      operationId: createKey
+      summary: Issue a scoped inference key for a principal or application
+      description: The secret is returned exactly once. PRP stores a verifier only (PRP-FR-005); no later call, export or backup can reveal it.
+      parameters:
+        - *p_idem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyRequest'
+      responses:
+        '201':
+          description: Key issued; secret shown once
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyIssued'
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '409': *e409
+  /prp/admin/v1/keys/{key_id}/rotate:
+    parameters:
+      - &p_key
+        name: key_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: rotateKey
+      summary: Rotate a key; the new secret is shown once, the old verifier expires per grace policy
+      parameters:
+        - *p_idem
+        - *p_ifmatch
+      responses:
+        '200':
+          description: New secret issued once
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyIssued'
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/keys/{key_id}/revoke:
+    parameters:
+      - *p_key
+    post:
+      operationId: revokeKey
+      summary: Revoke a key immediately
+      parameters:
+        - *p_ifmatch
+      responses:
+        '200': *r_receipt
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/pools:
+    post:
+      operationId: registerPool
+      summary: Register a pool of physical resources
+      parameters:
+        - *p_idem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PoolRequest'
+      responses:
+        '201':
+          description: Pool registered
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MutationReceipt'
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '409': *e409
+  /prp/admin/v1/nodes:
+    post:
+      operationId: registerNode
+      summary: Register a runtime node (OPS-PRP RB02 enrollment)
+      description: Records allowed origin, physical GPU identity, runtime identity, credential reference and desired profile. Registration does not make the node eligible; qualification and resume do.
+      parameters:
+        - *p_idem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeRegistration'
+      responses:
+        '201':
+          description: Node registered in DISABLED state
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MutationReceipt'
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '409': *e409
+  /prp/admin/v1/nodes/{node_id}:
+    parameters:
+      - &p_node
+        name: node_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateNode
+      summary: Update node registration or capacity
+      description: Raising capacity requires a current qualification receipt covering the new value; otherwise 409 QUALIFICATION_REQUIRED.
+      parameters:
+        - *p_ifmatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeUpdate'
+      responses:
+        '200': *r_receipt
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/nodes/{node_id}/qualify:
+    parameters:
+      - *p_node
+    post:
+      operationId: qualifyNode
+      summary: Attach a qualification receipt to a node/profile/epoch
+      description: The receipt mirrors docs/registry/evidence-template.json. A receipt with status other than PASS is recorded but does not make the node eligible.
+      parameters:
+        - *p_idem
+        - *p_ifmatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QualificationReceipt'
+      responses:
+        '200': *r_receipt
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/nodes/{node_id}/drain:
+    parameters:
+      - *p_node
+    post:
+      operationId: drainNode
+      summary: Stop new admissions; running attempts finish or become UNKNOWN
+      parameters:
+        - *p_ifmatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateChangeRequest'
+      responses:
+        '200': *r_receipt
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/nodes/{node_id}/disable:
+    parameters:
+      - *p_node
+    post:
+      operationId: disableNode
+      summary: Disable a node; its bindings are removed from routing
+      parameters:
+        - *p_ifmatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateChangeRequest'
+      responses:
+        '200': *r_receipt
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/nodes/{node_id}/resume:
+    parameters:
+      - *p_node
+    post:
+      operationId: resumeNode
+      summary: Make a node eligible again
+      description: Requires a current qualification receipt for the node's runtime epoch and profile; otherwise 409 QUALIFICATION_REQUIRED (API-PRP §8).
+      parameters:
+        - *p_ifmatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateChangeRequest'
+      responses:
+        '200': *r_receipt
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/profiles/{profile_id}/approve:
+    parameters:
+      - name: profile_id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: approveProfile
+      summary: Approve a model or voice profile revision for serving
+      description: Approval records the license / voice-rights receipt reference (OPS-PRP RB01). Approval is not qualification of any node.
+      parameters:
+        - *p_idem
+        - *p_ifmatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileApproval'
+      responses:
+        '200': *r_receipt
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '404': *e404
+        '409': *e409
+  /prp/admin/v1/policies/{policy_kind}:
+    parameters:
+      - name: policy_kind
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [quota, retention]
+    patch:
+      operationId: updatePolicy
+      summary: Update quota or retention policy
+      parameters:
+        - *p_ifmatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyUpdate'
+      responses:
+        '200': *r_receipt
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '409': *e409
+  /prp/admin/v1/exports:
+    post:
+      operationId: createExport
+      summary: Start a redacted usage or audit export
+      description: Exports never contain raw prompts, transcripts, audio, key material or upstream bodies (Coding-Standards §8).
+      parameters:
+        - *p_idem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportRequest'
+      responses:
+        '202':
+          description: Export accepted
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportJob'
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '409': *e409
+  /prp/admin/v1/exports/{export_id}:
+    parameters:
+      - name: export_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getExport
+      summary: Export status and, when ready, the artifact reference
+      responses:
+        '200':
+          description: Export state
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportJob'
+        '401': *e401
+        '403': *e403
+        '404': *e404
+  /prp/admin/v1/backups:
+    post:
+      operationId: initiateBackup
+      summary: Initiate a backup of control state (keys stored separately from encrypted backups)
+      parameters:
+        - *p_idem
+      responses:
+        '202': &r_operation
+          description: Operation accepted
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationTicket'
+        '401': *e401
+        '403': *e403
+        '409': *e409
+  /prp/admin/v1/restores:
+    post:
+      operationId: initiateRestore
+      summary: Initiate a restore following OPS-PRP RB07
+      description: Traffic must already be isolated; the erasure ledger is replayed before any restored content becomes readable (ADR-PRP-007); node bindings come back DISABLED and must be requalified.
+      parameters:
+        - *p_idem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreRequest'
+      responses:
+        '202': *r_operation
+        '400': *e400
+        '401': *e401
+        '403': *e403
+        '409': *e409
+  /prp/admin/v1/operations/{operation_id}:
+    parameters:
+      - name: operation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getOperation
+      summary: Status of a backup or restore operation
+      responses:
+        '200':
+          description: Operation state
+          headers: *hdr
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationTicket'
+        '401': *e401
+        '403': *e403
+        '404': *e404
+components:
+  securitySchemes:
+    OperatorSession:
+      type: apiKey
+      in: cookie
+      name: prp_session
+      description: Console session with CSRF protection and secure cookie policy (API-PRP §2). No master or service key is ever exposed to browser JavaScript.
+    OperatorKey:
+      type: http
+      scheme: bearer
+      description: Administrative-scope key for operator automation. Distinct from inference client keys, which never authorize management routes.
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+        request_id:
+          type: string
+        safe_to_retry:
+          type: boolean
+      required: [error, request_id, safe_to_retry]
+      additionalProperties: false
+    ErrorBody:
+      type: object
+      properties:
+        code:
+          type: string
+          enum: [INVALID_REQUEST, UNSUPPORTED_PARAMETER, INVALID_KEY, EXPIRED_KEY, SCOPE_DENIED, POLICY_DENIED, NOT_FOUND, IDEMPOTENCY_CONFLICT, VERSION_CONFLICT, QUALIFICATION_REQUIRED, STATE_STORE_UNAVAILABLE]
+        type:
+          type: string
+        message:
+          type: string
+        param:
+          type: [string, 'null']
+      required: [code, type, message]
+      additionalProperties: false
+    MutationReceipt:
+      type: object
+      description: Uniform response for management mutations
+      properties:
+        resource_id:
+          type: string
+        version:
+          type: string
+          description: New resource version to send as If-Match on the next mutation
+        audit_event_id:
+          type: string
+          format: uuid
+        request_id:
+          type: string
+      required: [resource_id, version, audit_event_id, request_id]
+      additionalProperties: false
+    AccessGrantRequest:
+      type: object
+      properties:
+        subject_type:
+          type: string
+          enum: [organization, principal, application]
+        subject_id:
+          type: string
+        pool_id:
+          type: string
+          format: uuid
+        scopes:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        expires_at:
+          type: [string, 'null']
+          format: date-time
+      required: [subject_type, subject_id, pool_id, scopes]
+      additionalProperties: false
+    KeyRequest:
+      type: object
+      properties:
+        subject_type:
+          type: string
+          enum: [principal, application]
+        subject_id:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        pool_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+        expires_at:
+          type: [string, 'null']
+          format: date-time
+        label:
+          type: string
+          maxLength: 128
+      required: [subject_type, subject_id, scopes, pool_ids]
+      additionalProperties: false
+    KeyIssued:
+      type: object
+      properties:
+        key_id:
+          type: string
+          format: uuid
+        secret:
+          type: string
+          description: Shown once; never retrievable, exportable or restorable afterwards (PRP-FR-005)
+        key_prefix:
+          type: string
+          description: Non-secret prefix for identification in logs and UI
+        scopes:
+          type: array
+          items:
+            type: string
+        expires_at:
+          type: [string, 'null']
+          format: date-time
+        version:
+          type: string
+        audit_event_id:
+          type: string
+          format: uuid
+        request_id:
+          type: string
+      required: [key_id, secret, key_prefix, scopes, version, audit_event_id, request_id]
+      additionalProperties: false
+    PoolRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          maxLength: 512
+      required: [name]
+      additionalProperties: false
+    NodeRegistration:
+      type: object
+      properties:
+        pool_id:
+          type: string
+          format: uuid
+        origin:
+          type: string
+          pattern: '^https://'
+          description: Allowed worker/adapter endpoint on the private network
+        physical_resource_id:
+          type: string
+          description: host + GPU UUID, verified host-local identity or CPU pool (ARCH-PRP §5)
+        runtime_uid:
+          type: string
+        credential_ref:
+          type: string
+          description: Reference to the service credential in the secret store; never the credential itself
+        desired_profile_id:
+          type: string
+      required: [pool_id, origin, physical_resource_id, runtime_uid, credential_ref, desired_profile_id]
+      additionalProperties: false
+    NodeUpdate:
+      type: object
+      description: Partial update; fields to freeze at G0. Capacity increases are gated by qualification.
+      properties:
+        origin:
+          type: string
+          pattern: '^https://'
+        credential_ref:
+          type: string
+        desired_profile_id:
+          type: string
+        max_concurrent_invocations:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+    QualificationReceipt:
+      type: object
+      description: Mirrors docs/registry/evidence-template.json
+      properties:
+        evidence_id:
+          type: string
+        test_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcceptanceTestId'
+          minItems: 1
+        status:
+          type: string
+          enum: [PASS, FAIL, NOT_RUN, BLOCKED]
+        commit:
+          type: string
+        image_digest:
+          type: [string, 'null']
+        model_profile_hash:
+          type: string
+        profile_epoch:
+          type: integer
+          minimum: 0
+        hardware:
+          type: object
+        workload:
+          type: [string, 'null']
+        sample_count:
+          type: [integer, 'null']
+          minimum: 0
+        observations:
+          type: [object, 'null']
+        result_files:
+          type: array
+          items:
+            type: string
+        reviewer:
+          type: string
+        recorded_at:
+          type: string
+          format: date-time
+      required: [evidence_id, test_ids, status, commit, model_profile_hash, profile_epoch, hardware, reviewer, recorded_at]
+      additionalProperties: false
+    AcceptanceTestId:
+      type: string
+      pattern: '^PRP-AT-[0-9]{3}$'
+    StateChangeRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 512
+      additionalProperties: false
+    ProfileApproval:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [model, voice]
+        revision:
+          type: string
+        license_receipt_ref:
+          type: string
+          description: Reference to the recorded license / voice-rights receipt; not the document itself
+        approved_until:
+          type: [string, 'null']
+          format: date-time
+      required: [kind, revision, license_receipt_ref]
+      additionalProperties: false
+    PolicyUpdate:
+      type: object
+      description: Policy field schemas are frozen at G0; until then settings is an opaque object validated server-side against the frozen schema.
+      properties:
+        scope:
+          $ref: '#/components/schemas/PolicyScope'
+        settings:
+          type: object
+      required: [settings]
+      additionalProperties: false
+    PolicyScope:
+      type: object
+      properties:
+        organization_id:
+          type: string
+        application_id:
+          type: string
+      additionalProperties: false
+    ExportRequest:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [usage, audit]
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+        organization_id:
+          type: string
+      required: [kind, from, to]
+      additionalProperties: false
+    ExportJob:
+      type: object
+      properties:
+        export_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum: [usage, audit]
+        status:
+          type: string
+          enum: [PENDING, READY, FAILED]
+        redaction:
+          const: redacted
+        artifact_id:
+          type: [string, 'null']
+          format: uuid
+        expires_at:
+          type: [string, 'null']
+          format: date-time
+        request_id:
+          type: string
+      required: [export_id, kind, status, redaction, request_id]
+      additionalProperties: false
+    RestoreRequest:
+      type: object
+      properties:
+        backup_id:
+          type: string
+          format: uuid
+        traffic_isolated:
+          const: true
+          description: Operator attests that traffic is isolated (OPS-PRP RB07 step 1)
+        replay_erasure_ledger:
+          const: true
+          description: Always true; erasure tombstones are applied before restored content is readable (ADR-PRP-007)
+      required: [backup_id, traffic_isolated, replay_erasure_ledger]
+      additionalProperties: false
+    OperationTicket:
+      type: object
+      properties:
+        operation_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum: [backup, restore]
+        status:
+          type: string
+          enum: [PENDING, RUNNING, SUCCEEDED, FAILED]
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: [string, 'null']
+          format: date-time
+        audit_event_id:
+          type: string
+          format: uuid
+        request_id:
+          type: string
+      required: [operation_id, kind, status, started_at, audit_event_id, request_id]
+      additionalProperties: false

@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant U as User
+    participant C as Client workflow
+    participant P as PRP API / Jobs
+    participant W as Qualified workers
+    participant S as Artifact service
+    U->>C: Record and send audio
+    C->>P: Upload + ASR request/job
+    P->>W: ASR with reserved resource
+    W-->>P: ASR result
+    P-->>C: Validated transcript
+    Note over U,S: Client validates transcript and composes its own context; no central PRP business memory
+    C->>P: Chat with supplied messages
+    P-->>C: Canonical answer text
+    C->>P: TTS for saved answer
+    P->>W: Preset TTS with reservation
+    W->>S: Validated audio output
+    S-->>C: Authorized artifact via PRP
+    C-->>U: Text + audio playback
+    Note over U,S: ALT: TTS fails -> client PARTIAL_SUCCESS; retain text, retry TTS only; PRP TTS job is FAILED

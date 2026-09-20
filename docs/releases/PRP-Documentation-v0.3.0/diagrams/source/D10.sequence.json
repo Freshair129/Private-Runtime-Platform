@@ -1,0 +1,92 @@
+{
+  "actors": [
+    [
+      "O",
+      "Operator"
+    ],
+    [
+      "R",
+      "Registry"
+    ],
+    [
+      "P",
+      "Private transport"
+    ],
+    [
+      "W",
+      "Runtime / adapter"
+    ],
+    [
+      "D",
+      "State store"
+    ]
+  ],
+  "events": [
+    [
+      "O",
+      "R",
+      "Register allowed origin / profile",
+      ""
+    ],
+    [
+      "R",
+      "P",
+      "Validate DNS / TLS / route",
+      ""
+    ],
+    [
+      "P",
+      "W",
+      "Missing + wrong credential tests",
+      ""
+    ],
+    [
+      "W",
+      "R",
+      "Protected endpoint must deny",
+      "return"
+    ],
+    [
+      "P",
+      "W",
+      "Valid credential + model listing",
+      ""
+    ],
+    [
+      "W",
+      "R",
+      "Exact model / capability identity",
+      "return"
+    ],
+    [
+      "R",
+      "W",
+      "Synthetic inference qualification",
+      ""
+    ],
+    [
+      "W",
+      "R",
+      "Result + measured evidence",
+      "return"
+    ],
+    [
+      "R",
+      "D",
+      "Receipt bound to profile epochs",
+      ""
+    ],
+    [
+      "R",
+      "O",
+      "READY only with fresh observation",
+      "return"
+    ],
+    [
+      "NOTE",
+      "",
+      "Health success alone is insufficient; configuration change or restore invalidates old qualification",
+      ""
+    ]
+  ]
+}

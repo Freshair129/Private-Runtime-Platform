@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant C as Client
+    participant J as PRP Jobs
+    participant D as Lease / state DB
+    participant W as Worker
+    participant O as Observer / supervisor
+    J->>W: Dispatch reserved attempt
+    C->>J: Cancel or connection closes
+    J->>D: Record cancel request / fence
+    J->>W: Best-effort abort
+    W-->>J: Unsupported / acknowledgement lost
+    J->>D: Execution UNKNOWN; quarantine
+    J-->>C: Outcome + uncertainty visible
+    O->>W: Obtain termination evidence
+    W-->>O: Verified finish / process stopped
+    O->>D: Reconcile usage; release invocation
+    Note over C,O: Late output cannot reopen terminal job or erased content. Database TTL does not prove GPU stopped

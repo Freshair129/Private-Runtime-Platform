@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prp.example.invalid/schemas/runtime-environment-manifest.schema.json",
+  "title": "PRP runtime environment manifest",
+  "description": "DRAFT schema for contracts/examples/runtime-environment-manifest.example.yaml. Describes the three isolated environments (control, LLM A/B, speech) and their qualification state (ARCH-PRP §13, Coding-Standards §7, ADR-PRP-011). A manifest with status NOT_QUALIFIED is a template, not a deployable configuration. Credential fields are references only; key bytes never appear in a manifest.",
+  "type": "object",
+  "properties": {
+    "product": { "const": "PRP" },
+    "spec_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[A-Za-z0-9.]+)?$" },
+    "status": { "type": "string", "enum": ["NOT_QUALIFIED", "QUALIFIED"] },
+    "selected_runtime_strategy": {
+      "type": ["string", "null"],
+      "enum": ["A", "B", "C", null],
+      "description": "A = Xinference-managed runtimes, B = independent vLLM/speech services, C = Ray Serve (requires its own decision); null until WP24 evidence and WP03 selection"
+    },
+    "client_key_authority": { "type": ["string", "null"], "description": "Exactly one selected verifier-only authority (PRP-FR-005)" },
+    "admission_authority": { "type": ["string", "null"], "description": "Exactly one physical admission authority (ADR-PRP-002)" },
+    "services": {
+      "type": "object",
+      "properties": {
+        "control": {
+          "type": "object",
+          "properties": {
+            "language": { "const": "python" },
+            "python_version": { "type": ["string", "null"] },
+            "lock_or_image_digest": { "type": ["string", "null"] },
+            "model_loading_allowed": { "const": false, "description": "PRP-NFR-021: API processes never load models" },
+            "cuda_initialization_allowed": { "const": false, "description": "PRP-NFR-021: API processes never initialize GPU drivers" }
+          },
+          "required": ["language", "python_version", "lock_or_image_digest", "model_loading_allowed", "cuda_initialization_allowed"],
+          "additionalProperties": false
+        },
+        "llm_a": { "$ref": "#/$defs/llmService" },
+        "llm_b": { "$ref": "#/$defs/llmService" },
+        "speech": {
+          "type": "object",
+          "properties": {
+            "adapter": { "type": ["string", "null"] },
+            "python_version": { "type": ["string", "null"] },
+            "lock_or_image_digest": { "type": ["string", "null"] },
+            "placement": { "type": ["string", "null"], "description": "CPU-first candidate or measured resident GPU headroom on B (ARCH-PRP §4); null until qualified" },
+            "model_revision": { "type": ["string", "null"] },
+            "approved_voice_revision": { "type": ["string", "null"] },
+            "qualified": { "type": "boolean" }
+          },
+          "required": ["adapter", "python_version", "lock_or_image_digest", "placement", "model_revision", "approved_voice_revision", "qualified"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["control", "llm_a", "llm_b", "speech"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["product", "spec_version", "status", "selected_runtime_strategy", "client_key_authority", "admission_authority", "services"],
+  "additionalProperties": false,
+  "if": { "properties": { "status": { "const": "QUALIFIED" } } },
+  "then": {
+    "properties": {
+      "selected_runtime_strategy": { "type": "string" },
+      "client_key_authority": { "type": "string" },
+      "admission_authority": { "type": "string" },
+      "services": {
+        "properties": {
+          "llm_a": { "properties": { "qualified": { "const": true } } },
+          "llm_b": { "properties": { "qualified": { "const": true } } },
+          "speech": { "properties": { "qualified": { "const": true } } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "llmService": {
+      "type": "object",
+      "properties": {
+        "runtime": { "type": "string", "description": "Engine name, e.g. vllm; a name is not a qualification claim" },
+        "runtime_manager": { "type": ["string", "null"], "description": "Lifecycle manager for candidate A; null for candidate B" },
+        "python_version": { "type": ["string", "null"] },
+        "image_digest": { "type": ["string", "null"], "description": "Pinned vendor image digest (Coding-Standards §7)" },
+        "model_revision": { "type": ["string", "null"] },
+        "physical_resource_id": { "type": ["string", "null"], "description": "host + GPU UUID or verified host-local identity (ARCH-PRP §5)" },
+        "profile_epoch": { "type": ["integer", "null"], "minimum": 0 },
+        "qualified": { "type": "boolean" }
+      },
+      "required": ["runtime", "runtime_manager", "python_version", "image_digest", "model_revision", "physical_resource_id", "profile_epoch", "qualified"],
+      "additionalProperties": false
+    }
+  }
+}

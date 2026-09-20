@@ -1,0 +1,22 @@
+digraph D33 {
+graph [bgcolor="white",fontname="DejaVu Sans",fontsize=16,rankdir=TB,nodesep=0.48,ranksep=0.70,pad=0.32,splines=spline];
+node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=12,margin="0.19,0.13",color="#536779",fillcolor="#E9F3F8"];
+edge [fontname="DejaVu Sans",fontsize=10,color="#5B6F81",arrowsize=0.7];
+client [label="Member / application key",fillcolor="#F0F1F3"];
+key [label="ONE client-key authority\nVerifier-only client-key contract\nExpiry / grants / revoke",fillcolor="#E9F3F8"];
+policy [label="PRP object and scope policy\nOrg / job / artifact authorization\nIgnore untrusted identity headers",fillcolor="#E9F3F8"];
+route [label="PRP Router responsibility\nReused / configured / adapted\nEligible candidate + profile",fillcolor="#E9F3F8"];
+ad [label="ONE global admission contract\nAtomic quota + actual resource hold\nDurable attempt identity",fillcolor="#E9F3F8"];
+bind [label="Bound dispatch adapter\nRuntime ID + GPU + profile epoch\nManager targeting proved in G0",fillcolor="#E5F3ED"];
+worker [label="Runtime local scheduler\nBatch only within assigned envelope",fillcolor="#E5F3ED"];
+no [label="Blocked shortcuts\nDirect worker keys / hidden retries\nUnaccounted reroute / duplicate store",fillcolor="#FDECE6"];
+internal [label="Internal service credential\nNot a copy of each user key\nAdmin endpoints stay private",fillcolor="#FFF4DB"];
+client -> key [label="",style=solid];
+key -> policy [label="trusted auth context",style=solid];
+policy -> route [label="",style=solid];
+route -> ad [label="candidate not yet dispatched",style=solid];
+ad -> bind [label="committed hold + fence",style=solid];
+bind -> worker [label="actual qualified target",style=solid];
+internal -> bind [label="service authentication",style=dashed];
+no -> bind [label="not permitted",style=dashed];
+}

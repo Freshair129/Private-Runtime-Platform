@@ -1,0 +1,56 @@
+name: Contracts
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "contracts/**"
+      - "tools/contracts/**"
+      - "tools/docs/validate_docs.py"
+      - ".github/workflows/contracts.yml"
+  pull_request:
+    paths:
+      - "contracts/**"
+      - "tools/contracts/**"
+      - "tools/docs/validate_docs.py"
+      - ".github/workflows/contracts.yml"
+  workflow_dispatch:
+
+jobs:
+  contracts:
+    name: YAML is canonical, JSON is derived, examples conform
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install contract tooling
+        run: python -m pip install --quiet -r tools/contracts/requirements.txt
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/uv.lock"
+
+      - name: Sync every Python project (generated models are formatted with each project's ruff)
+        run: |
+          for pyproject in apps/*/pyproject.toml workers/*/pyproject.toml; do
+            project="$(dirname "$pyproject")"
+            (cd "$project" && uv python install && uv sync --locked --group dev)
+          done
+
+      - name: JSON exports match their YAML source
+        run: python tools/contracts/export_json.py --check
+
+      - name: Generated Pydantic models match their YAML source (ADR-PRP-013)
+        run: python tools/contracts/gen_models.py --check
+
+      - name: Examples conform to their schemas
+        run: python tools/contracts/validate_examples.py
+
+      - name: Structural validation (refs, operationIds, security, client inventory)
+        run: python tools/docs/validate_docs.py

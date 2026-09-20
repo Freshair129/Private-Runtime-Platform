@@ -1,0 +1,86 @@
+{
+  "actors": [
+    [
+      "A",
+      "Org admin"
+    ],
+    [
+      "I",
+      "Identity / Policy"
+    ],
+    [
+      "D",
+      "Verifier store"
+    ],
+    [
+      "C",
+      "Client"
+    ],
+    [
+      "G",
+      "Gateway"
+    ]
+  ],
+  "events": [
+    [
+      "A",
+      "I",
+      "Create least-privilege grant",
+      ""
+    ],
+    [
+      "I",
+      "D",
+      "Store verifier / prefix / policy",
+      ""
+    ],
+    [
+      "I",
+      "A",
+      "Show plaintext secret once",
+      "return"
+    ],
+    [
+      "A",
+      "C",
+      "Deliver key securely",
+      ""
+    ],
+    [
+      "C",
+      "G",
+      "Invoke with Bearer key",
+      ""
+    ],
+    [
+      "G",
+      "I",
+      "Resolve trusted identity",
+      ""
+    ],
+    [
+      "I",
+      "G",
+      "Current scopes + quota",
+      "return"
+    ],
+    [
+      "A",
+      "I",
+      "Revoke / rotate grant",
+      ""
+    ],
+    [
+      "I",
+      "D",
+      "Versioned update + invalidate",
+      ""
+    ],
+    [
+      "NOTE",
+      "",
+      "All new admission, dispatch and result reads honor revocation bound; inference keys never become admin",
+      ""
+    ]
+  ]
+}

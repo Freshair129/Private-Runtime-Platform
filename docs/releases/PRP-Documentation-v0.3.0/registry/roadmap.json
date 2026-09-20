@@ -1,0 +1,280 @@
+{
+  "version": "0.3.0",
+  "work_packages": [
+    {
+      "id": "WP01",
+      "phase": "G0",
+      "title": "Scope & ownership freeze",
+      "owner": "Product + Architecture",
+      "deliverable": "PRD/SRS boundaries, requirement IDs, job dimensions",
+      "dependencies": "None",
+      "trace": "G01/G02/G05",
+      "diagrams": "D01,D03,D12",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP02",
+      "phase": "G0",
+      "title": "Hardware & runtime discovery",
+      "owner": "Operations",
+      "deliverable": "GPU/CPU/RAM/OS/network inventory; model/license candidates",
+      "dependencies": "None",
+      "trace": "E02/E04",
+      "diagrams": "D04,D18",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP03",
+      "phase": "G0",
+      "title": "Contracts & authority decision",
+      "owner": "API + Security",
+      "deliverable": "freeze public/management contracts, selected A/B binding, single key/admission authority, approved gaps and secret design",
+      "dependencies": "WP01,WP24",
+      "trace": "E01/E03/E05; NFR-020/023",
+      "diagrams": "D08,D17,D31,D33",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP04",
+      "phase": "P1-A",
+      "title": "Standalone control plane",
+      "owner": "Core",
+      "deliverable": "thin Python control package, framework configuration/adapter seams, health and independent release; no duplicated vendor services",
+      "dependencies": "WP01,WP03,WP25",
+      "trace": "FR-001/002/050/054; NFR-019/021/022",
+      "diagrams": "D02,D04,D32",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP05",
+      "phase": "P1-A",
+      "title": "Identity/key/quota",
+      "owner": "Identity",
+      "deliverable": "configure conforming key/RBAC authority and quota primitives; custom verifier/ledger only for approved gaps; object grants and revoke tests",
+      "dependencies": "WP03,WP04",
+      "trace": "FR-003..009/047",
+      "diagrams": "D08,D17",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP06",
+      "phase": "P1-A",
+      "title": "Registry/qualification",
+      "owner": "Registry",
+      "deliverable": "reuse selected manager/service inventory with PRP profile/qualification mapping, actual resource identity and readiness receipts",
+      "dependencies": "WP02,WP04",
+      "trace": "FR-010..015/042",
+      "diagrams": "D10,D14",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP07",
+      "phase": "P1-A",
+      "title": "Router/admission/execution",
+      "owner": "Router + Admission",
+      "deliverable": "configure/reuse router and admission primitives; implement only approved binding/atomicity/uncertainty gaps; test hidden retries and races",
+      "dependencies": "WP05,WP06",
+      "trace": "FR-016..022",
+      "diagrams": "D09,D13",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP08",
+      "phase": "P1-A",
+      "title": "Chat/stream contracts",
+      "owner": "API + Chat Adapter",
+      "deliverable": "thin stable chat contract and selected runtime adapter, tokenizer budgets, JSON/SSE/tools-as-data; disable unaccounted retries",
+      "dependencies": "WP03,WP07",
+      "trace": "FR-023..028",
+      "diagrams": "D06",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP09",
+      "phase": "P1-A",
+      "title": "Text console & negative tests",
+      "owner": "Console + QA",
+      "deliverable": "independent key/health UI; mock+DB races+isolation tests",
+      "dependencies": "WP05,WP08",
+      "trace": "FR-045/048/056",
+      "diagrams": "D05,D21",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP10",
+      "phase": "P1-B",
+      "title": "Speech extraction spike",
+      "owner": "Speech",
+      "deliverable": "compare existing speech runtime with headless Lalin extraction; reuse engine pipeline, restrict routes, approve voice rights",
+      "dependencies": "WP02,WP03",
+      "trace": "FR-031/033/043",
+      "diagrams": "D03,D18",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP11",
+      "phase": "P1-B",
+      "title": "Artifacts/decode",
+      "owner": "Artifact + Security",
+      "deliverable": "bounded upload, sandbox, checksums, ACL, TTL/erasure/share grants",
+      "dependencies": "WP05",
+      "trace": "FR-029/030/039..041",
+      "diagrams": "D19,D20",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP12",
+      "phase": "P1-B",
+      "title": "Native durable speech jobs",
+      "owner": "Jobs",
+      "deliverable": "reuse durable job primitives or approved gap implementation; native ASR/TTS kinds, idempotency, state/cancel/recovery tests",
+      "dependencies": "WP07,WP11",
+      "trace": "FR-036..038",
+      "diagrams": "D12",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP13",
+      "phase": "P1-B",
+      "title": "ASR/TTS integration",
+      "owner": "Speech + API",
+      "deliverable": "sync/async adapters, fidelity, no-speech and model manifest",
+      "dependencies": "WP10,WP11,WP12",
+      "trace": "FR-031..035/043",
+      "diagrams": "D07",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP14",
+      "phase": "P1-B",
+      "title": "Physical placement qualification",
+      "owner": "Operations + QA",
+      "deliverable": "CPU speech or measured B headroom; resident budgets, no silent swaps",
+      "dependencies": "WP06,WP13",
+      "trace": "FR-018/044",
+      "diagrams": "D04,D14",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP15",
+      "phase": "P1-B",
+      "title": "Independent voice playground",
+      "owner": "Client",
+      "deliverable": "record-send/upload, own voice-turn state, text fallback/TTS-only retry",
+      "dependencies": "WP08,WP13",
+      "trace": "FR-049",
+      "diagrams": "D07",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP16",
+      "phase": "P1-B",
+      "title": "Speech quality evidence",
+      "owner": "QA + Product",
+      "deliverable": "fixed corpus/scorers, ASR CER/WER/entity and TTS listening evidence",
+      "dependencies": "WP13",
+      "trace": "NFR-008..010",
+      "diagrams": "D25",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP17",
+      "phase": "P1-C",
+      "title": "Mixed/fault/security qualification",
+      "owner": "QA + Security",
+      "deliverable": "W0-W4, node/DB/observer failures, revoke/delete/uncertain execution",
+      "dependencies": "WP09,WP14,WP15,WP16",
+      "trace": "NFR/SEC",
+      "diagrams": "D13,D20,D25",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP18",
+      "phase": "P1-C",
+      "title": "Operations and recovery",
+      "owner": "Operations",
+      "deliverable": "alerts/runbooks, disaster restore, forward-safe rollback, release evidence",
+      "dependencies": "WP17",
+      "trace": "FR-046/051/052",
+      "diagrams": "D21,D22,D23",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP19",
+      "phase": "P1-C",
+      "title": "Portability & multi-app pilot",
+      "owner": "API + QA",
+      "deliverable": "two clients, vendor-neutral replacement conformance, config export, pending-job/erasure preservation and key-rotation rehearsal",
+      "dependencies": "WP18",
+      "trace": "FR-053/054; NFR-024",
+      "diagrams": "D26,D34",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP20",
+      "phase": "LINE",
+      "title": "External LINE adapter",
+      "owner": "Integration owner",
+      "deliverable": "signature/dedupe/content/ASR-chat-TTS/outbox/push/URL adapter",
+      "dependencies": "WP08,WP13",
+      "trace": "FR-055",
+      "diagrams": "D11,D15",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP21",
+      "phase": "LINE",
+      "title": "Authorized LINE canary",
+      "owner": "Integration owner + QA",
+      "deliverable": "real channel permissions, quota, device playback, unknown-send recovery",
+      "dependencies": "WP20,WP17",
+      "trace": "INT-LINE gate",
+      "diagrams": "D11,D15",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP22",
+      "phase": "P2-A",
+      "title": "Image contract & implementation",
+      "owner": "Media + Security",
+      "deliverable": "approved workflow/model, pixel/step quotas, async lineage",
+      "dependencies": "G3 complete + P2 scope freeze",
+      "trace": "P2-001..008",
+      "diagrams": "D24",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP23",
+      "phase": "P2-B",
+      "title": "Video qualification & rollout",
+      "owner": "Media + Operations",
+      "deliverable": "duration/resolution envelopes, reserved chat capacity, video safety/test",
+      "dependencies": "WP22 + hardware evidence",
+      "trace": "P2-001..008",
+      "diagrams": "D24",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP24",
+      "phase": "G0",
+      "title": "Runtime reuse fit-gap and A/B spikes",
+      "owner": "Architecture + Runtime + Security + QA",
+      "deliverable": "A-Xinference vs B-independent services evidence; conditional C-Ray; full requirement mapping; key-recovery gap; target-binding/retry/cancel tests; decision recommendation without fabricated benchmarks",
+      "dependencies": "WP01,WP02",
+      "trace": "NFR-020/023/024; FR-005/017/018/042",
+      "diagrams": "D31,D33,D34",
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "WP25",
+      "phase": "P1-A",
+      "title": "Python engineering and environment baseline",
+      "owner": "Build + Core + Operations",
+      "deliverable": "compatible pinned Python/toolchain and separate control/LLM/speech locks/images, typed ports, no-model-import tests and CI gates per Coding Standards",
+      "dependencies": "WP03",
+      "trace": "NFR-019/021/022",
+      "diagrams": "D23,D30,D32",
+      "status": "NOT_STARTED"
+    }
+  ]
+}

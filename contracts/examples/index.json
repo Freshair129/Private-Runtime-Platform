@@ -1,0 +1,5 @@
+{
+  "job-asr.example.json": { "openapi": "openapi/prp-client.json", "schema": "JobRequest" },
+  "job-tts.example.json": { "openapi": "openapi/prp-client.json", "schema": "JobRequest" },
+  "runtime-environment-manifest.example.yaml": { "schema_file": "schemas/runtime-environment-manifest.schema.json" }
+}

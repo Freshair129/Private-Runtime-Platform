@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant C as Client
+    participant G as Gateway / Policy
+    participant A as Admission / DB
+    participant R as Router / Adapter
+    participant W as vLLM worker
+    C->>G: POST chat + scoped key
+    G->>R: Validate profile / context
+    R->>A: Reserve candidate + quota
+    A-->>R: Committed attempt + fence
+    R->>W: Bounded invoke / deadline
+    W-->>R: Text chunks or full result
+    R-->>G: Normalized response / chunks
+    G-->>C: JSON or SSE chunks
+    R->>A: Settle usage / verified finish
+    G-->>C: Successful completion / DONE
+    Note over C,W: ALT: partial-stream failure -> error + close; never splice a new node into this stream

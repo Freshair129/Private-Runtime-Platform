@@ -1,0 +1,308 @@
+[
+  {
+    "id": "D01",
+    "title": "System context",
+    "type": "C4-inspired context",
+    "description": "แสดงขอบเขต PRP และผู้ใช้บริการ Zuri เป็น client ทางเลือก ไม่ใช่ dependency ที่จำเป็น",
+    "requirements": "PRP-FR-001,002,054",
+    "notes": "No mandatory business application. LINE traffic is outside the private compute boundary.",
+    "source": "diagrams/source/D01.dot"
+  },
+  {
+    "id": "D02",
+    "title": "Containers and control/data planes",
+    "type": "C4-inspired containers",
+    "description": "บริการเชิงตรรกะไม่ใช่จำนวนเครื่องหรือ microservice ที่ต้องซื้อเพิ่ม",
+    "requirements": "PRP-FR-017,042,045,050",
+    "notes": "v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.",
+    "source": "diagrams/source/D02.dot"
+  },
+  {
+    "id": "D03",
+    "title": "Ownership and dependency rules",
+    "type": "Component / package boundaries",
+    "description": "แบ่ง app workflow, PRP control และ model runtime; ห้าม worker ถือ LINE credential หรือ business database token",
+    "requirements": "PRP-FR-002,026,028,043,054; PRP-SEC-012",
+    "notes": "v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.",
+    "source": "diagrams/source/D03.dot"
+  },
+  {
+    "id": "D04",
+    "title": "Two-host private deployment",
+    "type": "Deployment / network topology",
+    "description": "สองเครื่องไม่เท่ากับ high availability; speech แชร์ GPU เฉพาะหลัง qualification",
+    "requirements": "PRP-FR-018,044,050; PRP-NFR-012",
+    "notes": "v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.",
+    "source": "diagrams/source/D04.dot"
+  },
+  {
+    "id": "D05",
+    "title": "Actors and use cases",
+    "type": "Use-case view",
+    "description": "แยกสิทธิ์ operator กับ content owner; inference key ไม่ใช่ admin key",
+    "requirements": "PRP-FR-004,005,007,048",
+    "notes": "",
+    "source": "diagrams/source/D05.dot"
+  },
+  {
+    "id": "D06",
+    "title": "Chat JSON/SSE request",
+    "type": "UML-style sequence",
+    "description": "แสดง auth, reservation, dispatch, streaming และแยก interrupted stream ออกจาก success",
+    "requirements": "PRP-FR-017,024,025,027",
+    "notes": "",
+    "source": "diagrams/source/D06.mmd"
+  },
+  {
+    "id": "D07",
+    "title": "Client-owned voice conversation",
+    "type": "UML-style sequence",
+    "description": "PRP มี atomic ASR/TTS; app เก็บข้อความก่อนขอเสียงและ retry เฉพาะ TTS เมื่อเสีย",
+    "requirements": "PRP-FR-031..038,049",
+    "notes": "",
+    "source": "diagrams/source/D07.mmd"
+  },
+  {
+    "id": "D08",
+    "title": "Key issuance, use and revocation",
+    "type": "UML-style sequence",
+    "description": "คีย์แสดงครั้งเดียวและ revoke ตรวจใหม่ก่อน dispatch/result access",
+    "requirements": "PRP-FR-005,006; PRP-SEC-002",
+    "notes": "",
+    "source": "diagrams/source/D08.mmd"
+  },
+  {
+    "id": "D09",
+    "title": "Admission and routing activity",
+    "type": "Activity / decision flow",
+    "description": "Router เสนอ candidate แต่ Admission เป็นผู้จองจริง จึงป้องกัน race ข้าม process",
+    "requirements": "PRP-FR-008,016..022",
+    "notes": "",
+    "source": "diagrams/source/D09.dot"
+  },
+  {
+    "id": "D10",
+    "title": "Node enrollment and qualification",
+    "type": "UML-style sequence",
+    "description": "ไม่มี custom Edge handshake; receipt ผูก exact config/model/credential epoch",
+    "requirements": "PRP-FR-010..015,042",
+    "notes": "",
+    "source": "diagrams/source/D10.mmd"
+  },
+  {
+    "id": "D11",
+    "title": "LINE voice integration outside PRP",
+    "type": "UML-style sequence",
+    "description": "adapter ถือ webhook/delivery; PRP ไม่รับ LINE token และไม่ส่งข้อความเอง",
+    "requirements": "PRP-FR-040,055",
+    "notes": "",
+    "source": "diagrams/source/D11.mmd"
+  },
+  {
+    "id": "D12",
+    "title": "Job state dimensions",
+    "type": "State machines / product state",
+    "description": "outcome timeout กับ execution unknown และ quarantined lease เกิดพร้อมกันได้",
+    "requirements": "PRP-FR-020,021,036..038",
+    "notes": "",
+    "source": "diagrams/source/D12.dot"
+  },
+  {
+    "id": "D13",
+    "title": "Cancellation and uncertain recovery",
+    "type": "UML-style sequence",
+    "description": "cancel request และ timeout ไม่ใช่ compute stop; คืน lease ต่อเมื่อมีหลักฐาน",
+    "requirements": "PRP-FR-020..022,041",
+    "notes": "",
+    "source": "diagrams/source/D13.mmd"
+  },
+  {
+    "id": "D14",
+    "title": "Runtime readiness and residency",
+    "type": "State machine",
+    "description": "ready ต้องผ่าน qualification; model residency ไม่ผูกกับ job lifecycle",
+    "requirements": "PRP-FR-014,015,044",
+    "notes": "",
+    "source": "diagrams/source/D14.dot"
+  },
+  {
+    "id": "D15",
+    "title": "External delivery lifecycle",
+    "type": "State machine / external integration",
+    "description": "สถานะ delivery ของ LINE adapter แยกจาก inference; API accepted ไม่เท่ากับ read",
+    "requirements": "PRP-FR-055",
+    "notes": "",
+    "source": "diagrams/source/D15.dot"
+  },
+  {
+    "id": "D16",
+    "title": "Compute and job data model",
+    "type": "Logical ERD",
+    "description": "cardinality labels เป็น logical model; ไม่ใช่ schema migration ที่รันแล้ว",
+    "requirements": "PRP-FR-013,017,027,036..041",
+    "notes": "",
+    "source": "diagrams/source/D16.dot"
+  },
+  {
+    "id": "D17",
+    "title": "Identity, keys and object grants",
+    "type": "Logical ERD / authorization",
+    "description": "องค์กรของ PRP เป็น boundary อิสระจาก Zuri Business; user tag ไม่ใช่สิทธิ์",
+    "requirements": "PRP-FR-003..009,038..040; PRP-SEC-004",
+    "notes": "",
+    "source": "diagrams/source/D17.dot"
+  },
+  {
+    "id": "D18",
+    "title": "Worker ports and profile contract",
+    "type": "UML-inspired class/interface",
+    "description": "เน้น interface แทน runtime-specific imports; deployment hash ตรึง capability",
+    "requirements": "PRP-FR-011,012,042,043",
+    "notes": "v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.",
+    "source": "diagrams/source/D18.dot"
+  },
+  {
+    "id": "D19",
+    "title": "Audio artifact lifecycle and lineage",
+    "type": "Data-flow + lifecycle",
+    "description": "retention, erase และ share grant มีขอบเขตต่างจากสำเนาที่ client/LINE ดาวน์โหลดแล้ว",
+    "requirements": "PRP-FR-028..030,039..041",
+    "notes": "",
+    "source": "diagrams/source/D19.dot"
+  },
+  {
+    "id": "D20",
+    "title": "Trust boundaries and threat controls",
+    "type": "Trust-boundary / DFD security",
+    "description": "control worker storage และ public integration เป็นคนละ trust boundary",
+    "requirements": "PRP-SEC-001..012",
+    "notes": "",
+    "source": "diagrams/source/D20.dot"
+  },
+  {
+    "id": "D21",
+    "title": "Observability and operational loop",
+    "type": "Telemetry / control-flow",
+    "description": "observer ใช้ admission ส่วน dashboard เป็น projection ที่ถอดออกได้",
+    "requirements": "PRP-FR-014,045..047",
+    "notes": "",
+    "source": "diagrams/source/D21.dot"
+  },
+  {
+    "id": "D22",
+    "title": "Disaster restore and erasure reconciliation",
+    "type": "Recovery activity",
+    "description": "RPO/RTO เป็น targets; restore ไม่เปิด node/grant จาก snapshot ทันที",
+    "requirements": "PRP-FR-041,051; PRP-NFR-012",
+    "notes": "",
+    "source": "diagrams/source/D22.dot"
+  },
+  {
+    "id": "D23",
+    "title": "Release pipeline and rollback",
+    "type": "CI/CD / release gates",
+    "description": "เอกสาร source กับ test evidence แยกกัน; production activation ไม่เกิดจาก docs build",
+    "requirements": "PRP-FR-050..053; PRP-SEC-010",
+    "notes": "",
+    "source": "diagrams/source/D23.dot"
+  },
+  {
+    "id": "D24",
+    "title": "Phase 2 media extension",
+    "type": "Workflow / extensibility",
+    "description": "ภาพและวิดีโอใช้ primitives เดิม แต่มี grants, units, profiles และ quality gates ใหม่",
+    "requirements": "PRP-P2-001..008; PRP-FR-056",
+    "notes": "",
+    "source": "diagrams/source/D24.dot"
+  },
+  {
+    "id": "D25",
+    "title": "Failure and risk coverage",
+    "type": "Fault tree / verification map",
+    "description": "root cause หลายแบบทำให้งานล้มเหมือนกัน จึงต้องรายงานแยกและมีหลักฐาน",
+    "requirements": "PRP-NFR-001..018; PRP-FR-020,051",
+    "notes": "",
+    "source": "diagrams/source/D25.dot"
+  },
+  {
+    "id": "D26",
+    "title": "Requirement-to-evidence traceability",
+    "type": "Traceability dependency graph",
+    "description": "เอกสาร derived ไม่เป็น requirement source อีกชุด; code/test links ต้องมีจริงก่อนใส่ PASS",
+    "requirements": "PRP-FR-053; all requirement families",
+    "notes": "",
+    "source": "diagrams/source/D26.dot"
+  },
+  {
+    "id": "D27",
+    "title": "Roadmap dependencies and parallel lanes",
+    "type": "Roadmap / dependency DAG",
+    "description": "ลำดับตาม gate ไม่สมมติวันเสร็จ; LINE acceptance แยกจาก core pilot",
+    "requirements": "Roadmap WP01..WP25; PRP-NFR-019..024",
+    "notes": "v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.",
+    "source": "diagrams/source/D27.dot"
+  },
+  {
+    "id": "D28",
+    "title": "Console and playground navigation",
+    "type": "UX navigation / sitemap",
+    "description": "หน้าจอเป็น client ผ่าน API ไม่ฝัง business state เข้า core",
+    "requirements": "PRP-FR-048,049",
+    "notes": "",
+    "source": "diagrams/source/D28.dot"
+  },
+  {
+    "id": "D29",
+    "title": "Resident memory versus invocation leases",
+    "type": "Resource-allocation lifecycle",
+    "description": "จบงานไม่ได้ทำให้น้ำหนักโมเดลหายจาก VRAM; ติดตามคนละ lifecycle",
+    "requirements": "PRP-FR-013,018,044",
+    "notes": "",
+    "source": "diagrams/source/D29.dot"
+  },
+  {
+    "id": "D30",
+    "title": "Repository and package direction",
+    "type": "Package dependency diagram",
+    "description": "ชื่อ path เป็นข้อเสนอ ไม่ใช่ไฟล์ที่สร้างใน GitHub; หลีกเลี่ยง import จาก Zuri",
+    "requirements": "PRP-FR-001,002,043,050,053; PRP-NFR-019,021,022",
+    "notes": "v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.",
+    "source": "diagrams/source/D30.dot"
+  },
+  {
+    "id": "D31",
+    "title": "Reuse-first framework evaluation",
+    "type": "Decision / evaluation DAG",
+    "description": "เปรียบเทียบ A/B ก่อนเลือก stack; source review ไม่เท่ากับ runtime PASS และ critical gap ห้ามถูกคะแนนรวมกลบ",
+    "requirements": "PRP-NFR-020; WP24/WP03",
+    "source": "diagrams/source/D31.dot",
+    "notes": "Design proposal. Framework conformance and runtime tests: NOT_RUN."
+  },
+  {
+    "id": "D32",
+    "title": "Python API and model process isolation",
+    "type": "Process / deployment boundaries",
+    "description": "Python-first แต่ไม่ใช่ single process: เพิ่ม API workers ต้องไม่เพิ่มจำนวนโมเดลหรือ CUDA residency",
+    "requirements": "PRP-NFR-019,021,022",
+    "source": "diagrams/source/D32.dot",
+    "notes": "Design proposal. Framework conformance and runtime tests: NOT_RUN."
+  },
+  {
+    "id": "D33",
+    "title": "Framework delegation without authority bypass",
+    "type": "Authority / admission flow",
+    "description": "ใช้ key/router/manager ที่มีอยู่ได้ แต่ทุกการส่งงานต้องผ่านสิทธิ์และ lease เดียวกัน ไม่มี hidden retry/reroute",
+    "requirements": "PRP-NFR-023; PRP-FR-005,017,018",
+    "source": "diagrams/source/D33.dot",
+    "notes": "Design proposal. Framework conformance and runtime tests: NOT_RUN."
+  },
+  {
+    "id": "D34",
+    "title": "Runtime manager binding and safe lifecycle",
+    "type": "UML-style sequence",
+    "description": "การจัดการ runtime ผ่าน adapter ต้องผูก actual resource/epoch ก่อน ready และก่อน dispatch; เป็น proposed contract ไม่อ้าง vendor รองรับแล้ว",
+    "requirements": "PRP-NFR-024; PRP-FR-011,015,020,042,044",
+    "source": "diagrams/source/D34.mmd",
+    "notes": "Design proposal. Framework conformance and runtime tests: NOT_RUN."
+  }
+]

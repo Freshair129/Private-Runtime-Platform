@@ -1,0 +1,110 @@
+{
+  "actors": [
+    [
+      "U",
+      "User"
+    ],
+    [
+      "C",
+      "Client workflow"
+    ],
+    [
+      "P",
+      "PRP API / Jobs"
+    ],
+    [
+      "W",
+      "Qualified workers"
+    ],
+    [
+      "S",
+      "Artifact service"
+    ]
+  ],
+  "events": [
+    [
+      "U",
+      "C",
+      "Record and send audio",
+      ""
+    ],
+    [
+      "C",
+      "P",
+      "Upload + ASR request/job",
+      ""
+    ],
+    [
+      "P",
+      "W",
+      "ASR with reserved resource",
+      ""
+    ],
+    [
+      "W",
+      "P",
+      "ASR result",
+      "return"
+    ],
+    [
+      "P",
+      "C",
+      "Validated transcript",
+      "return"
+    ],
+    [
+      "NOTE",
+      "",
+      "Client validates transcript and composes its own context; no central PRP business memory",
+      ""
+    ],
+    [
+      "C",
+      "P",
+      "Chat with supplied messages",
+      ""
+    ],
+    [
+      "P",
+      "C",
+      "Canonical answer text",
+      "return"
+    ],
+    [
+      "C",
+      "P",
+      "TTS for saved answer",
+      ""
+    ],
+    [
+      "P",
+      "W",
+      "Preset TTS with reservation",
+      ""
+    ],
+    [
+      "W",
+      "S",
+      "Validated audio output",
+      ""
+    ],
+    [
+      "S",
+      "C",
+      "Authorized artifact via PRP",
+      "return"
+    ],
+    [
+      "C",
+      "U",
+      "Text + audio playback",
+      "return"
+    ],
+    [
+      "NOTE",
+      "",
+      "ALT: TTS fails -> client PARTIAL_SUCCESS; retain text, retry TTS only; PRP TTS job is FAILED",
+      ""
+    ]
+  ]
+}
