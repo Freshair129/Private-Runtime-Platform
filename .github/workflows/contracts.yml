@@ -9,11 +9,7 @@ on:
       - "tools/docs/validate_docs.py"
       - ".github/workflows/contracts.yml"
   pull_request:
-    paths:
-      - "contracts/**"
-      - "tools/contracts/**"
-      - "tools/docs/validate_docs.py"
-      - ".github/workflows/contracts.yml"
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:

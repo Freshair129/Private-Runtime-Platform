@@ -13,15 +13,7 @@ on:
       - "tools/docs/validate_docs.py"
       - ".github/workflows/trace.yml"
   pull_request:
-    paths:
-      - "apps/**"
-      - "workers/**"
-      - "docs/TEST-PRP.md"
-      - "docs/registry/**"
-      - "docs/evidence/**"
-      - "tools/trace/**"
-      - "tools/docs/validate_docs.py"
-      - ".github/workflows/trace.yml"
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:

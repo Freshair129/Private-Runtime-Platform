@@ -8,10 +8,7 @@ on:
       - "contracts/openapi/prp-worker.*"
       - ".github/workflows/voice-worker.yml"
   pull_request:
-    paths:
-      - "workers/voice/**"
-      - "contracts/openapi/prp-worker.*"
-      - ".github/workflows/voice-worker.yml"
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:

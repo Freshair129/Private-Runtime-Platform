@@ -304,7 +304,7 @@ flowchart LR
 | Physical GPU / voice quality | `workers/voice/tests/hardware` | self-hosted, manual | ไม่รันใน cloud CI |
 | Live external channel (LINE) | นอก core | gate แยก | ตาม ARCH §4 |
 
-Workflows ใน `.github/workflows/` (path-filtered): `docs.yml` (validate + build views + regen check), `contracts.yml` (`export_json.py --check`, `gen_models.py --check` หลัง sync ทั้งสอง project, `validate_examples.py`, validator), `control-api.yml` (`uv sync --locked`, `ruff check`, `ruff format --check`, `mypy --strict src/prp`, pytest unit+contracts, import-linter), `voice-worker.yml` (แบบเดียวกัน lock ของตัวเอง ไม่มี hardware), `trace.yml` (collect_trace + validator) ไฟล์ workflow ของ GoVibe ใน `github-setting/` ไม่นำมาใช้
+Workflows ใน `.github/workflows/` (path-filtered เฉพาะ `push`; ทุก PR รันครบทั้งห้าเพราะชื่อ job เป็น required status checks ของ `main` ถ้า path-filter ทำงานกับ PR ด้วย check ที่ไม่รันจะค้าง "Expected" และ merge ไม่ได้): `docs.yml` (validate + build views + regen check), `contracts.yml` (`export_json.py --check`, `gen_models.py --check` หลัง sync ทั้งสอง project, `validate_examples.py`, validator), `control-api.yml` (`uv sync --locked`, `ruff check`, `ruff format --check`, `mypy --strict src/prp`, pytest unit+contracts, import-linter), `voice-worker.yml` (แบบเดียวกัน lock ของตัวเอง ไม่มี hardware), `trace.yml` (collect_trace + validator) ไฟล์ workflow ของ GoVibe ใน `github-setting/` ไม่นำมาใช้
 
 ## 11. Migration plan (แยก PR ต่อขั้น มี approval gate ทุกขั้น)
 
