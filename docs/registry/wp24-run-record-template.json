@@ -41,7 +41,8 @@
       "note": "Owner brings the model and holds its rights; a license receipt per SEC-007 / SECURITY-DATA section 8 is still required before activation and is recorded in shared_revision."
     },
     "candidate_C_in_scope": null,
-    "speech_in_scope": null
+    "speech_in_scope": null,
+    "candidate_B_engine": null
   },
   "deviations": [],
   "environment": {
@@ -83,16 +84,34 @@
   },
   "shared_revision": {
     "llm_model": null,
+    "llm_model_requested_as": null,
     "model_revision": null,
+    "model_last_modified": null,
     "tokenizer_revision": null,
+    "tokenizer_json_sha256": null,
     "chat_template_hash": null,
+    "chat_template_file": null,
+    "generation_config_sha256": null,
+    "architecture": null,
+    "dtype": null,
+    "weights": {
+      "format": null,
+      "files": [],
+      "total_gib": null,
+      "note": null
+    },
     "context_length": null,
+    "context_length_note": null,
     "asr_model": null,
     "asr_revision": null,
     "tts_model": null,
     "tts_revision": null,
+    "llm_license": null,
     "licenses_checked_by": null,
-    "licenses_checked_on": null
+    "licenses_checked_on": null,
+    "decided_by": null,
+    "decided_on": null,
+    "pins_fetched_at": null
   },
   "candidates": [
     {
