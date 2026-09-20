@@ -1,22 +1,22 @@
 {
-  "kind": "WP24_RUN_RECORD_TEMPLATE_NOT_RESULTS",
+  "kind": "WP24_RUN_RECORD",
   "version": "0.4.0-draft",
-  "template_note": "Copy to docs/evidence/wp24/<record_id>.json before the first command runs. Every null is filled from a measurement, a command log or an owner decision, never from documentation alone; source observations go in source_observations, not in measurements. Status vocabulary: NOT_RUN | PASS | FAIL | BLOCKED. A PASS without at least one artifact is invalid. Gate requirement IDs are copied from registry/reuse-fit-gap-template.json experiments (STACK-EVALUATION-PRP section 6) and must not be edited here.",
+  "template_note": "Run record derived from registry/wp24-run-record-template.json. Only EV01 has been executed so far; every other experiment stays NOT_RUN. Values come from the artifacts listed next to them.",
   "procedure": "docs/WP24-EXPERIMENT-PROCEDURE.md",
-  "record_id": null,
+  "record_id": "WP24-2026-09-20-run1",
   "prepared_from": {
     "fitgap_template": "docs/registry/reuse-fit-gap-template.json",
     "fitgap_template_version": "0.4.0-draft",
     "stack_evaluation_template": "docs/registry/stack-evaluation-template.json",
-    "prp_commit": null
+    "prp_commit": "30a7d39a697bad06d5d46cc6d48101e3bd8046d5"
   },
   "run_window": {
-    "started_at": null,
+    "started_at": "2026-09-20T15:41:52+00:00",
     "finished_at": null,
     "time_box_hours_per_candidate": null
   },
   "people": {
-    "operator": null,
+    "operator": "Freshair129 (repository owner)",
     "reviewer": null,
     "approver": null
   },
@@ -42,14 +42,26 @@
     "candidate_C_in_scope": null,
     "speech_in_scope": null
   },
-  "deviations": [],
+  "deviations": [
+    {
+      "id": "DEV-01",
+      "experiment": "EV01",
+      "requirement": "procedure section 2: control host without GPU driver",
+      "observed": "The control host used for EV01 has an NVIDIA driver (GeForce RTX 5060 Ti, driver 32.0.16.1692); nvidia-smi is on PATH.",
+      "mitigation": "NFR-021 evidence relies on (a) importing all 44 prp modules with no ML module in sys.modules and (b) the prp-api process being absent from the nvidia-smi compute-process list while serving requests. A driver-less host cannot initialise CUDA at all; this host could have and did not.",
+      "reviewer_action": "Accept as sufficient for NFR-021, or require a repeat of EV01 steps 1-2 on a driver-less host before the fit-gap row leaves UNASSESSED."
+    }
+  ],
   "environment": {
     "control_host": {
-      "host_id": null,
-      "os": null,
-      "kernel": null,
-      "python": null,
-      "gpu_driver_present": false
+      "host_id": "DESKTOP-VETATMQ",
+      "os": "Microsoft Windows 11 Pro 10.0.26200 build 26200",
+      "kernel": "10.0.26200",
+      "python": "3.12.10 (uv 0.12.8, git 2.55.0)",
+      "cpu": "Intel Core i7-14700KF, 20 cores / 28 threads",
+      "ram_gb": 31.8,
+      "gpu_driver_present": true,
+      "gpu": "NVIDIA GeForce RTX 5060 Ti, driver 32.0.16.1692 (see deviations DEV-01)"
     },
     "gpu_hosts": [
       {
@@ -75,9 +87,9 @@
         "container_runtime": null
       }
     ],
-    "network_boundary": null,
-    "data_retention": null,
-    "test_corpus": null,
+    "network_boundary": "EV01 only: prp-api bound to 127.0.0.1:8080 (settings default); no LAN or public exposure; no GPU host contacted.",
+    "data_retention": "EV01 uses no corpus; request bodies were fixed test strings.",
+    "test_corpus": "none required for EV01",
     "weights_cache_kept_between_candidates": null
   },
   "shared_revision": {
@@ -97,7 +109,7 @@
     {
       "id": "A",
       "name": "Xinference-managed runtimes",
-      "in_scope": null,
+      "in_scope": true,
       "sources": [
         "SRC-09",
         "SRC-10",
@@ -106,7 +118,28 @@
       ],
       "version_manifest": {
         "images": [],
-        "python_packages": [],
+        "python_packages": [
+          "aiohappyeyeballs==2.7.1",
+          "aiohttp==3.14.3",
+          "aiosignal==1.4.0",
+          "annotated-types==0.8.0",
+          "attrs==26.1.0",
+          "certifi==2026.7.22",
+          "charset-normalizer==3.5.1",
+          "frozenlist==1.8.0",
+          "idna==3.20",
+          "multidict==6.9.0",
+          "pip==25.0.1",
+          "propcache==0.5.4",
+          "pydantic==2.13.5",
+          "pydantic_core==2.46.5",
+          "requests==2.34.2",
+          "typing_extensions==4.16.0",
+          "typing-inspection==0.4.4",
+          "urllib3==2.8.0",
+          "xinference-client==3.4.0",
+          "yarl==1.25.1"
+        ],
         "config_files": []
       },
       "status": "NOT_RUN",
@@ -132,7 +165,7 @@
     {
       "id": "B",
       "name": "Independent vLLM and speech services",
-      "in_scope": null,
+      "in_scope": true,
       "sources": [
         "SRC-01",
         "SRC-02",
@@ -179,7 +212,9 @@
       },
       "status": "NOT_RUN",
       "gate_failures": [],
-      "blocked_items": [],
+      "blocked_items": [
+        "scope undecided by the owner (procedure section 9 item 3)"
+      ],
       "operator_cost_measurements": {
         "deploy_steps_count": null,
         "deploy_wall_clock_minutes_cold": null,
@@ -209,62 +244,162 @@
       ],
       "shared_prp": {
         "note": "EV01 steps 1-2 concern the PRP control plane itself and run once per record; per_candidate holds the SDK import check of step 3.",
-        "status": "NOT_RUN",
-        "started_at": null,
-        "finished_at": null,
-        "cold_or_warm": null,
-        "commands_log": null,
-        "measurements": [],
-        "observations": [],
-        "artifacts": [],
+        "status": "PASS",
+        "started_at": "2026-09-20T15:41:52+00:00",
+        "finished_at": "2026-09-20T15:43:10+00:00",
+        "cold_or_warm": "fresh checkout of 30a7d39 into an empty directory; uv cache warm (packages previously downloaded on this host); no cold-network measurement",
+        "commands_log": "PRP/EV01/*.log",
+        "measurements": [
+          {
+            "name": "git clone (local) seconds",
+            "value": 0.6
+          },
+          {
+            "name": "uv sync --locked --group dev apps/control-api seconds (warm cache)",
+            "value": 3.1
+          },
+          {
+            "name": "uv sync --locked --group dev workers/voice seconds (warm cache)",
+            "value": 1.5
+          },
+          {
+            "name": "Coding-Standards 10 gates apps/control-api seconds",
+            "value": 11.7
+          },
+          {
+            "name": "Coding-Standards 10 gates workers/voice seconds",
+            "value": 5.1
+          },
+          {
+            "name": "pytest tests/unit tests/contracts",
+            "value": "control-api 50 passed; voice 22 passed"
+          },
+          {
+            "name": "mypy --strict",
+            "value": "control-api 45 files; voice 12 files; no issues"
+          },
+          {
+            "name": "lint-imports",
+            "value": "control-api 4 contracts kept; voice 2 kept"
+          },
+          {
+            "name": "uv.lock sha256 apps/control-api",
+            "value": "fff29f55f82f2098d58a687ab4a87a08aa8f529cd1fd39b18b006fad5643e8ec"
+          },
+          {
+            "name": "uv.lock sha256 workers/voice",
+            "value": "adfb8f9558e85c03a639564d331376683360d65303522044457bcf20b53e8241"
+          },
+          {
+            "name": "prp modules imported by walk_packages",
+            "value": 44
+          },
+          {
+            "name": "ML modules in sys.modules after importing all prp modules",
+            "value": "none"
+          }
+        ],
+        "observations": [
+          "Python 3.12.10 resolved from .python-version in both projects; no native build step, no Rust/Tauri or desktop shell involved (NFR-019).",
+          "prp-api started with no PRP_* variable set: GET /v1/models without credential -> 401 INVALID_KEY envelope; with a test bearer -> 503 STATE_STORE_UNAVAILABLE 'no key verifier configured; refusing to authenticate'; POST /v1/chat/completions with bearer and a valid body -> same 503. No traceback, request_id present on every envelope.",
+          "While prp-api (pid 30032) served requests, nvidia-smi --query-compute-apps did not list it; no python or uvicorn process held the GPU (NFR-021).",
+          "prp-dispatcher and prp-observer exit 3 with a single structured ERROR line naming the missing adapters (M4).",
+          "Both uv.lock files synced with --locked from a fresh checkout; lock digests recorded (NFR-022). Cold-network install time was not measured because the uv cache on this host was warm.",
+          "Timing values are wall clock on a developer workstation while other desktop processes ran; they are orientation values, not benchmarks."
+        ],
+        "artifacts": [
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/timing.txt",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/lock-digests.txt",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/control-api.uv-sync.log",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/voice.uv-sync.log",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/control-api.gates.log",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/voice.gates.log",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/control-api.failclosed.log",
+          "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/control-api.api-stdout.log"
+        ],
         "gate_verdicts": {
-          "PRP-NFR-019": "NOT_RUN",
-          "PRP-NFR-021": "NOT_RUN",
-          "PRP-NFR-022": "NOT_RUN"
+          "PRP-NFR-019": "PASS",
+          "PRP-NFR-021": "PASS",
+          "PRP-NFR-022": "PASS"
         },
-        "blocker": null
+        "blocker": null,
+        "limitations": [
+          "PRP-NFR-021: host has a GPU driver (DEV-01); verdict rests on import and process-list evidence.",
+          "PRP-NFR-022: reproducibility shown from a warm uv cache; SBOM / license / egress review of the locks (SRS statement) not part of EV01."
+        ]
       },
       "per_candidate": {
         "A": {
-          "status": "NOT_RUN",
+          "status": "PASS",
           "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "finished_at": "2026-09-20T15:44:47+00:00",
+          "cold_or_warm": "fresh venv (python -m venv); pip cache state unknown; network download; start time not captured, finished_at is the log mtime",
+          "sample_count": 1,
+          "commands_log": "A/EV01/candidate-A.xinference-client.log",
+          "source_observations": [
+            "Xinference documents a supervisor/worker topology with a REST client package separate from the server (SRC-09)."
+          ],
+          "measurements": [
+            {
+              "name": "pip install xinference-client seconds",
+              "value": 9.6
+            },
+            {
+              "name": "packages in the venv after install",
+              "value": 20
+            },
+            {
+              "name": "xinference-client version installed",
+              "value": "3.4.0"
+            },
+            {
+              "name": "ML modules in sys.modules after import xinference_client",
+              "value": "none"
+            }
+          ],
+          "observations": [
+            "xinference-client 3.4.0 installs 20 packages and imports without torch, CUDA or any listed ML module; the control-side adapter for A can stay ML-free (NFR-021).",
+            "The module path xinference_client.restful.restful_client from older documentation does not exist in 3.4.0; top-level exports: ['AsyncRESTfulClient', 'RESTfulClient']. The adapter must pin the client version and import from the top level."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV01/candidate-A.xinference-client.log"
+          ],
           "gate_verdicts": {
-            "PRP-NFR-019": "NOT_RUN",
-            "PRP-NFR-021": "NOT_RUN",
-            "PRP-NFR-022": "NOT_RUN"
+            "PRP-NFR-019": "PASS",
+            "PRP-NFR-021": "PASS",
+            "PRP-NFR-022": "PASS"
           },
-          "disposition_hint": null,
+          "disposition_hint": "REUSE (client SDK) or ADAPT (thin HTTP client) both remain open; decided after EV02-EV03.",
           "blocker": null
         },
         "B": {
-          "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
+          "status": "PASS",
+          "started_at": "2026-09-20T15:41:52+00:00",
+          "finished_at": "2026-09-20T15:41:52+00:00",
+          "cold_or_warm": "n/a",
+          "sample_count": 0,
           "commands_log": null,
-          "source_observations": [],
+          "source_observations": [
+            "vLLM is consumed as a pinned vendor image over its OpenAI-compatible HTTP API (SRC-01); no Python SDK is needed on the control host.",
+            "LiteLLM is excluded from EV01 by the owner decision of 2026-09-20 (EV04 + EV03 only); as a proxy it is also HTTP-only from the control host."
+          ],
           "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "observations": [
+            "No control-side SDK to install for B: the adapter uses the project's HTTP client only, so the step-3 import check is trivially satisfied by the shared PRP result."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/PRP/EV01/timing.txt"
+          ],
           "gate_verdicts": {
-            "PRP-NFR-019": "NOT_RUN",
-            "PRP-NFR-021": "NOT_RUN",
-            "PRP-NFR-022": "NOT_RUN"
+            "PRP-NFR-019": "PASS",
+            "PRP-NFR-021": "PASS",
+            "PRP-NFR-022": "PASS"
           },
-          "disposition_hint": null,
+          "disposition_hint": "ADAPT (thin HTTP client in adapters/runtimes).",
           "blocker": null
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -275,12 +410,12 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-NFR-019": "NOT_RUN",
-            "PRP-NFR-021": "NOT_RUN",
-            "PRP-NFR-022": "NOT_RUN"
+            "PRP-NFR-019": "BLOCKED",
+            "PRP-NFR-021": "BLOCKED",
+            "PRP-NFR-022": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C scope undecided by the owner (procedure section 9 item 3); Ray client SDK not installed."
         }
       }
     },
@@ -781,5 +916,6 @@
     "rollback_exit_plan": null,
     "approved_by": null,
     "approved_on": null
-  }
+  },
+  "requirement_rows_note": "The fit-gap copy registry/reuse-fit-gap.<record_id>.json is produced when the first candidate has completed EV01-EV08 or at the reviewer's checkpoint; after EV01 alone every row stays UNASSESSED."
 }

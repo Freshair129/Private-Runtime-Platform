@@ -102,6 +102,13 @@ repository_integration: NOT_PERFORMED
 - STACK-EVALUATION §6 ชี้ไปยัง procedure; `docs/README.md` เพิ่มแถว; `evidence/README.md` อธิบายโฟลเดอร์ `wp24/` ว่าไม่ใช่ acceptance receipt; HTML builder ORDER เพิ่มเอกสารหลัง STACK-EVALUATION; ทุก AT ยัง NOT_RUN
 - owner ตัดสิน 2026-09-20 (บันทึกใน procedure §2 / EV03 / EV04 / §9 และ `scope_decisions` ของ template): LiteLLM อยู่ใน WP24 เฉพาะ EV04 + EV03 ในฐานะ key / proxy layer ของ candidate B time box รวมไม่เกิน 1 วันทำงาน routing ของมันไม่แทน PRP Router; โมเดลเป็น BYOM โดย license receipt ตาม SEC-007 ยังต้องมีก่อน activation; C และ speech ยังไม่ตัดสิน
 
+### WP24 EV01 run record · WP24-2026-09-20-run1 (2026-09-20, C-2 / H4)
+- รัน EV01 (Clean control install; gate NFR-019 / 021 / 022) จริงครั้งแรก operator = owner บันทึกที่ `docs/evidence/wp24/WP24-2026-09-20-run1.json` พร้อม artifact ใน `docs/evidence/wp24/WP24-2026-09-20-run1/{PRP,A}/EV01/` ทุกตัวเลขในการ record มาจาก log ที่แนบ ไม่มีตัวเลขพิมพ์มือ; reviewer ยังไม่ลงชื่อ (`people.reviewer: null`) ทุก EV อื่นยัง NOT_RUN
+- ผล shared PRP ที่ `30a7d39`: fresh checkout + `uv sync --locked` ทั้งสอง project ผ่าน, gates §10 ผ่านครบ (pytest 50 / 22, mypy 45 / 12 files, lint-imports 4 / 2), `prp-api` โดยไม่ตั้ง `PRP_*` ตอบ 401 `INVALID_KEY` เมื่อไม่มี credential และ 503 `STATE_STORE_UNAVAILABLE` เมื่อมี bearer, dispatcher / observer exit 3, import ทุก module ของ `prp` (44) ไม่มี ML module ใน `sys.modules`, process ของ `prp-api` ไม่อยู่ในรายชื่อ compute process ของ `nvidia-smi`; verdict PASS ทั้งสาม gate
+- candidate A: `xinference-client` 3.4.0 ติดตั้ง 20 packages และ import โดยไม่มี ML module → PASS; ข้อสังเกตสำหรับ adapter: module path `restful.restful_client` จากเอกสารเก่าไม่มีแล้ว export อยู่ที่ top level (`RESTfulClient`, `AsyncRESTfulClient`) candidate B: ไม่ต้องมี SDK ฝั่ง control (HTTP only; LiteLLM อยู่นอก EV01 ตามคำตัดสิน) → PASS; candidate C: BLOCKED เพราะ scope ยังไม่ตัดสิน
+- **Deviation DEV-01**: control host ที่ใช้มี NVIDIA driver (RTX 5060 Ti) ไม่ตรง precondition §2 ของ procedure หลักฐาน NFR-021 จึงอาศัย `sys.modules` + GPU process list บันทึกให้ reviewer ตัดสินว่ารับได้หรือต้องรันซ้ำบน host ที่ไม่มี driver; เวลาที่วัดเป็น wall clock บน workstation ที่มี process อื่นรันอยู่และ uv cache warm เป็นค่าอ้างอิงไม่ใช่ benchmark
+- `registry/wp24-run-record-template.json` เพิ่มโครง `experiments.EV01.shared_prp` (ส่วนของ PRP เองที่รันครั้งเดียวต่อ record) และ `deviations` เพื่อให้ record ทุกรอบบันทึกได้ในที่เดียวกัน; fit-gap copy ยังไม่สร้างจนกว่า candidate แรกจะครบ EV01–EV08 (ระบุใน record)
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
