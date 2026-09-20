@@ -59,6 +59,11 @@ uv run --locked pytest tests/contracts/test_openapi_conformance.py -q -k invento
 ```
 
 ```bash
+# After adding or re-marking tests: regenerate docs/registry/code-trace.json from the pytest markers of every project (needs both projects synced). --check is what CI runs.
+python tools/trace/collect_trace.py
+```
+
+```bash
 # Rebuild docs/PRP-Documentation.html and docs/PRP-Diagram-Atlas.html (gitignored). Needs markdown-it-py and beautifulsoup4,
 # which are not installed in this environment; use a scratch venv rather than the system Python.
 python tools/docs/build_html_views.py
@@ -104,7 +109,8 @@ The central idea is **one canonical source with derived views, and a validator t
 - **Layers** (`apps/control-api/src/prp`): `entrypoints` → `api` | `adapters` → `core` → `platform`. `import-linter` enforces it from `pyproject.toml`; `core` and `platform` may not import FastAPI, Pydantic, ORMs or HTTP clients, and nothing may import torch, vLLM, whisper or similar. Wire ports to adapters only in `entrypoints/wiring.py`.
 - **Contexts** under `core/` mirror the ARCH §2 ownership table one to one: `access`, `fleet`, `scheduling` (router selects, admission reserves), `execution`, `content`, `observability`. Each exposes frozen dataclasses in `model.py`, `Protocol` ports in `ports.py`, and pure rule functions; cross-context calls go through the owning context's ports.
 - **Contract binding**: `api/routes.py` declares every client operation with the contract's `operationId`; `tests/contracts/test_openapi_conformance.py` diffs `app.openapi()` against `contracts/openapi/prp-client.yaml`. The worker does the same against `prp-worker.yaml`. Change the YAML first, then the routes.
-- **Test tiers**: `tests/unit` (pure), `tests/contracts` (inventory, envelopes, no-ML import, lock contents), `tests/integration` (real services, M4+), `workers/voice/tests/hardware` (self-hosted only). Mark tests with `@pytest.mark.req("PRP-FR-nnn")`; use `@pytest.mark.at("PRP-AT-nnn")` only when the test is the acceptance procedure itself. Markers never change a status in `docs/TEST-PRP.md`; only an evidence receipt does.
+- **Test tiers**: `tests/unit` (pure), `tests/contracts` (inventory, envelopes, no-ML import, lock contents), `tests/integration` (real services, M4+), `workers/voice/tests/hardware` (self-hosted only). Mark tests with `@pytest.mark.req("PRP-FR-nnn")`; use `@pytest.mark.at("PRP-AT-nnn")` only when the test is the acceptance procedure itself, and never more than one `at` per test.
+- **Status gate**: `tools/trace/collect_trace.py` turns the markers into `docs/registry/code-trace.json` (derived, committed, checked in CI). An acceptance case in `docs/TEST-PRP.md` may leave `NOT_RUN` only when that file lists a collected test for it **and** `docs/evidence/` holds a complete receipt with the same status; a PASS from unit or contract tests alone is rejected unless the requirement's proof is purely contract/packaging/portability. Markers never change a status. See `docs/evidence/README.md`.
 - **Settings** are frozen dataclasses reading `PRP_*` / `PRP_VOICE_*` environment variable names; never put values or secrets in source.
 
 ## Design decisions that constrain edits

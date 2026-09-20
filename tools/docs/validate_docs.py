@@ -98,7 +98,31 @@ for r in requirements:
 fitgap=read_json('registry/reuse-fit-gap-template.json')['rows']
 check({r['requirement_id'] for r in fitgap}==set(ids) and len(fitgap)==92,'Fit-gap template coverage mismatch')
 check(all(r['runtime_test_status']=='NOT_RUN' and r['disposition']=='UNASSESSED' for r in fitgap),'Template contains invented evidence')
-check('**Status:** PASS' not in tests,'Draft acceptance file claims PASS')
+# Acceptance status gate (SDD-PRP-REPO 9 item 4; ADR-PRP-012 action 5): leaving NOT_RUN needs a collected test and a complete receipt.
+trace_path=ROOT/'registry/code-trace.json'
+check(trace_path.exists(),'Missing registry/code-trace.json (run: python tools/trace/collect_trace.py)')
+trace=read_json('registry/code-trace.json') if trace_path.exists() else {'acceptance':{},'projects':{},'errors':['missing']}
+check(not trace.get('errors'),f'code-trace.json reports marker errors: {trace.get("errors")}')
+receipts={}
+for p in sorted((ROOT/'evidence').glob('*.json')):
+    r=json.loads(p.read_text(encoding='utf-8'))
+    check(isinstance(r.get('test_id'),str) and r.get('status') in {'PASS','FAIL','BLOCKED'},f'Evidence {p.name}: test_id/status invalid (a NOT_RUN receipt is not evidence)')
+    receipts.setdefault(r.get('test_id'),[]).append(r)
+statuses=dict(re.findall(r'<a id="(PRP-AT-\d+)"></a>.*?\*\*Status:\*\* ([A-Z_]+)',tests,flags=re.S))
+check(len(statuses)==92,'Could not parse the status of every acceptance case')
+proof_by_test={r['test']:str(r.get('proof','')) for r in requirements}
+MOCK_OK={'contract','packaging','portability','design evidence','operations review','load mock'}
+status_counts=Counter(statuses.values())
+for at,status in statuses.items():
+    check(status in {'NOT_RUN','PASS','FAIL','BLOCKED'},f'{at}: unknown status {status}')
+    if status=='NOT_RUN':continue
+    complete=[r for r in receipts.get(at,[]) if r.get('status')==status and r.get('evidence_id') and r.get('commit') and r.get('reviewer')]
+    check(bool(complete),f'{at}: status {status} without a complete evidence receipt (evidence_id, commit, reviewer) in docs/evidence/')
+    entry=trace.get('acceptance',{}).get(at) or {}
+    check(bool(entry.get('tests')),f'{at}: status {status} without a collected test in registry/code-trace.json')
+    components={c.strip().lower() for c in proof_by_test.get(at,'').replace('+',',').split(',') if c.strip()}
+    if status=='PASS' and not components<=MOCK_OK:
+        check(bool({'integration','hardware'}&set(entry.get('tiers',[]))),f'{at}: proof "{proof_by_test.get(at)}" cannot PASS from unit/contract tests alone')
 roadtext=(ROOT/'ROADMAP-PRP.md').read_text(encoding='utf-8')
 for w in roadmap:
     check(w['deliverable'] in roadtext,f'Roadmap deliverable drift {w["id"]}')
@@ -111,5 +135,5 @@ for p in ROOT.rglob('*'):
     if 'releases' in p.relative_to(ROOT).parts:continue
     if p.is_file():
         check(p.suffix.lower() not in {'.ttf','.otf','.woff','.woff2'},'Font file must not be distributed: '+str(p))
-result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':92,'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_documents':len(specs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN'}
+result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':92,'acceptance_status':dict(status_counts),'evidence_receipts':sum(len(v) for v in receipts.values()),'code_trace_tests':sum(int(p.get('tests_collected',0)) for p in trace.get('projects',{}).values()),'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_documents':len(specs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN' if status_counts.get('NOT_RUN')==92 else 'PARTIAL'}
 print(json.dumps(result,ensure_ascii=False,indent=2));sys.exit(1 if errors else 0)

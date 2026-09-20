@@ -1,0 +1,141 @@
+{
+  "kind": "CODE_TRACE",
+  "generated_by": "tools/trace/collect_trace.py",
+  "note": "Derived from pytest markers req(...) and at(...). Markers never change acceptance status; a complete receipt in docs/evidence/ does (validate_docs.py enforces both).",
+  "projects": {
+    "apps/control-api": {
+      "tests_collected": 36,
+      "tiers": {
+        "contracts": 8,
+        "unit": 28
+      }
+    },
+    "workers/voice": {
+      "tests_collected": 14,
+      "tiers": {
+        "contracts": 8,
+        "unit": 6
+      }
+    }
+  },
+  "requirements": {
+    "PRP-FR-002": [
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_bearer_without_configured_verifier_fails_closed",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_missing_credential_yields_401_envelope_on_every_operation",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_no_interactive_docs_are_exposed",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_route_inventory_equals_client_contract",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_unknown_route_and_wrong_method_use_not_found_envelope"
+    ],
+    "PRP-FR-005": [
+      "apps/control-api::tests/unit/test_fleet_access_content.py::test_grant_and_auth_context_carry_no_key_material"
+    ],
+    "PRP-FR-018": [
+      "apps/control-api::tests/unit/test_fleet_access_content.py::test_eligibility_requires_enabled_node_and_pass_receipt_for_current_epoch"
+    ],
+    "PRP-FR-020": [
+      "apps/control-api::tests/unit/test_execution_rules.py::test_cancel_after_dispatch_only_records_the_request",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_cancel_before_dispatch_finishes_immediately",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_client_deadline_keeps_finished_execution_finished",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_client_deadline_never_proves_compute_stopped",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_result_is_accepted_once",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_result_settles_only_when_every_identity_dimension_matches",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_second_dispatcher_cannot_reclaim_or_resend",
+      "apps/control-api::tests/unit/test_scheduling.py::test_client_deadline_quarantines_instead_of_releasing",
+      "apps/control-api::tests/unit/test_scheduling.py::test_missing_observation_is_not_guessed_as_ready",
+      "apps/control-api::tests/unit/test_scheduling.py::test_only_finished_evidence_releases_a_lease",
+      "apps/control-api::tests/unit/test_scheduling.py::test_ready_candidates_ranked_by_preference",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[epoch_mismatch]",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[not_ready]",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[stale]",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[unknown]"
+    ],
+    "PRP-FR-021": [
+      "apps/control-api::tests/unit/test_execution_rules.py::test_cancel_after_dispatch_only_records_the_request",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_cancel_before_dispatch_finishes_immediately",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_client_deadline_keeps_finished_execution_finished",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_client_deadline_never_proves_compute_stopped",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_result_is_accepted_once",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_result_settles_only_when_every_identity_dimension_matches",
+      "apps/control-api::tests/unit/test_execution_rules.py::test_second_dispatcher_cannot_reclaim_or_resend",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_rejects_unknown_fields_and_short_fence",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_reports_unsupported_and_evidence_is_501",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_describe_and_invoke_fail_closed_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_missing_credential_is_rejected_on_every_operation",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_readiness_reports_not_ready_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_route_inventory_equals_worker_contract",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_unconfigured_credential_fails_closed",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_wrong_credential_is_rejected"
+    ],
+    "PRP-FR-039": [
+      "apps/control-api::tests/unit/test_fleet_access_content.py::test_reads_require_owner_organization_and_live_artifact"
+    ],
+    "PRP-FR-040": [
+      "apps/control-api::tests/unit/test_fleet_access_content.py::test_share_grant_ttl_is_bounded_by_24h_and_artifact_expiry"
+    ],
+    "PRP-FR-044": [
+      "apps/control-api::tests/unit/test_scheduling.py::test_client_deadline_quarantines_instead_of_releasing",
+      "apps/control-api::tests/unit/test_scheduling.py::test_missing_observation_is_not_guessed_as_ready",
+      "apps/control-api::tests/unit/test_scheduling.py::test_only_finished_evidence_releases_a_lease",
+      "apps/control-api::tests/unit/test_scheduling.py::test_ready_candidates_ranked_by_preference",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[epoch_mismatch]",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[not_ready]",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[stale]",
+      "apps/control-api::tests/unit/test_scheduling.py::test_unfit_observations_exclude_the_candidate[unknown]",
+      "workers/voice::tests/unit/test_lifecycle.py::test_draining_and_stopped_are_not_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_incomplete_identity_cannot_become_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_loading_worker_is_not_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_observation_failure_is_reported_as_unknown_not_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_profile_change_bumps_epoch_and_returns_to_loading",
+      "workers/voice::tests/unit/test_lifecycle.py::test_ready_only_for_the_current_epoch"
+    ],
+    "PRP-NFR-019": [
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_bearer_without_configured_verifier_fails_closed",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_missing_credential_yields_401_envelope_on_every_operation",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_no_interactive_docs_are_exposed",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_route_inventory_equals_client_contract",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_unknown_route_and_wrong_method_use_not_found_envelope"
+    ],
+    "PRP-NFR-021": [
+      "apps/control-api::tests/contracts/test_no_ml_import.py::test_importing_the_whole_control_plane_loads_no_ml_runtime",
+      "apps/control-api::tests/contracts/test_no_ml_import.py::test_lock_file_contains_no_ml_or_cuda_packages",
+      "apps/control-api::tests/contracts/test_no_ml_import.py::test_scaling_api_instances_spawns_no_model_processes"
+    ],
+    "PRP-NFR-022": [
+      "apps/control-api::tests/contracts/test_no_ml_import.py::test_importing_the_whole_control_plane_loads_no_ml_runtime",
+      "apps/control-api::tests/contracts/test_no_ml_import.py::test_lock_file_contains_no_ml_or_cuda_packages",
+      "apps/control-api::tests/contracts/test_no_ml_import.py::test_scaling_api_instances_spawns_no_model_processes"
+    ],
+    "PRP-NFR-023": [
+      "workers/voice::tests/unit/test_lifecycle.py::test_draining_and_stopped_are_not_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_incomplete_identity_cannot_become_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_loading_worker_is_not_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_observation_failure_is_reported_as_unknown_not_ready",
+      "workers/voice::tests/unit/test_lifecycle.py::test_profile_change_bumps_epoch_and_returns_to_loading",
+      "workers/voice::tests/unit/test_lifecycle.py::test_ready_only_for_the_current_epoch"
+    ],
+    "PRP-NFR-024": [
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_rejects_unknown_fields_and_short_fence",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_reports_unsupported_and_evidence_is_501",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_describe_and_invoke_fail_closed_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_missing_credential_is_rejected_on_every_operation",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_readiness_reports_not_ready_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_route_inventory_equals_worker_contract",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_unconfigured_credential_fails_closed",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_wrong_credential_is_rejected"
+    ]
+  },
+  "acceptance": {
+    "PRP-AT-089": {
+      "tests": [
+        "apps/control-api::tests/contracts/test_no_ml_import.py::test_importing_the_whole_control_plane_loads_no_ml_runtime",
+        "apps/control-api::tests/contracts/test_no_ml_import.py::test_lock_file_contains_no_ml_or_cuda_packages",
+        "apps/control-api::tests/contracts/test_no_ml_import.py::test_scaling_api_instances_spawns_no_model_processes"
+      ],
+      "tiers": [
+        "contracts"
+      ]
+    }
+  },
+  "tests_without_markers": 9,
+  "errors": []
+}

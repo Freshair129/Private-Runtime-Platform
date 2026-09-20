@@ -48,6 +48,13 @@ repository_integration: NOT_PERFORMED
 - เพิ่ม `.github/workflows/control-api.yml`, `voice-worker.yml` (uv, path-filtered; `tests/hardware` ไม่ถูก collect ใน cloud)
 - ค้างไว้: request/response Pydantic models ของ client API และคำตัดสิน generated-vs-handwritten ไป M4; ค่า `error.type` category ยัง draft (freeze WP03); `PYTHONUTF8=1` จำเป็นสำหรับ `lint-imports` บน Windows console cp874; `tools/trace/collect_trace.py` ยังไม่มี (SDD §9 ข้อ 3)
 
+### Trace tooling · SDD §9 ข้อ 3–5 (2026-09-20, C-2 / H3)
+- เพิ่ม `tools/trace/collect_trace.py` (stdlib) รัน `uv run --locked pytest --collect-only` ในทุก project ใต้ `apps/*` และ `workers/*` ผ่าน plugin `tools/trace/pytest_trace_plugin.py` แล้วเขียน `docs/registry/code-trace.json` (requirement → tests, acceptance → tests + tiers) แบบ deterministic; `--check` ปฏิเสธไฟล์ค้างและ marker ที่อ้าง ID ไม่มีในทะเบียนหรือ test ที่อ้าง AT มากกว่าหนึ่ง
+- validator เปลี่ยนจาก "ห้าม PASS ทุกกรณี" เป็น **status gate**: AT ที่ไม่ใช่ NOT_RUN ต้องมี test ที่ collect ได้ใน code-trace.json และ receipt ครบ (`evidence_id`, `commit`, `reviewer`, `status` ตรง) ใน `docs/evidence/`; PASS จาก tier unit/contracts ได้เฉพาะ proof ที่เป็น contract / packaging / portability / design evidence / operations review / load mock ล้วน มิฉะนั้นต้องมี tier integration หรือ hardware; receipt `status: NOT_RUN` ถูกปฏิเสธ
+- `document-validation.json` เพิ่ม `acceptance_status`, `evidence_receipts`, `code_trace_tests`; `runtime_test_status` คำนวณจากสถานะจริงแทน hard-code
+- เพิ่ม `docs/evidence/README.md` (รูปแบบ receipt, ชื่อไฟล์, ขั้นตอนเปลี่ยนสถานะ) และ `.github/workflows/trace.yml` (sync ทุก project → `collect_trace.py --check` → validator)
+- สถานะยังคง NOT_RUN ทั้ง 92 กรณี ไม่มี receipt
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

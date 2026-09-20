@@ -11,7 +11,8 @@ PRP คือ self-hosted inference platform สำหรับ chat / ASR / TTS
 | [`docs/`](docs/README.md) | living documentation: SRS (requirement authority), PRD, Roadmap, ARCH, API, ADR, Test Plan, standards, diagrams, derived registry | มีแล้ว (M1) |
 | [`docs/releases/`](docs/releases/) | release package ที่ frozen พร้อม `MANIFEST.sha256` ห้ามแก้ | v0.3.0 |
 | [`contracts/`](contracts/README.md) | protocol source of truth: OpenAPI client / worker / management contracts, JSON Schema ของ runtime manifest, ตัวอย่าง payload | มีแล้ว (M1–M2); worker และ management เป็น DRAFT freeze ที่ WP03 |
-| [`tools/`](tools/) | repo tooling เท่านั้น: `docs/` validator, HTML builder, sequence renderer; `contracts/` YAML→JSON export และ example validation | มีแล้ว (M1–M2) |
+| [`tools/`](tools/) | repo tooling เท่านั้น: `docs/` validator, HTML builder, sequence renderer; `contracts/` YAML→JSON export และ example validation; `trace/` รวม pytest markers เป็น `code-trace.json` | มีแล้ว |
+| [`docs/evidence/`](docs/evidence/README.md) | receipt ของการรันจริง ต้องมีคู่กับ test ที่ collect ได้ก่อน acceptance status จะออกจาก NOT_RUN | ว่าง (ยังไม่มี runtime test) |
 | [`apps/control-api/`](apps/control-api/README.md) | Python control plane (`src/prp`): platform, 6 core contexts + ports, api ผูก 14 operations, 3 entrypoints | มีแล้ว (M3) skeleton fail closed; adapters ที่ M4 |
 | [`workers/voice/`](workers/voice/README.md) | Python ASR/TTS worker ใน environment แยก: contract, lifecycle, server 5 operations | มีแล้ว (M3) skeleton fail closed; engines ที่ M4 |
 | `deploy/` | host A/B composition templates, pinned vendor images | M4 |
