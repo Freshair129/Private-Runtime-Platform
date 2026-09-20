@@ -138,6 +138,11 @@ repository_integration: NOT_PERFORMED
 - gates ที่รันผ่าน: `python -m py_compile` ทั้งสอง script, `python -m unittest discover -s tools/wp24/litellm_subspike/tests` (28/28 ผ่าน), `uv run --locked ruff check` และ `ruff format --check` จากภายใน `apps/control-api` (ใช้ config เดียวกับ control-api: line-length 100, target py312)
 - ไม่แตะไฟล์อื่นใต้ `tools/wp24/` (`README.md` ระดับบน, `EV02-CHECKLIST.md`, EV02 scripts เป็นของ agent อื่น) และไม่แก้ `CLAUDE.md` หรือ `docs/SDD-PRP-REPO.md`; ไม่มีการ deploy หรือรันจริงใน task นี้
 
+### WP24 shared_revision และ engine ของ candidate B (2026-09-20, C-1 / H2)
+- owner ตัดสิน 2026-09-20: `shared_revision` = `typhoon-ai/typhoon2.5-qwen3-4b` (ขอมาในชื่อ `scb10x/...` Hugging Face ชี้ไป org `typhoon-ai`) pin ที่ revision `ce0a7416fe82d4404b2b4a253ce3ac095ab1252c` (last modified 2026-06-11), license tag Apache-2.0, weights safetensors bf16 2 shard รวม 7.49 GiB, `Qwen3ForCausalLM`, `max_position_embeddings` 262144; hash ของ `chat_template.jinja`, `tokenizer.json` และ `generation_config.json` บันทึกใน record; `--max-model-len` ที่ใช้จริงจะบันทึกตอน EV02
+- candidate B ยืนยันเป็น vLLM ตามเดิมหลังพิจารณา Ollama/GGUF (บันทึกใน `scope_decisions.candidate_B_engine`); Ollama ใช้เป็น dev target ของ chatbot client ได้ ไม่ใช่ runtime ของ PRP; BYOM: owner รับ model แล้ว license receipt ตาม SEC-007 ยังต้องยื่นก่อน activation
+- template `shared_revision` เพิ่ม field pin (requested_as, last_modified, tokenizer/generation hashes, architecture, dtype, weights, context note, llm_license, decided_by/on, pins_fetched_at) และ `scope_decisions.candidate_B_engine`; procedure §9 ข้อ 1 ตัดสินแล้ว ทุกข้อใน §9 ปิดครบ
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

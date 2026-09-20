@@ -232,7 +232,7 @@ owner ตัดสินใจเมื่อ 2026-09-20 ว่า speech ไม
 
 ## 9. สิ่งที่ owner ต้องตัดสินก่อนเริ่ม
 
-1. รายการ LLM model และ license ที่จะใช้เป็น `shared_revision`
+1. รายการ LLM model และ license ที่จะใช้เป็น `shared_revision` — ตัดสินแล้ว 2026-09-20: `typhoon-ai/typhoon2.5-qwen3-4b` revision `ce0a741` (Apache-2.0, safetensors bf16 7.49 GiB, `Qwen3ForCausalLM`) ใช้ artifact เดียวกันทั้ง A และ B โดยไม่ quantize; candidate B ยืนยันเป็น vLLM ตามเดิม (Ollama/GGUF ไม่ใช้ใน WP24); license receipt ตาม SEC-007 ยังต้องยื่นก่อน activation
 2. speech อยู่ใน WP24 หรือให้ EV07 เป็น BLOCKED จน WP10 (ถ้ารวม ต้องอนุมัติ voice rights ของ TTS ก่อน) — ตัดสินแล้ว 2026-09-20: speech ไม่อยู่ใน scope ของ WP24; EV07 เป็น BLOCKED จนกว่า WP10 (speech extraction spike) จะส่งมอบ speech candidate ที่มี license ครบ ไม่ใช้ stub เป็นหลักฐาน
 3. C อยู่ใน scope หรือไม่ — ตัดสินแล้ว 2026-09-20: C ไม่อยู่ใน scope ของ WP24 (สองเครื่องไม่มีความจำเป็นต้องมี replica, STACK-EVALUATION-PRP หมวด 7 ไม่บังคับ C เมื่อ A/B อยู่ระหว่างประเมิน) (LiteLLM ตัดสินแล้ว 2026-09-20: เฉพาะ EV04 + EV03 ภายใน B, time box ไม่เกิน 1 วันทำงาน)
 4. time box ต่อ candidate และชื่อ operator / reviewer — ตัดสินแล้ว 2026-09-20: time box = 3 วันทำงาน (8 ชั่วโมง/วัน) ต่อ candidate สำหรับ EV01–EV08 ไม่รวมเวลาดาวน์โหลด model weight, experiment ที่ยังไม่เสร็จเมื่อหมดเวลาเป็น BLOCKED ไม่ต่อเวลา; reviewer = Freshair129 เจ้าของ repository คนเดียวกับ operator เพราะไม่มีผู้ตรวจสอบอิสระคนที่สอง
