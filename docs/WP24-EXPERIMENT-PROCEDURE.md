@@ -38,7 +38,7 @@ governance:
 
 | รายการ | ผู้จัดหา | บันทึกลง record ที่ |
 |---|---|---|
-| Host A (nominal VRAM 12 GB) และ Host B (16 GB) ใน LAN เดียวกัน พร้อม driver / CUDA ที่ติดตั้งแล้ว และ control host ที่ **ไม่มี GPU driver** | ops | `environment.gpu_hosts[]`, `environment.control_host` |
+| Host A (nominal VRAM 12 GB) และ Host B (16 GB) ใน LAN เดียวกัน พร้อม driver / CUDA ที่ติดตั้งแล้ว และเครื่องที่ control processes จะรัน (ตาม SRS host topology และ ARCH §3 control co-locate บน CPU ของ A ได้ ไม่ต้องมีเครื่องที่สาม) การมี GPU driver บนเครื่องเดียวกันเป็นสิ่งที่ **บันทึก** ไม่ใช่สิ่งต้องห้าม ข้อกำหนดจริงคือ control process ต้องไม่แตะ GPU (NFR-021) และมี lock แยก (NFR-022) | ops | `environment.gpu_hosts[]`, `environment.control_host` |
 | Network boundary: LAN เท่านั้น ไม่ expose สู่ public, egress policy ระบุชัด (ARCH §1 ไม่มี automatic public-cloud) | ops | `environment.network_boundary` |
 | Test corpus: ข้อความและเสียงที่เตรียมไว้เพื่อทดสอบเท่านั้น ห้ามใช้ข้อมูลหรือเสียงลูกค้า (Coding-Standards §10) พร้อม data-retention rule | owner | `environment.test_corpus`, `environment.data_retention` |
 | LLM model ที่จะใช้ทดลอง: ชื่อ, revision, tokenizer, chat template, context length, license ตรวจแล้ว **ชุดเดียวใช้กับทั้ง A และ B** (STACK §6) โมเดลเป็น BYOM: owner นำมาเองและรับผิดชอบสิทธิ์ แต่ license receipt ตาม SEC-007 / SECURITY-DATA §8 ยังต้องมีก่อน activation | owner | `shared_revision` |
@@ -79,16 +79,16 @@ EV04 ขึ้นก่อน EV03 ในลำดับปฏิบัติเ
 
 ### EV01 Clean control install — gate PRP-NFR-019 / 021 / 022
 
-**คำถาม:** control plane ติดตั้งและ import ได้บนเครื่องที่ไม่มี GPU driver, ไม่มี desktop shell และไม่โหลด ML หรือไม่ และ SDK ที่ candidate ต้องการฝั่ง control ดึง ML dependency เข้ามาหรือไม่
+**คำถาม:** control plane ติดตั้งและ import ได้โดยไม่มี desktop shell, ไม่โหลด ML และไม่แตะ GPU ของเครื่องหรือไม่ (เครื่องมี GPU ได้ตาม topology สองเครื่อง) และ SDK ที่ candidate ต้องการฝั่ง control ดึง ML dependency เข้ามาหรือไม่
 
 **ขั้นตอน**
 1. บน control host: clone PRP ที่ `prepared_from.prp_commit`, `uv sync --locked --group dev` ทั้ง `apps/control-api` และ `workers/voice`, รันชุดคำสั่ง Coding-Standards §10 ทั้งหมด เก็บ output
 2. รัน `prp-api` แล้วยิง request ที่มี bearer ทดลอง ต้องได้ 503 `STATE_STORE_UNAVAILABLE` (fail closed) ไม่ใช่ traceback; รัน `prp-dispatcher` และ `prp-observer` ต้อง exit 3 พร้อมข้อความชัด
 3. ต่อ candidate: สร้าง scratch venv แยก ติดตั้งเฉพาะ client SDK ที่ adapter ฝั่ง control จะต้องใช้ (เช่น Xinference client, LiteLLM SDK, Ray client) แล้ว import และตรวจ `sys.modules` ด้วยวิธีเดียวกับ `tests/contracts/test_no_ml_import.py` บันทึกว่า SDK ดึง torch / CUDA เข้ามาหรือไม่ และขนาด dependency tree
 
-**บันทึก:** Python version, lock digests, รายชื่อ package ที่ SDK ติดตั้ง, ผล import check, เวลาติดตั้ง (วัดจริง, cold)
+**บันทึก:** Python version, lock digests, รายชื่อ package ที่ SDK ติดตั้ง, ผล import check, เวลาติดตั้ง (วัดจริง, cold), ว่าเครื่องมี GPU driver หรือไม่ และรายชื่อ compute process จาก `nvidia-smi` ขณะ `prp-api` ให้บริการ (ถ้าเครื่องมี GPU)
 
-**เกณฑ์:** `PASS` เมื่อ PRP ผ่านทั้งข้อ 1–2 และ SDK ของ candidate import ได้โดยไม่มี ML module ใน `sys.modules`; `FAIL` เมื่อ SDK ดึง ML เข้ามาและไม่มีทางเลือก HTTP-only; disposition ที่เป็นไปได้: REUSE (HTTP only), ADAPT (เขียน thin HTTP client เอง)
+**เกณฑ์:** `PASS` เมื่อ PRP ผ่านทั้งข้อ 1–2 โดยไม่มี ML module ใน `sys.modules` หลัง import ทุก module ของ control และ process ของ `prp-api` ไม่ปรากฏใน GPU process list (เมื่อเครื่องมี GPU) และ SDK ของ candidate import ได้โดยไม่มี ML module; `FAIL` เมื่อ SDK ดึง ML เข้ามาและไม่มีทางเลือก HTTP-only; disposition ที่เป็นไปได้: REUSE (HTTP only), ADAPT (เขียน thin HTTP client เอง) การรันบนเครื่องที่ไม่มี driver เป็นหลักฐานเสริมที่เลือกได้ ไม่ใช่ precondition
 
 ### EV02 Real A/B registration — gate PRP-FR-010..015
 
