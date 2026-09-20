@@ -9,7 +9,6 @@ from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from pydantic import (
-    AnyUrl,
     AwareDatetime,
     ConfigDict,
     Field,
@@ -184,7 +183,7 @@ class Grant(ContractModel):
         extra="forbid",
     )
     grant_id: UUID
-    url: AnyUrl
+    url: Annotated[str, Field(pattern="^https://")]
     expires_at: AwareDatetime
 
 
@@ -208,6 +207,13 @@ class Capability(ContractModel):
     formats: list[str] | None = None
     limits: CapabilityLimits | None = None
     status: Literal["ready", "unavailable"]
+
+
+class CapabilityList(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    data: list[Capability]
 
 
 class Tool(ContractModel):

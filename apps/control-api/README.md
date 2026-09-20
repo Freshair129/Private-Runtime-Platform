@@ -2,7 +2,7 @@
 
 Python control plane ของ PRP ตาม [SDD-PRP-REPO §6](../../docs/SDD-PRP-REPO.md) และ ADR-PRP-009/011 หนึ่ง codebase สาม process: `prp-api` (ASGI), `prp-dispatcher` (outbox claim → send), `prp-observer` (critical observer)
 
-**สถานะ M3 (WP25 baseline): skeleton ที่ fail closed** มี `platform/`, `core/*` (domain types + ports), `api/` ที่ผูก route ครบ 14 operations ของ `contracts/openapi/prp-client.yaml` และ entrypoint ทั้งสาม แต่ **ยังไม่มี adapter** ทุก request ที่ผ่าน auth header ได้ตอบ `503 STATE_STORE_UNAVAILABLE` และ dispatcher/observer ปฏิเสธการ start จนกว่า M4 จะเพิ่ม adapters ตาม disposition ของ WP24 ไม่มี acceptance test ใดเปลี่ยนจาก NOT_RUN
+**สถานะ M3 (WP25 baseline): skeleton ที่ fail closed** มี `platform/`, `core/*` (domain types + ports), `contracts/` (generated models ตาม ADR-PRP-013), `api/` ที่ผูก route ครบ 14 operations ของ `contracts/openapi/prp-client.yaml` พร้อม body / parameter / response types จาก generated models (validation ตาม contract ทำงานจริง: unknown field, string number, out-of-range → 400) และ entrypoint ทั้งสาม แต่ **ยังไม่มี adapter** ทุก request ที่ผ่าน auth และ validation แล้วตอบ `503 STATE_STORE_UNAVAILABLE` และ dispatcher/observer ปฏิเสธการ start จนกว่า M4 จะเพิ่ม adapters ตาม disposition ของ WP24 ไม่มี acceptance test ใดเปลี่ยนจาก NOT_RUN
 
 ## คำสั่ง (Coding-Standards §10)
 

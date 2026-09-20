@@ -38,7 +38,7 @@ uv run --locked lint-imports
 
 | Package | บทบาท |
 |---|---|
-| `prp_voice.contract` | Pydantic models ของ worker contract (`extra="forbid"`) |
+| `prp_voice.contract` | `generated.py` = Pydantic models ที่ generate จาก `prp-worker.yaml` (ADR-PRP-013, ห้ามแก้), `base.py` = `ContractModel` (`extra="forbid"`, `frozen`), `models.py` = re-export + Literal aliases ที่มี test กัน drift |
 | `prp_voice.engines` | ports `AsrEngine` / `TtsEngine`; ที่เดียวที่จะ import ML ได้ (M4) |
 | `prp_voice.lifecycle` | identity, profile epoch, readiness gate, drain (ARCH §11: binding runtime UID + physical resource + profile + epoch) |
 | `prp_voice.server` | FastAPI app + service-credential check + main |

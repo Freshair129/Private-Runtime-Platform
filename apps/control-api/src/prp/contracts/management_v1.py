@@ -8,15 +8,7 @@ from __future__ import annotations
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
-from pydantic import (
-    AnyUrl,
-    AwareDatetime,
-    ConfigDict,
-    Field,
-    RootModel,
-    StrictBool,
-    StrictInt,
-)
+from pydantic import AwareDatetime, ConfigDict, Field, RootModel, StrictBool, StrictInt
 
 from prp.contracts.base import ContractModel
 
@@ -114,8 +106,11 @@ class NodeRegistration(ContractModel):
     )
     pool_id: UUID
     origin: Annotated[
-        AnyUrl,
-        Field(description="Allowed worker/adapter endpoint on the private network"),
+        str,
+        Field(
+            description="Allowed worker/adapter endpoint on the private network",
+            pattern="^https://",
+        ),
     ]
     physical_resource_id: Annotated[
         str,
@@ -137,7 +132,7 @@ class NodeUpdate(ContractModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    origin: AnyUrl | None = None
+    origin: Annotated[str | None, Field(pattern="^https://")] = None
     credential_ref: str | None = None
     desired_profile_id: str | None = None
     max_concurrent_invocations: Annotated[StrictInt | None, Field(ge=1)] = None

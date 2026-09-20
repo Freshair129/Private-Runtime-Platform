@@ -1,6 +1,8 @@
 """Worker application factory.
 
-M3: no engine is configured, so describe and invoke fail closed with RUNTIME_UNAVAILABLE, cancel
+Routes are bound to the generated worker contract models (ADR-PRP-013): FastAPI validates every
+JSON request against contracts/openapi/prp-worker.yaml before a handler runs. M3 semantics stay:
+no engine is configured, so describe and invoke fail closed with RUNTIME_UNAVAILABLE, cancel
 reports UNSUPPORTED and execution evidence reports 501 UNSUPPORTED. These are the honest answers of
 an adapter without an engine (ADR-PRP-005), not placeholders for success.
 """
@@ -9,8 +11,10 @@ import hmac
 import uuid
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
+from typing import Annotated
+from uuid import UUID
 
-from fastapi import Depends, FastAPI, Request, Response
+from fastapi import Depends, FastAPI, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -20,7 +24,11 @@ from prp_voice import __version__
 from prp_voice.contract.models import (
     CancelRequest,
     CancelResult,
+    Describe,
     ErrorCode,
+    ExecutionEvidence,
+    InvocationRequest,
+    InvocationResult,
     Readiness,
 )
 from prp_voice.lifecycle import Lifecycle
@@ -40,6 +48,7 @@ HTTP_STATUS: dict[str, int] = {
     "RUNTIME_UNAVAILABLE": 503,
     "DEADLINE_EXCEEDED": 504,
 }
+Epoch = Annotated[int, Query(ge=0)]
 
 
 class WorkerError(Exception):
@@ -123,23 +132,24 @@ def create_app(lifecycle: Lifecycle, *, service_token: str | None) -> FastAPI:
     app.add_exception_handler(RequestValidationError, handle_validation)
     app.add_exception_handler(StarletteHTTPException, handle_http)
 
-    @app.get("/prp/worker/v1/describe", operation_id="describeRuntime")
-    def describe() -> None:
+    @app.get("/prp/worker/v1/describe", operation_id="describeRuntime", response_model=Describe)
+    def describe() -> Describe:
         raise WorkerError("RUNTIME_UNAVAILABLE", "no engine configured; nothing to describe")
 
     @app.get("/prp/worker/v1/readiness", operation_id="getReadiness", response_model=Readiness)
-    def readiness(profile_epoch: int) -> Readiness:
+    def readiness(profile_epoch: Epoch) -> Readiness:
         return lifecycle.readiness(profile_epoch)
 
-    @app.post("/prp/worker/v1/invocations", operation_id="invoke")
-    def invoke() -> None:
+    @app.post("/prp/worker/v1/invocations", operation_id="invoke", response_model=InvocationResult)
+    def invoke(body: InvocationRequest) -> InvocationResult:
         raise WorkerError("RUNTIME_UNAVAILABLE", "no engine configured; invocation refused")
 
     @app.get(
         "/prp/worker/v1/invocations/{attempt_id}",
         operation_id="getExecutionEvidence",
+        response_model=ExecutionEvidence,
     )
-    def execution_evidence(attempt_id: str, runtime_epoch: int) -> None:
+    def execution_evidence(attempt_id: UUID, runtime_epoch: Epoch) -> ExecutionEvidence:
         raise WorkerError("UNSUPPORTED", "this adapter cannot report termination evidence yet")
 
     @app.post(
@@ -147,7 +157,7 @@ def create_app(lifecycle: Lifecycle, *, service_token: str | None) -> FastAPI:
         operation_id="cancelAttempt",
         response_model=CancelResult,
     )
-    def cancel(attempt_id: str, body: CancelRequest) -> CancelResult:
+    def cancel(attempt_id: UUID, body: CancelRequest) -> CancelResult:
         return CancelResult(
             attempt_id=attempt_id, disposition="UNSUPPORTED", observed_at=datetime.now(UTC)
         )

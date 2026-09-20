@@ -57,15 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Capability'
-                required:
-                - data
-                additionalProperties: false
+                $ref: '#/components/schemas/CapabilityList'
         '401': *id002
         '403': *id003
         '503': *id004
@@ -564,6 +556,16 @@ components:
       - capabilities
       - status
       additionalProperties: false
+    CapabilityList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Capability'
+      required:
+      - data
+      additionalProperties: false
     CapabilityLimits:
       type: object
       properties:
@@ -1025,7 +1027,6 @@ components:
         grant_id: *id014
         url:
           type: string
-          format: uri
           pattern: ^https://
         expires_at: *id015
       required:

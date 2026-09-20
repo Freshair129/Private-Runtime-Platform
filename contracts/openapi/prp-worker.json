@@ -1088,7 +1088,6 @@
           },
           "artifact_grant_url": {
             "type": "string",
-            "format": "uri",
             "pattern": "^https://",
             "description": "Time-bound, revocable read grant minted by PRP for this attempt only. The worker never receives a client key or storage credential."
           },

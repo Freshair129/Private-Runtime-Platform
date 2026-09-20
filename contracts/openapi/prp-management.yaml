@@ -648,7 +648,6 @@ components:
           format: uuid
         origin:
           type: string
-          format: uri
           pattern: '^https://'
           description: Allowed worker/adapter endpoint on the private network
         physical_resource_id:
@@ -669,7 +668,6 @@ components:
       properties:
         origin:
           type: string
-          format: uri
           pattern: '^https://'
         credential_ref:
           type: string

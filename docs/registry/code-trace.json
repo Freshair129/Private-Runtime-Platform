@@ -4,17 +4,17 @@
   "note": "Derived from pytest markers req(...) and at(...). Markers never change acceptance status; a complete receipt in docs/evidence/ does (validate_docs.py enforces both).",
   "projects": {
     "apps/control-api": {
-      "tests_collected": 36,
+      "tests_collected": 50,
       "tiers": {
-        "contracts": 8,
+        "contracts": 22,
         "unit": 28
       }
     },
     "workers/voice": {
-      "tests_collected": 14,
+      "tests_collected": 22,
       "tiers": {
-        "contracts": 8,
-        "unit": 6
+        "contracts": 14,
+        "unit": 8
       }
     }
   },
@@ -23,6 +23,7 @@
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_bearer_without_configured_verifier_fails_closed",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_missing_credential_yields_401_envelope_on_every_operation",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_no_interactive_docs_are_exposed",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_parameters_bodies_and_responses_conform_to_contract",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_route_inventory_equals_client_contract",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_unknown_route_and_wrong_method_use_not_found_envelope"
     ],
@@ -59,18 +60,70 @@
       "apps/control-api::tests/unit/test_execution_rules.py::test_second_dispatcher_cannot_reclaim_or_resend",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_rejects_unknown_fields_and_short_fence",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_reports_unsupported_and_evidence_is_501",
-      "workers/voice::tests/contracts/test_worker_conformance.py::test_describe_and_invoke_fail_closed_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_describe_and_valid_invoke_fail_closed_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[bad_discriminator]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[naive_datetime]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[short_fence]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[string_int]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[unknown_field]",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_missing_credential_is_rejected_on_every_operation",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_parameters_bodies_and_responses_conform_to_contract",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_readiness_reports_not_ready_without_engine",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_route_inventory_equals_worker_contract",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_unconfigured_credential_fails_closed",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_wrong_credential_is_rejected"
+    ],
+    "PRP-FR-024": [
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[n_not_1]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_bool]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_float]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_int]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[unknown_field]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_grant_request_bounds_and_strictness",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_creation_requires_the_idempotency_header_and_strict_numbers",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_examples_with_uuid_strings_are_accepted[job-asr.example.json]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_examples_with_uuid_strings_are_accepted[job-tts.example.json]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_models_are_frozen_and_reject_naive_timestamps",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_path_and_query_parameters_follow_the_contract",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_valid_chat_request_passes_validation_then_fails_closed",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_wrong_key_is_rejected_by_the_verifier"
+    ],
+    "PRP-FR-037": [
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[n_not_1]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_bool]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_float]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_int]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[unknown_field]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_grant_request_bounds_and_strictness",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_creation_requires_the_idempotency_header_and_strict_numbers",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_examples_with_uuid_strings_are_accepted[job-asr.example.json]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_examples_with_uuid_strings_are_accepted[job-tts.example.json]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_models_are_frozen_and_reject_naive_timestamps",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_path_and_query_parameters_follow_the_contract",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_valid_chat_request_passes_validation_then_fails_closed",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_wrong_key_is_rejected_by_the_verifier"
     ],
     "PRP-FR-039": [
       "apps/control-api::tests/unit/test_fleet_access_content.py::test_reads_require_owner_organization_and_live_artifact"
     ],
     "PRP-FR-040": [
       "apps/control-api::tests/unit/test_fleet_access_content.py::test_share_grant_ttl_is_bounded_by_24h_and_artifact_expiry"
+    ],
+    "PRP-FR-042": [
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_rejects_unknown_fields_and_short_fence",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_reports_unsupported_and_evidence_is_501",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_describe_and_valid_invoke_fail_closed_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[bad_discriminator]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[naive_datetime]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[short_fence]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[string_int]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[unknown_field]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_missing_credential_is_rejected_on_every_operation",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_parameters_bodies_and_responses_conform_to_contract",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_readiness_reports_not_ready_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_route_inventory_equals_worker_contract",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_unconfigured_credential_fails_closed",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_wrong_credential_is_rejected"
     ],
     "PRP-FR-044": [
       "apps/control-api::tests/unit/test_scheduling.py::test_client_deadline_quarantines_instead_of_releasing",
@@ -89,9 +142,23 @@
       "workers/voice::tests/unit/test_lifecycle.py::test_ready_only_for_the_current_epoch"
     ],
     "PRP-NFR-019": [
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[n_not_1]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_bool]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_float]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[string_int]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_contract_violations_are_rejected_before_any_handler[unknown_field]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_grant_request_bounds_and_strictness",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_creation_requires_the_idempotency_header_and_strict_numbers",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_examples_with_uuid_strings_are_accepted[job-asr.example.json]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_job_examples_with_uuid_strings_are_accepted[job-tts.example.json]",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_models_are_frozen_and_reject_naive_timestamps",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_path_and_query_parameters_follow_the_contract",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_valid_chat_request_passes_validation_then_fails_closed",
+      "apps/control-api::tests/contracts/test_contract_binding.py::test_wrong_key_is_rejected_by_the_verifier",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_bearer_without_configured_verifier_fails_closed",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_missing_credential_yields_401_envelope_on_every_operation",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_no_interactive_docs_are_exposed",
+      "apps/control-api::tests/contracts/test_openapi_conformance.py::test_parameters_bodies_and_responses_conform_to_contract",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_route_inventory_equals_client_contract",
       "apps/control-api::tests/contracts/test_openapi_conformance.py::test_unknown_route_and_wrong_method_use_not_found_envelope"
     ],
@@ -116,8 +183,14 @@
     "PRP-NFR-024": [
       "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_rejects_unknown_fields_and_short_fence",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_cancel_reports_unsupported_and_evidence_is_501",
-      "workers/voice::tests/contracts/test_worker_conformance.py::test_describe_and_invoke_fail_closed_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_describe_and_valid_invoke_fail_closed_without_engine",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[bad_discriminator]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[naive_datetime]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[short_fence]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[string_int]",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_invoke_rejects_contract_violations_before_the_handler[unknown_field]",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_missing_credential_is_rejected_on_every_operation",
+      "workers/voice::tests/contracts/test_worker_conformance.py::test_parameters_bodies_and_responses_conform_to_contract",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_readiness_reports_not_ready_without_engine",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_route_inventory_equals_worker_contract",
       "workers/voice::tests/contracts/test_worker_conformance.py::test_unconfigured_credential_fails_closed",
@@ -136,6 +209,6 @@
       ]
     }
   },
-  "tests_without_markers": 9,
+  "tests_without_markers": 11,
   "errors": []
 }

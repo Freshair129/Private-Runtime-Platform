@@ -115,19 +115,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Capability"
-                      }
-                    }
-                  },
-                  "required": [
-                    "data"
-                  ],
-                  "additionalProperties": false
+                  "$ref": "#/components/schemas/CapabilityList"
                 }
               }
             }
@@ -2368,6 +2356,21 @@
         ],
         "additionalProperties": false
       },
+      "CapabilityList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Capability"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false
+      },
       "CapabilityLimits": {
         "type": "object",
         "properties": {
@@ -3035,7 +3038,6 @@
           },
           "url": {
             "type": "string",
-            "format": "uri",
             "pattern": "^https://"
           },
           "expires_at": {

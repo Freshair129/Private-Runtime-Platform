@@ -74,6 +74,13 @@ repository_integration: NOT_PERFORMED
 - ปรับ placement จาก ADR-013 rule 5: control-api รวม generated modules ใน package `prp.contracts` (layer ใต้ `api | adapters` เหนือ `core`) เพราะ base class เดียวต่อ project (rule 4) ต้องถูก import จากทั้ง api และ adapters ซึ่ง layer rule ห้าม import กัน; import-linter เพิ่ม layer นี้และ contract ห้าม `prp.contracts` import อะไรนอกจาก Pydantic; per-file-ignores E501 เฉพาะ generated modules
 - gates ผ่านทั้งสอง project (mypy --strict 45 / 12 files, lint-imports 4 / 2 contracts kept, pytest 36 / 14); ยังไม่ wire เข้า route และ `prp_voice.contract.models` ที่เขียนมือยังอยู่จน action item 3; SDD §5–§6 อัปเดตที่ action item 5
 
+### ADR-PRP-013 action items 3–4 · generated models wired into routes (2026-09-20, C-2 / H3)
+- control-api: ทั้ง 14 routes ผูก body / parameters / success response กับ generated models (`ChatRequest`, `JobRequest` + header `Idempotency-Key`, `GrantRequest`, `SpeechRequest`; path `UUID`; query `limit` 1–100; status 201 / 202 / 204; `cancelJob` ประกาศทั้ง 200 และ 202) handler ยัง fail closed 503 จนกว่าจะมี adapter; multipart ของ `transcribeAudio` / `uploadArtifact` ยังไม่ผูกจนมี upload path (ต้อง python-multipart) test บันทึกข้อยกเว้นนี้ไว้ชัดเจน
+- voice worker: `prp_voice.contract.models` เปลี่ยนเป็น re-export จาก `generated.py` เหลือเฉพาะ Literal aliases 4 ตัวที่มี test กัน drift; server ผูก `InvocationRequest` / `CancelRequest`, path `attempt_id: UUID`, query `ge=0`; response_model ครบ 5 operations
+- conformance tests ใหม่ทั้งสอง project เทียบ `app.openapi()` กับ contract ต่อ operation หลัง normalize (type, property set, required, enum, const, format, bounds, oneOf) ตาม ADR-013 rule 8 และ strictness tests: string number / bool และ unknown field → 400 INVALID_REQUEST, UUID / date-time เป็น string → ผ่าน validation แล้วจึง 503, naive datetime → 400, ยืนยันคำอธิบายใน ADR rule 4 บน FastAPI path จริง
+- contract: promote response inline ของ `listCapabilities` เป็น component `CapabilityList` (client 29→30) และเปลี่ยน `format: uri` เป็น `type: string` + `pattern: ^https://` ใน 4 field (`Grant.url`, `AsrPayload.artifact_grant_url`, `NodeRegistration.origin`, `NodeUpdate.origin`) เพราะ Pydantic `AnyUrl` รับ pattern ไม่ได้ทำให้ generator ทิ้ง https constraint; พิสูจน์ด้วย dereference ว่า wire format เท่าเดิม ต่างเฉพาะ metadata `format`
+- gates ผ่าน: pytest 50 / 22, mypy --strict 45 / 12, lint-imports 4 / 2, `gen_models --check` เสถียร; `code-trace.json` regenerate; ทุก AT ยัง NOT_RUN
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

@@ -9,7 +9,6 @@ from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from pydantic import (
-    AnyUrl,
     AwareDatetime,
     ConfigDict,
     Field,
@@ -166,9 +165,10 @@ class AsrPayload(ContractModel):
     kind: Literal["asr"]
     profile_id: str
     artifact_grant_url: Annotated[
-        AnyUrl,
+        str,
         Field(
-            description="Time-bound, revocable read grant minted by PRP for this attempt only. The worker never receives a client key or storage credential."
+            description="Time-bound, revocable read grant minted by PRP for this attempt only. The worker never receives a client key or storage credential.",
+            pattern="^https://",
         ),
     ]
     mime_type: str
