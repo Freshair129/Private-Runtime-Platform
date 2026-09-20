@@ -43,6 +43,7 @@ uv run --locked lint-imports
 | `prp.core.execution` | Invocation, Attempt, Job, DispatchOutbox; settlement fence และ state rules (ADR-005) | platform, scheduling |
 | `prp.core.content` | Artifact, ArtifactGrant, ErasureTombstone; read/grant rules (API-PRP §6) | platform, access.model |
 | `prp.core.observability` | Observation, AuditEvent, UsageReceipt; sink ports | platform |
+| `prp.contracts` | generated Pydantic models ของ client / worker / management contract (ADR-PRP-013) + `base.py` ที่เขียนมือ; ห้ามแก้ `*_v1.py` ให้แก้ YAML แล้วรัน `tools/contracts/gen_models.py` | pydantic เท่านั้น |
 | `prp.adapters` | port implementations (ว่างใน M3; M4 เติมตาม fit-gap) | core ports, platform, vendor SDK |
 | `prp.api` | FastAPI app, request id, error envelope, auth facade, routes ตาม contract | core, platform |
 | `prp.entrypoints` | composition root และ process mains | ทุกอย่าง |

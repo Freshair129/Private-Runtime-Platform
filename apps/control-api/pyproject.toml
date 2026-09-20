@@ -41,6 +41,10 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "N"]
 
+[tool.ruff.lint.per-file-ignores]
+# Generated contract models keep the contract's own descriptions verbatim (ADR-PRP-013 rule 3).
+"src/prp/contracts/*_v1.py" = ["E501"]
+
 [tool.mypy]
 strict = true
 python_version = "3.12"
@@ -62,14 +66,21 @@ root_package = "prp"
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
-name = "Layered architecture (SDD-PRP-REPO 6.3): entrypoints -> api | adapters -> core -> platform"
+name = "Layered architecture (SDD-PRP-REPO 6.3): entrypoints -> api | adapters -> contracts -> core -> platform"
 type = "layers"
 layers = [
     "prp.entrypoints",
     "prp.api | prp.adapters",
+    "prp.contracts",
     "prp.core",
     "prp.platform",
 ]
+
+[[tool.importlinter.contracts]]
+name = "generated contract models depend on Pydantic only (ADR-PRP-013)"
+type = "forbidden"
+source_modules = ["prp.contracts"]
+forbidden_modules = ["prp.core", "prp.platform", "prp.api", "prp.adapters", "prp.entrypoints", "fastapi", "starlette"]
 
 [[tool.importlinter.contracts]]
 name = "core and platform are pure Python: no web framework, ORM, HTTP client or vendor SDK"

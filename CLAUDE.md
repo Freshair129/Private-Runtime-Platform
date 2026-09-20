@@ -21,7 +21,7 @@ Prose is Thai (`language: th-TH`); identifiers, API names, state names and diagr
 | `contracts/openapi/*.yaml`, `contracts/schemas/`, `contracts/examples/` | protocol source of truth | YAML is authored; regenerate the `.json` twins with `tools/contracts/export_json.py` (CI rejects stale ones) |
 | `tools/docs/`, `tools/contracts/` | validator, HTML builder, sequence renderer; contract export and example validation | repo tooling only; `tools/contracts` needs `pip install -r tools/contracts/requirements.txt` |
 | `docs/registry/*.json`, `docs/*.html` | **Derived** | never hand-edit registry content; HTML is gitignored and built on demand |
-| `apps/control-api/` | Python control plane: `platform/` kernel, `core/` six bounded contexts with ports, `api/` bound to the client contract, `entrypoints/` (api, dispatcher, observer) | own `uv.lock`; adding any ML or CUDA package fails `test_no_ml_import` and `lint-imports` |
+| `apps/control-api/` | Python control plane: `platform/` kernel, `core/` six bounded contexts with ports, `contracts/` generated models, `api/` bound to the client contract, `entrypoints/` (api, dispatcher, observer) | own `uv.lock`; adding any ML or CUDA package fails `test_no_ml_import` and `lint-imports` |
 | `workers/voice/` | Python speech worker: `contract/` models, `engines/` ports, `lifecycle/`, `server/` bound to the worker contract | own `uv.lock`; ML imports allowed only under `engines/` from M4 |
 
 ## Commands
@@ -41,6 +41,11 @@ python tools/contracts/export_json.py
 ```bash
 # Examples must satisfy the schemas named in contracts/examples/index.json.
 python tools/contracts/validate_examples.py
+```
+
+```bash
+# Regenerate the Pydantic contract models in both projects (needs the tools requirements installed and both projects synced; --check is what CI runs).
+python tools/contracts/gen_models.py
 ```
 
 Python gates (Coding-Standards §10) run inside `apps/control-api` or `workers/voice`; swap `src/prp` for `src/prp_voice` in the worker. On a Windows cp874 console set `PYTHONUTF8=1` before `lint-imports`.
@@ -106,7 +111,8 @@ The central idea is **one canonical source with derived views, and a validator t
 
 ## How the Python code fits together
 
-- **Layers** (`apps/control-api/src/prp`): `entrypoints` → `api` | `adapters` → `core` → `platform`. `import-linter` enforces it from `pyproject.toml`; `core` and `platform` may not import FastAPI, Pydantic, ORMs or HTTP clients, and nothing may import torch, vLLM, whisper or similar. Wire ports to adapters only in `entrypoints/wiring.py`.
+- **Layers** (`apps/control-api/src/prp`): `entrypoints` → `api` | `adapters` → `contracts` → `core` → `platform`. `import-linter` enforces it from `pyproject.toml`; `core` and `platform` may not import FastAPI, Pydantic, ORMs or HTTP clients, `contracts` may import Pydantic only, and nothing may import torch, vLLM, whisper or similar. Wire ports to adapters only in `entrypoints/wiring.py`.
+- **Contract models are generated** (ADR-PRP-013). `prp/contracts/*_v1.py` and `workers/voice/src/prp_voice/contract/generated.py` are derived from `contracts/openapi/*.yaml` by `tools/contracts/gen_models.py`; only the `base.py` files (`ContractModel`: `extra="forbid"`, `frozen=True`, strict int/float/bool from the generator) are hand-written. Never edit a generated module: change the YAML, regenerate, commit both. CI fails on a stale module.
 - **Contexts** under `core/` mirror the ARCH §2 ownership table one to one: `access`, `fleet`, `scheduling` (router selects, admission reserves), `execution`, `content`, `observability`. Each exposes frozen dataclasses in `model.py`, `Protocol` ports in `ports.py`, and pure rule functions; cross-context calls go through the owning context's ports.
 - **Contract binding**: `api/routes.py` declares every client operation with the contract's `operationId`; `tests/contracts/test_openapi_conformance.py` diffs `app.openapi()` against `contracts/openapi/prp-client.yaml`. The worker does the same against `prp-worker.yaml`. Change the YAML first, then the routes.
 - **Test tiers**: `tests/unit` (pure), `tests/contracts` (inventory, envelopes, no-ML import, lock contents), `tests/integration` (real services, M4+), `workers/voice/tests/hardware` (self-hosted only). Mark tests with `@pytest.mark.req("PRP-FR-nnn")`; use `@pytest.mark.at("PRP-AT-nnn")` only when the test is the acceptance procedure itself, and never more than one `at` per test.

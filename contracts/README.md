@@ -43,6 +43,16 @@ python tools/contracts/validate_examples.py
 ```
 
 ```sh
+python tools/contracts/gen_models.py --check
+```
+
+```sh
+python tools/contracts/gen_models.py
+```
+
+`gen_models.py` สร้าง Pydantic models ตาม ADR-PRP-013 ลง `apps/control-api/src/prp/contracts/{client_v1,worker_v1,management_v1}.py` และ `workers/voice/src/prp_voice/contract/generated.py` ต้อง sync ทั้งสอง project ด้วย uv ก่อน เพราะ output ถูก format ด้วย ruff ของ project นั้น
+
+```sh
 python tools/docs/validate_docs.py
 ```
 

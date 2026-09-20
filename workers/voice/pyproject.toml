@@ -39,6 +39,10 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "N"]
 
+[tool.ruff.lint.per-file-ignores]
+# Generated contract models keep the contract's own descriptions verbatim (ADR-PRP-013 rule 3).
+"src/prp_voice/contract/generated.py" = ["E501"]
+
 [tool.mypy]
 strict = true
 python_version = "3.12"

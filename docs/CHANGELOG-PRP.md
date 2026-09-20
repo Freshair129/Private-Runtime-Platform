@@ -68,6 +68,12 @@ repository_integration: NOT_PERFORMED
 - test conformance ของ control-api resolve `$ref` ใน Error envelope แทนอ่าน inline
 - action items 2–5 ของ ADR-013 (gen_models tool, generate + wire, FastAPI binding, docs) รอ M4 kickoff
 
+### ADR-PRP-013 action item 2 · generator wrapper (2026-09-20, C-2 / H3)
+- เพิ่ม `tools/contracts/gen_models.py`: ตาราง contract → project → module → base class, flags ตาม ADR rule 3, post-step `ruff check --fix --select I` และ `ruff format` ของ project เป้าหมายผ่าน `uv run --locked` ให้ output canonical, `--check` regenerate แล้วเทียบ; pin `datamodel-code-generator==0.82.0` ใน `tools/contracts/requirements.txt`; `contracts.yml` sync ทุก project แล้วรัน `gen_models.py --check`
+- generated modules: `apps/control-api/src/prp/contracts/{client_v1,worker_v1,management_v1}.py` และ `workers/voice/src/prp_voice/contract/generated.py` (307 / 434 / 267 / 434 บรรทัด) พร้อม base class `ContractModel` (`extra="forbid"`, `frozen=True`) ที่เขียนมือหนึ่งไฟล์ต่อ project; regenerate ซ้ำไม่มี diff
+- ปรับ placement จาก ADR-013 rule 5: control-api รวม generated modules ใน package `prp.contracts` (layer ใต้ `api | adapters` เหนือ `core`) เพราะ base class เดียวต่อ project (rule 4) ต้องถูก import จากทั้ง api และ adapters ซึ่ง layer rule ห้าม import กัน; import-linter เพิ่ม layer นี้และ contract ห้าม `prp.contracts` import อะไรนอกจาก Pydantic; per-file-ignores E501 เฉพาะ generated modules
+- gates ผ่านทั้งสอง project (mypy --strict 45 / 12 files, lint-imports 4 / 2 contracts kept, pytest 36 / 14); ยังไม่ wire เข้า route และ `prp_voice.contract.models` ที่เขียนมือยังอยู่จน action item 3; SDD §5–§6 อัปเดตที่ action item 5
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

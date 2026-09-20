@@ -31,8 +31,23 @@ jobs:
       - name: Install contract tooling
         run: python -m pip install --quiet -r tools/contracts/requirements.txt
 
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/uv.lock"
+
+      - name: Sync every Python project (generated models are formatted with each project's ruff)
+        run: |
+          for pyproject in apps/*/pyproject.toml workers/*/pyproject.toml; do
+            project="$(dirname "$pyproject")"
+            (cd "$project" && uv python install && uv sync --locked --group dev)
+          done
+
       - name: JSON exports match their YAML source
         run: python tools/contracts/export_json.py --check
+
+      - name: Generated Pydantic models match their YAML source (ADR-PRP-013)
+        run: python tools/contracts/gen_models.py --check
 
       - name: Examples conform to their schemas
         run: python tools/contracts/validate_examples.py

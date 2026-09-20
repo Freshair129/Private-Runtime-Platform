@@ -2,3 +2,5 @@
 # Exact pins verified on 2026-09-20; move to a uv lock together with the rest of tools/ at WP25.
 pyyaml==6.0.3
 jsonschema==4.26.0
+# ADR-PRP-013: contract model generator; flags live in tools/contracts/gen_models.py
+datamodel-code-generator==0.82.0
