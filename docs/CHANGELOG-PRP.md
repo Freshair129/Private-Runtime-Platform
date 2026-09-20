@@ -114,6 +114,14 @@ repository_integration: NOT_PERFORMED
 - procedure §2 และ EV01 แก้ให้ GPU driver บนเครื่อง control เป็นสิ่งที่บันทึก ไม่ใช่สิ่งต้องห้าม เกณฑ์ PASS ของ NFR-021 ระบุหลักฐานจริง: ไม่มี ML module ใน `sys.modules` หลัง import ทุก module ของ control และ process ของ `prp-api` ไม่อยู่ใน GPU process list; host ไม่มี driver เป็นหลักฐานเสริมที่เลือกได้
 - record `WP24-2026-09-20-run1`: DEV-01 คงไว้เพื่อประวัติพร้อม `resolution` และสถานะ RESOLVED_PROCEDURE_CORRECTED; verdict และ artifact ของ EV01 ไม่เปลี่ยน; template `control_host.gpu_driver_present` default เป็น null
 
+### WP24 owner decisions ชุดที่สอง · reviewer, time box, C out of scope, EV07 blocked until WP10 (2026-09-20, C-1 / H2)
+- owner ให้คำตัดสินด้วยวาจากับ main session เมื่อ 2026-09-20 สี่ข้อ บันทึกลง `docs/evidence/wp24/WP24-2026-09-20-run1.json`, `docs/registry/wp24-run-record-template.json` (โครงเท่านั้น) และ `docs/WP24-EXPERIMENT-PROCEDURE.md` §6 / §9
+- **Reviewer**: owner ทำหน้าที่ reviewer เองด้วยเพราะไม่มีบุคคลที่สอง — `people.reviewer` = "Freshair129 (repository owner; same person as operator, no independent reviewer available)"; `decision_receipt.tests_and_blocked_items` บันทึกข้อจำกัดนี้ไว้
+- **Time box**: 3 วันทำงาน (8 ชั่วโมง) ต่อ candidate สำหรับ EV01–EV08 ไม่รวมเวลาดาวน์โหลด model weight — `run_window.time_box_hours_per_candidate` = 24 พร้อม field ใหม่ `time_box_note`; experiment ที่ยังไม่เสร็จเมื่อหมดเวลาเป็น BLOCKED ไม่ต่อเวลา; template เพิ่ม `time_box_note: null` ข้าง `time_box_hours_per_candidate` เป็นโครงสร้างเท่านั้น (ไม่ใส่ค่า)
+- **Candidate C**: ตัดสินไม่อยู่ใน scope ของ WP24 (สองเครื่องไม่มีความจำเป็นต้องมี replica, STACK-EVALUATION-PRP หมวด 7 ไม่บังคับ C เมื่อ A/B อยู่ระหว่างประเมิน) — `scope_decisions.candidate_C_in_scope` เป็น object พร้อมเหตุผล; `candidates[C]` เป็น `in_scope: false`, `status: BLOCKED`; ทุก EV01–EV08 `per_candidate.C` เป็น BLOCKED พร้อม blocker และ `gate_verdicts` เป็น BLOCKED ทั้งหมด
+- **Speech**: ตัดสินไม่อยู่ใน scope ของ WP24; EV07 เป็น BLOCKED จนกว่า WP10 (speech extraction spike) จะส่งมอบ speech candidate ที่มี license — `scope_decisions.speech_in_scope` เป็น object เดียวกัน; EV07 ของ candidate A / B เป็น BLOCKED พร้อม blocker และ `gate_verdicts` เป็น BLOCKED (candidate C ของ EV07 ใช้ blocker ของ C แทน)
+- ไม่มีการรัน experiment ใหม่ ไม่มีตัวเลข benchmark ใหม่ และไม่แตะ `docs/registry/reuse-fit-gap-template.json` / `stack-evaluation-template.json`
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
