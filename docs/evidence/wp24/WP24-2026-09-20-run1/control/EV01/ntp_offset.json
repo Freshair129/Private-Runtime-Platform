@@ -1,0 +1,11 @@
+{
+ "method": "w32tm /stripchart /computer:time.windows.com /samples:3 /period:2 /dataonly (read-only NTP query; offset = local - server; run via PowerShell)",
+ "offsets_seconds": [
+  -0.6247612,
+  -0.625333,
+  -0.6253737
+ ],
+ "measured_at_utc": "2026-09-20T16:44:55+00:00",
+ "raw_file": "stripchart_raw.txt",
+ "note": "w32tm /query /status exited with code 38 and no output on this host (Windows Time service state not queried); the stripchart samples stand on their own"
+}

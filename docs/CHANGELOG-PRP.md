@@ -143,6 +143,11 @@ repository_integration: NOT_PERFORMED
 - candidate B ยืนยันเป็น vLLM ตามเดิมหลังพิจารณา Ollama/GGUF (บันทึกใน `scope_decisions.candidate_B_engine`); Ollama ใช้เป็น dev target ของ chatbot client ได้ ไม่ใช่ runtime ของ PRP; BYOM: owner รับ model แล้ว license receipt ตาม SEC-007 ยังต้องยื่นก่อน activation
 - template `shared_revision` เพิ่ม field pin (requested_as, last_modified, tokenizer/generation hashes, architecture, dtype, weights, context note, llm_license, decided_by/on, pins_fetched_at) และ `scope_decisions.candidate_B_engine`; procedure §9 ข้อ 1 ตัดสินแล้ว ทุกข้อใน §9 ปิดครบ
 
+### WP24 control-host inventory ด้วย tools/wp24 (2026-09-20, C-1 / H2)
+- รัน `tools/wp24/host_inventory.py --host-id control` บนเครื่อง control จริงครั้งแรก (การใช้เครื่องมือจาก PR #9 ครั้งแรก) artifact อยู่ที่ `docs/evidence/wp24/WP24-2026-09-20-run1/control/EV01/` ตามที่ `EV02-CHECKLIST.md` กำหนด; ค่าที่ได้ผูกเข้า `environment.control_host` ของ record: NVIDIA GeForce RTX 5060 Ti 16311 MiB driver 616.92, Windows 10.0.26200, Python 3.12.10, Docker มี, systemctl ไม่มี, disk ว่างสำหรับ weights ~217 GiB บน `F:\`
+- ข้อสังเกตต่อเครื่องมือ: ค่า clock skew ของ tool รวมเวลาระหว่างการดึง reference time กับการวัด และตัวอย่างจาก HTTP Date header ไม่สอดคล้องกัน (15.1 / 2.3 / 3.4 s) จึงวัดใหม่ด้วย `w32tm /stripchart` กับ time.windows.com (`ntp_offset.json`) เป็นค่าอ้างอิงจริง และ header ของ `nvidia-smi` บน Windows ใช้คำว่า `CUDA UMD Version:` ไม่ใช่ `CUDA Version:` ที่ tool มองหา (เก็บ header เป็น artifact และกรอก 13.4 เอง) ทั้งสองข้อเป็น candidate สำหรับปรับ `host_inventory.py` ก่อนใช้กับ host A/B ไม่ใช่ blocker
+- ไม่มี verdict เปลี่ยน; EV02 ยัง NOT_RUN; ทุก AT ยัง NOT_RUN
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

@@ -1,0 +1,19 @@
+{
+ "method": "HTTP HEAD https://api.github.com; Date header (1 s resolution) vs local clock at mid-RTT; 3 samples",
+ "samples": [
+  {
+   "rtt_seconds": 0.153,
+   "local_minus_reference_seconds": 15.126
+  },
+  {
+   "rtt_seconds": 0.104,
+   "local_minus_reference_seconds": 2.257
+  },
+  {
+   "rtt_seconds": 0.101,
+   "local_minus_reference_seconds": 3.36
+  }
+ ],
+ "measured_at_utc": "2026-09-20T16:42:30+00:00",
+ "note": "|skew| below ~1.5 s is indistinguishable from header resolution plus RTT"
+}
