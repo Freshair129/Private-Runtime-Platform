@@ -284,7 +284,7 @@ def collect_ntp_offset(
         offsets = parser(stdout)
         if not offsets:
             observations.append(
-                f"{tool} ran (exit {result['return_code']}) but no offset could be parsed from its output"
+                f"{tool} ran (exit {result['return_code']}) but no offset could be parsed"
             )
             continue
         return {
