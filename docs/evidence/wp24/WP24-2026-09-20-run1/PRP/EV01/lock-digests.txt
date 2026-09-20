@@ -1,0 +1,2 @@
+fff29f55f82f2098d58a687ab4a87a08aa8f529cd1fd39b18b006fad5643e8ec *<scratch>/ev01/PRP/apps/control-api/uv.lock
+adfb8f9558e85c03a639564d331376683360d65303522044457bcf20b53e8241 *<scratch>/ev01/PRP/workers/voice/uv.lock

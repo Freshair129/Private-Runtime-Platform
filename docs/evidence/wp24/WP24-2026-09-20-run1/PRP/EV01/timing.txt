@@ -1,0 +1,8 @@
+clone_seconds=0.6
+commit=30a7d39a697bad06d5d46cc6d48101e3bd8046d5
+control-api uv_sync_seconds=3.1 rc=0 cache=warm
+Python 3.12.10
+voice uv_sync_seconds=1.5 rc=0 cache=warm
+Python 3.12.10
+control-api gates_seconds=11.7
+voice gates_seconds=5.1

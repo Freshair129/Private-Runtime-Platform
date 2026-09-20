@@ -1,0 +1,52 @@
+$ uv run --locked ruff check .
+All checks passed!
+rc=0
+$ uv run --locked ruff format --check .
+54 files already formatted
+rc=0
+$ uv run --locked mypy --strict src/prp
+Success: no issues found in 45 source files
+rc=0
+$ uv run --locked lint-imports
+
+╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
+╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
+ ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
+ ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
+╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
+╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
+  └──▶║║                    ▲ 
+      ╚╝────────────────────┘
+
+
+---------
+Contracts
+---------
+
+Analyzed 59 files, 133 dependencies.
+------------------------------------
+
+Layered architecture (SDD-PRP-REPO 6.3): entrypoints -> api | adapters -> 
+contracts -> core -> platform KEPT
+generated contract models depend on Pydantic only (ADR-PRP-013) KEPT
+core and platform are pure Python: no web framework, ORM, HTTP client or vendor
+SDK KEPT
+control plane never imports ML runtimes or weights loaders (PRP-NFR-021, 
+Coding-Standards 4) KEPT
+
+Contracts: 4 kept, 0 broken.
+rc=0
+$ uv run --locked pytest tests/unit tests/contracts -q
+..................................................                       [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  <scratch>/ev01\PRP\apps\control-api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv\Lib\site-packages\starlette\testclient.py:53
+  <scratch>/ev01\PRP\apps\control-api\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+50 passed, 2 warnings in 0.71s
+rc=0

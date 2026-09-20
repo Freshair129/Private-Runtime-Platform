@@ -1,0 +1,7 @@
+{"ts": "2026-09-20T15:43:04.368158+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Started server process [30032]"}
+{"ts": "2026-09-20T15:43:04.368661+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Waiting for application startup."}
+{"ts": "2026-09-20T15:43:04.368661+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Application startup complete."}
+{"ts": "2026-09-20T15:43:04.368661+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)"}
+{"ts": "2026-09-20T15:43:08.109323+00:00", "level": "INFO", "logger": "uvicorn.access", "message": "127.0.0.1:60165 - \"GET /v1/models HTTP/1.1\" 401"}
+{"ts": "2026-09-20T15:43:08.227448+00:00", "level": "INFO", "logger": "uvicorn.access", "message": "127.0.0.1:60168 - \"GET /v1/models HTTP/1.1\" 503"}
+{"ts": "2026-09-20T15:43:08.325836+00:00", "level": "INFO", "logger": "uvicorn.access", "message": "127.0.0.1:60172 - \"POST /v1/chat/completions HTTP/1.1\" 503"}

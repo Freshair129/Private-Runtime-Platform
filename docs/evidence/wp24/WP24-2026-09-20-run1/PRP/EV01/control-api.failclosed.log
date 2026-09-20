@@ -1,0 +1,50 @@
+== settings defaults
+bind 127.0.0.1 8080
+['bind_host', 'bind_port', 'from_env', 'log_level', 'route_preference']
+== start prp-api (no PRP_* env set)
+== nvidia-smi compute apps while api runs
+pid, process_name, used_gpu_memory [MiB]
+<25 unrelated desktop processes omitted from the artifact; prp-api pid 30032 is NOT in the list; no python/uvicorn process holds the GPU>
+== GET /v1/models noauth
+HTTP/1.1 401 Unauthorized
+date: Sun, 20 Sep 2026 15:43:07 GMT
+server: uvicorn
+x-request-id: c34f44b9-b54e-4f31-bf79-4f34a113fe74
+content-length: 194
+content-type: application/json
+
+{"error":{"code":"INVALID_KEY","type":"authentication","message":"missing or malformed bearer credential","param":null},"request_id":"c34f44b9-b54e-4f31-bf79-4f34a113fe74","safe_to_retry":false}
+== GET /v1/models bearer
+HTTP/1.1 503 Service Unavailable
+date: Sun, 20 Sep 2026 15:43:07 GMT
+server: uvicorn
+x-request-id: 8e366ead-3d55-4084-bed1-53a0089565a9
+content-length: 217
+content-type: application/json
+
+{"error":{"code":"STATE_STORE_UNAVAILABLE","type":"unavailable","message":"no key verifier configured; refusing to authenticate","param":null},"request_id":"8e366ead-3d55-4084-bed1-53a0089565a9","safe_to_retry":false}
+== POST /v1/chat/completions bearer
+HTTP/1.1 503 Service Unavailable
+date: Sun, 20 Sep 2026 15:43:07 GMT
+server: uvicorn
+x-request-id: 10013714-517a-44dd-9cd2-86194f4950ff
+content-length: 217
+content-type: application/json
+
+{"error":{"code":"STATE_STORE_UNAVAILABLE","type":"unavailable","message":"no key verifier configured; refusing to authenticate","param":null},"request_id":"10013714-517a-44dd-9cd2-86194f4950ff","safe_to_retry":false}
+== api stdout (first 15 lines)
+{"ts": "2026-09-20T15:43:04.368158+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Started server process [30032]"}
+{"ts": "2026-09-20T15:43:04.368661+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Waiting for application startup."}
+{"ts": "2026-09-20T15:43:04.368661+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Application startup complete."}
+{"ts": "2026-09-20T15:43:04.368661+00:00", "level": "INFO", "logger": "uvicorn.error", "message": "Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)"}
+{"ts": "2026-09-20T15:43:08.109323+00:00", "level": "INFO", "logger": "uvicorn.access", "message": "127.0.0.1:60165 - \"GET /v1/models HTTP/1.1\" 401"}
+{"ts": "2026-09-20T15:43:08.227448+00:00", "level": "INFO", "logger": "uvicorn.access", "message": "127.0.0.1:60168 - \"GET /v1/models HTTP/1.1\" 503"}
+{"ts": "2026-09-20T15:43:08.325836+00:00", "level": "INFO", "logger": "uvicorn.access", "message": "127.0.0.1:60172 - \"POST /v1/chat/completions HTTP/1.1\" 503"}
+== dispatcher
+{"ts": "2026-09-20T15:43:09.612014+00:00", "level": "ERROR", "logger": "prp.entrypoints.dispatcher", "message": "dispatcher refuses to start: no outbox store or runtime invoker configured (M4)", "process": "dispatcher", "exit_code": 3}
+rc=3
+== observer
+{"ts": "2026-09-20T15:43:09.813114+00:00", "level": "ERROR", "logger": "prp.entrypoints.observer", "message": "observer refuses to start: no runtime describer or observation sink configured (M4)", "process": "observer", "exit_code": 3}
+rc=3
+== import smoke: ML modules after importing every prp module
+prp modules imported: 44 | ML modules loaded: none
