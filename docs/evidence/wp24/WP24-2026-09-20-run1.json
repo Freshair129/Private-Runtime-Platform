@@ -13,11 +13,12 @@
   "run_window": {
     "started_at": "2026-09-20T15:41:52+00:00",
     "finished_at": null,
-    "time_box_hours_per_candidate": null
+    "time_box_hours_per_candidate": 24,
+    "time_box_note": "3 working days (8 h) per candidate, excluding model weight download; unfinished experiments at the end are BLOCKED, never extended (owner decision 2026-09-20)"
   },
   "people": {
     "operator": "Freshair129 (repository owner)",
-    "reviewer": null,
+    "reviewer": "Freshair129 (repository owner; same person as operator, no independent reviewer available)",
     "approver": null
   },
   "scope_decisions": {
@@ -39,8 +40,18 @@
       "decided_on": "2026-09-20",
       "note": "Owner brings the model and holds its rights; a license receipt per SEC-007 / SECURITY-DATA section 8 is still required before activation and is recorded in shared_revision."
     },
-    "candidate_C_in_scope": null,
-    "speech_in_scope": null
+    "candidate_C_in_scope": {
+      "in_scope": false,
+      "decided_by": "owner",
+      "decided_on": "2026-09-20",
+      "note": "two hosts, no replica need; STACK-EVALUATION-PRP section 7 does not require C when A/B are under evaluation"
+    },
+    "speech_in_scope": {
+      "in_scope": false,
+      "decided_by": "owner",
+      "decided_on": "2026-09-20",
+      "note": "EV07 BLOCKED until WP10 (speech extraction spike) delivers a licensed speech candidate; no stub is used as proof"
+    }
   },
   "deviations": [
     {
@@ -202,7 +213,7 @@
     {
       "id": "C",
       "name": "Ray Serve conditional alternative",
-      "in_scope": null,
+      "in_scope": false,
       "sources": [
         "SRC-11",
         "SRC-12"
@@ -212,10 +223,10 @@
         "python_packages": [],
         "config_files": []
       },
-      "status": "NOT_RUN",
+      "status": "BLOCKED",
       "gate_failures": [],
       "blocked_items": [
-        "scope undecided by the owner (procedure section 9 item 3)"
+        "out of scope by owner decision 2026-09-20"
       ],
       "operator_cost_measurements": {
         "deploy_steps_count": null,
@@ -417,7 +428,7 @@
             "PRP-NFR-022": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": "candidate C scope undecided by the owner (procedure section 9 item 3); Ray client SDK not installed."
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     },
@@ -478,7 +489,7 @@
           "blocker": null
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -489,15 +500,15 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-FR-010": "NOT_RUN",
-            "PRP-FR-011": "NOT_RUN",
-            "PRP-FR-012": "NOT_RUN",
-            "PRP-FR-013": "NOT_RUN",
-            "PRP-FR-014": "NOT_RUN",
-            "PRP-FR-015": "NOT_RUN"
+            "PRP-FR-010": "BLOCKED",
+            "PRP-FR-011": "BLOCKED",
+            "PRP-FR-012": "BLOCKED",
+            "PRP-FR-013": "BLOCKED",
+            "PRP-FR-014": "BLOCKED",
+            "PRP-FR-015": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     },
@@ -543,7 +554,7 @@
           "blocker": null
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -554,10 +565,10 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-NFR-023": "NOT_RUN"
+            "PRP-NFR-023": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     },
@@ -621,7 +632,7 @@
           "blocker": null
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -632,16 +643,16 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-FR-003": "NOT_RUN",
-            "PRP-FR-004": "NOT_RUN",
-            "PRP-FR-005": "NOT_RUN",
-            "PRP-FR-006": "NOT_RUN",
-            "PRP-FR-007": "NOT_RUN",
-            "PRP-FR-008": "NOT_RUN",
-            "PRP-FR-009": "NOT_RUN"
+            "PRP-FR-003": "BLOCKED",
+            "PRP-FR-004": "BLOCKED",
+            "PRP-FR-005": "BLOCKED",
+            "PRP-FR-006": "BLOCKED",
+            "PRP-FR-007": "BLOCKED",
+            "PRP-FR-008": "BLOCKED",
+            "PRP-FR-009": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     },
@@ -690,7 +701,7 @@
           "blocker": null
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -701,11 +712,11 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-FR-017": "NOT_RUN",
-            "PRP-FR-018": "NOT_RUN"
+            "PRP-FR-017": "BLOCKED",
+            "PRP-FR-018": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     },
@@ -757,7 +768,7 @@
           "blocker": null
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -768,12 +779,12 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-FR-020": "NOT_RUN",
-            "PRP-FR-021": "NOT_RUN",
-            "PRP-FR-022": "NOT_RUN"
+            "PRP-FR-020": "BLOCKED",
+            "PRP-FR-021": "BLOCKED",
+            "PRP-FR-022": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     },
@@ -786,7 +797,7 @@
       ],
       "per_candidate": {
         "A": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -797,14 +808,14 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-FR-018": "NOT_RUN",
-            "PRP-FR-044": "NOT_RUN"
+            "PRP-FR-018": "BLOCKED",
+            "PRP-FR-044": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "speech out of WP24 scope; blocked until WP10 (owner decision 2026-09-20)"
         },
         "B": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -815,14 +826,14 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-FR-018": "NOT_RUN",
-            "PRP-FR-044": "NOT_RUN"
+            "PRP-FR-018": "BLOCKED",
+            "PRP-FR-044": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "speech out of WP24 scope; blocked until WP10 (owner decision 2026-09-20)"
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -833,11 +844,11 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-FR-018": "NOT_RUN",
-            "PRP-FR-044": "NOT_RUN"
+            "PRP-FR-018": "BLOCKED",
+            "PRP-FR-044": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     },
@@ -883,7 +894,7 @@
           "blocker": null
         },
         "C": {
-          "status": "NOT_RUN",
+          "status": "BLOCKED",
           "started_at": null,
           "finished_at": null,
           "cold_or_warm": null,
@@ -894,10 +905,10 @@
           "observations": [],
           "artifacts": [],
           "gate_verdicts": {
-            "PRP-NFR-024": "NOT_RUN"
+            "PRP-NFR-024": "BLOCKED"
           },
           "disposition_hint": null,
-          "blocker": null
+          "blocker": "candidate C out of WP24 scope (owner decision 2026-09-20)"
         }
       }
     }
@@ -913,7 +924,9 @@
     "datastore_ownership": null,
     "immutable_version_matrix": null,
     "gap_code_owner": null,
-    "tests_and_blocked_items": [],
+    "tests_and_blocked_items": [
+      "no independent reviewer: operator and reviewer are the same person (owner decision 2026-09-20)"
+    ],
     "reviewer": null,
     "rollback_exit_plan": null,
     "approved_by": null,

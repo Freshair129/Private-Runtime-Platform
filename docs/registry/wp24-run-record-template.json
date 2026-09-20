@@ -13,7 +13,8 @@
   "run_window": {
     "started_at": null,
     "finished_at": null,
-    "time_box_hours_per_candidate": null
+    "time_box_hours_per_candidate": null,
+    "time_box_note": null
   },
   "people": {
     "operator": null,
