@@ -20,3 +20,7 @@
 3. แก้ `**Status:**` และ `**Evidence:**` ของ AT นั้นใน TEST-PRP.md ให้ชี้ `evidence_id`
 4. รัน `python tools/trace/collect_trace.py` แล้ว `python tools/docs/validate_docs.py` ต้อง `errors: []`
 5. commit ทั้งสามอย่างใน PR เดียว (Git-Standards: evidence required)
+
+## WP24 run records (`wp24/`)
+
+`wp24/<record_id>.json` และโฟลเดอร์ artifact `wp24/<record_id>/<candidate>/<EVnn>/` เก็บผลของ WP24 fit-gap และ A/B spikes ตาม [`../WP24-EXPERIMENT-PROCEDURE.md`](../WP24-EXPERIMENT-PROCEDURE.md) และ template [`../registry/wp24-run-record-template.json`](../registry/wp24-run-record-template.json) ไฟล์เหล่านี้เป็นหลักฐานระดับ candidate ไม่ใช่ acceptance receipt validator ไม่นับเป็น receipt และไม่เปลี่ยนสถานะ AT ใด ห้ามใส่ secret, เสียง / ข้อความลูกค้า หรือ model weights

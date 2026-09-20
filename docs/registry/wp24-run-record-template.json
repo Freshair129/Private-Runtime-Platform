@@ -1,0 +1,745 @@
+{
+  "kind": "WP24_RUN_RECORD_TEMPLATE_NOT_RESULTS",
+  "version": "0.4.0-draft",
+  "template_note": "Copy to docs/evidence/wp24/<record_id>.json before the first command runs. Every null is filled from a measurement, a command log or an owner decision, never from documentation alone; source observations go in source_observations, not in measurements. Status vocabulary: NOT_RUN | PASS | FAIL | BLOCKED. A PASS without at least one artifact is invalid. Gate requirement IDs are copied from registry/reuse-fit-gap-template.json experiments (STACK-EVALUATION-PRP section 6) and must not be edited here.",
+  "procedure": "docs/WP24-EXPERIMENT-PROCEDURE.md",
+  "record_id": null,
+  "prepared_from": {
+    "fitgap_template": "docs/registry/reuse-fit-gap-template.json",
+    "fitgap_template_version": "0.4.0-draft",
+    "stack_evaluation_template": "docs/registry/stack-evaluation-template.json",
+    "prp_commit": null
+  },
+  "run_window": {
+    "started_at": null,
+    "finished_at": null,
+    "time_box_hours_per_candidate": null
+  },
+  "people": {
+    "operator": null,
+    "reviewer": null,
+    "approver": null
+  },
+  "environment": {
+    "control_host": {
+      "host_id": null,
+      "os": null,
+      "kernel": null,
+      "python": null,
+      "gpu_driver_present": false
+    },
+    "gpu_hosts": [
+      {
+        "host_id": "A",
+        "nominal_vram_gb": 12,
+        "gpu_model": null,
+        "gpu_uuid": null,
+        "driver": null,
+        "cuda": null,
+        "os": null,
+        "kernel": null,
+        "container_runtime": null
+      },
+      {
+        "host_id": "B",
+        "nominal_vram_gb": 16,
+        "gpu_model": null,
+        "gpu_uuid": null,
+        "driver": null,
+        "cuda": null,
+        "os": null,
+        "kernel": null,
+        "container_runtime": null
+      }
+    ],
+    "network_boundary": null,
+    "data_retention": null,
+    "test_corpus": null,
+    "weights_cache_kept_between_candidates": null
+  },
+  "shared_revision": {
+    "llm_model": null,
+    "model_revision": null,
+    "tokenizer_revision": null,
+    "chat_template_hash": null,
+    "context_length": null,
+    "asr_model": null,
+    "asr_revision": null,
+    "tts_model": null,
+    "tts_revision": null,
+    "licenses_checked_by": null,
+    "licenses_checked_on": null
+  },
+  "candidates": [
+    {
+      "id": "A",
+      "name": "Xinference-managed runtimes",
+      "in_scope": null,
+      "sources": [
+        "SRC-09",
+        "SRC-10",
+        "SRC-01",
+        "SRC-02"
+      ],
+      "version_manifest": {
+        "images": [],
+        "python_packages": [],
+        "config_files": []
+      },
+      "status": "NOT_RUN",
+      "gate_failures": [],
+      "blocked_items": [],
+      "operator_cost_measurements": {
+        "deploy_steps_count": null,
+        "deploy_wall_clock_minutes_cold": null,
+        "services_to_operate": [],
+        "datastores_to_operate": [],
+        "custom_gap_code": [],
+        "upgrade_steps_tried": null,
+        "rollback_steps_tried": null,
+        "licenses_required": [],
+        "operator_skills_required": []
+      },
+      "reset_between_candidates": {
+        "performed": null,
+        "nvidia_smi_clean": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "B",
+      "name": "Independent vLLM and speech services",
+      "in_scope": null,
+      "sources": [
+        "SRC-01",
+        "SRC-02",
+        "SRC-03",
+        "SRC-15"
+      ],
+      "version_manifest": {
+        "images": [],
+        "python_packages": [],
+        "config_files": []
+      },
+      "status": "NOT_RUN",
+      "gate_failures": [],
+      "blocked_items": [],
+      "operator_cost_measurements": {
+        "deploy_steps_count": null,
+        "deploy_wall_clock_minutes_cold": null,
+        "services_to_operate": [],
+        "datastores_to_operate": [],
+        "custom_gap_code": [],
+        "upgrade_steps_tried": null,
+        "rollback_steps_tried": null,
+        "licenses_required": [],
+        "operator_skills_required": []
+      },
+      "reset_between_candidates": {
+        "performed": null,
+        "nvidia_smi_clean": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "C",
+      "name": "Ray Serve conditional alternative",
+      "in_scope": null,
+      "sources": [
+        "SRC-11",
+        "SRC-12"
+      ],
+      "version_manifest": {
+        "images": [],
+        "python_packages": [],
+        "config_files": []
+      },
+      "status": "NOT_RUN",
+      "gate_failures": [],
+      "blocked_items": [],
+      "operator_cost_measurements": {
+        "deploy_steps_count": null,
+        "deploy_wall_clock_minutes_cold": null,
+        "services_to_operate": [],
+        "datastores_to_operate": [],
+        "custom_gap_code": [],
+        "upgrade_steps_tried": null,
+        "rollback_steps_tried": null,
+        "licenses_required": [],
+        "operator_skills_required": []
+      },
+      "reset_between_candidates": {
+        "performed": null,
+        "nvidia_smi_clean": null,
+        "notes": null
+      }
+    }
+  ],
+  "experiments": {
+    "EV01": {
+      "title": "Clean control install",
+      "expected_evidence": "Python version/lock, no desktop dependency, control import without ML/GPU",
+      "gate": [
+        "PRP-NFR-019",
+        "PRP-NFR-021",
+        "PRP-NFR-022"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-019": "NOT_RUN",
+            "PRP-NFR-021": "NOT_RUN",
+            "PRP-NFR-022": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-019": "NOT_RUN",
+            "PRP-NFR-021": "NOT_RUN",
+            "PRP-NFR-022": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-019": "NOT_RUN",
+            "PRP-NFR-021": "NOT_RUN",
+            "PRP-NFR-022": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    },
+    "EV02": {
+      "title": "Real A/B registration",
+      "expected_evidence": "protected endpoint auth, model profile, distinct physical GPUs and epochs",
+      "gate": [
+        "PRP-FR-010",
+        "PRP-FR-011",
+        "PRP-FR-012",
+        "PRP-FR-013",
+        "PRP-FR-014",
+        "PRP-FR-015"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-010": "NOT_RUN",
+            "PRP-FR-011": "NOT_RUN",
+            "PRP-FR-012": "NOT_RUN",
+            "PRP-FR-013": "NOT_RUN",
+            "PRP-FR-014": "NOT_RUN",
+            "PRP-FR-015": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-010": "NOT_RUN",
+            "PRP-FR-011": "NOT_RUN",
+            "PRP-FR-012": "NOT_RUN",
+            "PRP-FR-013": "NOT_RUN",
+            "PRP-FR-014": "NOT_RUN",
+            "PRP-FR-015": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-010": "NOT_RUN",
+            "PRP-FR-011": "NOT_RUN",
+            "PRP-FR-012": "NOT_RUN",
+            "PRP-FR-013": "NOT_RUN",
+            "PRP-FR-014": "NOT_RUN",
+            "PRP-FR-015": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    },
+    "EV03": {
+      "title": "Target binding",
+      "expected_evidence": "request lease matches actual node, including framework routing/retry",
+      "gate": [
+        "PRP-NFR-023"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-023": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-023": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-023": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    },
+    "EV04": {
+      "title": "Identity/key semantics",
+      "expected_evidence": "hash/verifier or conforming authority, no reveal, scoped listing/jobs/files/revoke",
+      "gate": [
+        "PRP-FR-003",
+        "PRP-FR-004",
+        "PRP-FR-005",
+        "PRP-FR-006",
+        "PRP-FR-007",
+        "PRP-FR-008",
+        "PRP-FR-009"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-003": "NOT_RUN",
+            "PRP-FR-004": "NOT_RUN",
+            "PRP-FR-005": "NOT_RUN",
+            "PRP-FR-006": "NOT_RUN",
+            "PRP-FR-007": "NOT_RUN",
+            "PRP-FR-008": "NOT_RUN",
+            "PRP-FR-009": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-003": "NOT_RUN",
+            "PRP-FR-004": "NOT_RUN",
+            "PRP-FR-005": "NOT_RUN",
+            "PRP-FR-006": "NOT_RUN",
+            "PRP-FR-007": "NOT_RUN",
+            "PRP-FR-008": "NOT_RUN",
+            "PRP-FR-009": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-003": "NOT_RUN",
+            "PRP-FR-004": "NOT_RUN",
+            "PRP-FR-005": "NOT_RUN",
+            "PRP-FR-006": "NOT_RUN",
+            "PRP-FR-007": "NOT_RUN",
+            "PRP-FR-008": "NOT_RUN",
+            "PRP-FR-009": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    },
+    "EV05": {
+      "title": "Atomic multi-process load",
+      "expected_evidence": "no duplicated capacity/quota holds; no bypass direct worker",
+      "gate": [
+        "PRP-FR-017",
+        "PRP-FR-018"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-017": "NOT_RUN",
+            "PRP-FR-018": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-017": "NOT_RUN",
+            "PRP-FR-018": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-017": "NOT_RUN",
+            "PRP-FR-018": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    },
+    "EV06": {
+      "title": "Timeout/restart",
+      "expected_evidence": "UNKNOWN/QUARANTINED evidence, no blind inference replay",
+      "gate": [
+        "PRP-FR-020",
+        "PRP-FR-021",
+        "PRP-FR-022"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-020": "NOT_RUN",
+            "PRP-FR-021": "NOT_RUN",
+            "PRP-FR-022": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-020": "NOT_RUN",
+            "PRP-FR-021": "NOT_RUN",
+            "PRP-FR-022": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-020": "NOT_RUN",
+            "PRP-FR-021": "NOT_RUN",
+            "PRP-FR-022": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    },
+    "EV07": {
+      "title": "Mixed chat/speech",
+      "expected_evidence": "resident profile + actual placement, no silent unload or OOM under admitted load",
+      "gate": [
+        "PRP-FR-018",
+        "PRP-FR-044"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-018": "NOT_RUN",
+            "PRP-FR-044": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-018": "NOT_RUN",
+            "PRP-FR-044": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-FR-018": "NOT_RUN",
+            "PRP-FR-044": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    },
+    "EV08": {
+      "title": "Adapter/exit",
+      "expected_evidence": "public schemas unchanged; config export; key rotation plan; deletion fences preserved",
+      "gate": [
+        "PRP-NFR-024"
+      ],
+      "per_candidate": {
+        "A": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-024": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "B": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-024": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        },
+        "C": {
+          "status": "NOT_RUN",
+          "started_at": null,
+          "finished_at": null,
+          "cold_or_warm": null,
+          "sample_count": null,
+          "commands_log": null,
+          "source_observations": [],
+          "measurements": [],
+          "observations": [],
+          "artifacts": [],
+          "gate_verdicts": {
+            "PRP-NFR-024": "NOT_RUN"
+          },
+          "disposition_hint": null,
+          "blocker": null
+        }
+      }
+    }
+  },
+  "requirement_rows_file": null,
+  "decision_receipt": {
+    "selected_candidate": null,
+    "rejected_alternatives": [],
+    "key_authority": null,
+    "lifecycle_owner": null,
+    "route_binding": null,
+    "retry_policy": null,
+    "datastore_ownership": null,
+    "immutable_version_matrix": null,
+    "gap_code_owner": null,
+    "tests_and_blocked_items": [],
+    "reviewer": null,
+    "rollback_exit_plan": null,
+    "approved_by": null,
+    "approved_on": null
+  }
+}
