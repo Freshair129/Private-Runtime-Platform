@@ -109,6 +109,11 @@ repository_integration: NOT_PERFORMED
 - **Deviation DEV-01**: control host ที่ใช้มี NVIDIA driver (RTX 5060 Ti) ไม่ตรง precondition §2 ของ procedure หลักฐาน NFR-021 จึงอาศัย `sys.modules` + GPU process list บันทึกให้ reviewer ตัดสินว่ารับได้หรือต้องรันซ้ำบน host ที่ไม่มี driver; เวลาที่วัดเป็น wall clock บน workstation ที่มี process อื่นรันอยู่และ uv cache warm เป็นค่าอ้างอิงไม่ใช่ benchmark
 - `registry/wp24-run-record-template.json` เพิ่มโครง `experiments.EV01.shared_prp` (ส่วนของ PRP เองที่รันครั้งเดียวต่อ record) และ `deviations` เพื่อให้ record ทุกรอบบันทึกได้ในที่เดียวกัน; fit-gap copy ยังไม่สร้างจนกว่า candidate แรกจะครบ EV01–EV08 (ระบุใน record)
 
+### แก้ precondition EV01 ที่เขียนเกินข้อกำหนด (2026-09-20, C-1 / H2, RCA-2026-09-20-ev01-host-precondition)
+- owner ถามว่าทำไมห้ามมี GPU บน control host ทั้งที่มีสองเครื่องและทั้งคู่เป็นทั้ง control และ GPU worker; ตรวจแล้ว SRS host topology และ ARCH §3 ให้ control co-locate บน CPU ของ A ได้ NFR-021 / 022 ต้องการเพียง process และ dependency isolation precondition "control host ไม่มี GPU driver" ใน procedure §2 / EV01 จึงเป็นข้อผิดพลาดของ procedure (RCA ใน `.brain/rca/`)
+- procedure §2 และ EV01 แก้ให้ GPU driver บนเครื่อง control เป็นสิ่งที่บันทึก ไม่ใช่สิ่งต้องห้าม เกณฑ์ PASS ของ NFR-021 ระบุหลักฐานจริง: ไม่มี ML module ใน `sys.modules` หลัง import ทุก module ของ control และ process ของ `prp-api` ไม่อยู่ใน GPU process list; host ไม่มี driver เป็นหลักฐานเสริมที่เลือกได้
+- record `WP24-2026-09-20-run1`: DEV-01 คงไว้เพื่อประวัติพร้อม `resolution` และสถานะ RESOLVED_PROCEDURE_CORRECTED; verdict และ artifact ของ EV01 ไม่เปลี่ยน; template `control_host.gpu_driver_present` default เป็น null
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

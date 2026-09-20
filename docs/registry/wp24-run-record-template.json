@@ -49,7 +49,7 @@
       "os": null,
       "kernel": null,
       "python": null,
-      "gpu_driver_present": false
+      "gpu_driver_present": null
     },
     "gpu_hosts": [
       {

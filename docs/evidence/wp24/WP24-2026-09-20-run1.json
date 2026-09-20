@@ -49,7 +49,9 @@
       "requirement": "procedure section 2: control host without GPU driver",
       "observed": "The control host used for EV01 has an NVIDIA driver (GeForce RTX 5060 Ti, driver 32.0.16.1692); nvidia-smi is on PATH.",
       "mitigation": "NFR-021 evidence relies on (a) importing all 44 prp modules with no ML module in sys.modules and (b) the prp-api process being absent from the nvidia-smi compute-process list while serving requests. A driver-less host cannot initialise CUDA at all; this host could have and did not.",
-      "reviewer_action": "Accept as sufficient for NFR-021, or require a repeat of EV01 steps 1-2 on a driver-less host before the fit-gap row leaves UNASSESSED."
+      "reviewer_action": "Accept as sufficient for NFR-021, or require a repeat of EV01 steps 1-2 on a driver-less host before the fit-gap row leaves UNASSESSED.",
+      "resolution": "2026-09-20: procedure defect, not a requirement deviation. SRS host topology and ARCH-PRP section 3 place control on the CPU of a GPU host; NFR-021/022 demand process and dependency isolation only. The procedure was corrected (see .brain/rca/RCA-2026-09-20-ev01-host-precondition.md); the EV01 verdicts and artifacts stand unchanged. The reviewer no longer has to decide on a rerun for this reason.",
+      "status": "RESOLVED_PROCEDURE_CORRECTED"
     }
   ],
   "environment": {
@@ -61,7 +63,7 @@
       "cpu": "Intel Core i7-14700KF, 20 cores / 28 threads",
       "ram_gb": 31.8,
       "gpu_driver_present": true,
-      "gpu": "NVIDIA GeForce RTX 5060 Ti, driver 32.0.16.1692 (see deviations DEV-01)"
+      "gpu": "NVIDIA GeForce RTX 5060 Ti, driver 32.0.16.1692 (recorded; permitted by the two-host topology, see DEV-01 resolution)"
     },
     "gpu_hosts": [
       {
@@ -324,8 +326,8 @@
         },
         "blocker": null,
         "limitations": [
-          "PRP-NFR-021: host has a GPU driver (DEV-01); verdict rests on import and process-list evidence.",
-          "PRP-NFR-022: reproducibility shown from a warm uv cache; SBOM / license / egress review of the locks (SRS statement) not part of EV01."
+          "PRP-NFR-022: reproducibility shown from a warm uv cache; SBOM / license / egress review of the locks (SRS statement) not part of EV01.",
+          "PRP-NFR-021: verdict rests on import evidence (no ML module in sys.modules) and the GPU process list; a driver-less host was not used and is not required."
         ]
       },
       "per_candidate": {
