@@ -92,6 +92,9 @@ repository_integration: NOT_PERFORMED
 - ทั้งห้า workflows เปลี่ยน trigger `pull_request` จาก `paths` เป็น `branches: [main, develop]` เพื่อให้รันทุก PR (required check ที่ไม่รันจะทำให้ PR ค้าง "Expected" ตลอดไป); `push` ยังใช้ path filter เดิม; ต้นทุนเพิ่มราว 20 วินาทีต่อ job ต่อ PR
 - CLAUDE.md และ SDD-PRP-REPO §10 อธิบายกติกานี้และเตือนว่าการเปลี่ยนชื่อ job ต้องอัปเดต protection rule คู่กัน
 
+### AGENTS.md cleanup (2026-09-20, C-1 / H2)
+- ลบส่วน "Mobile Testing Mindset (ARTEMIS Integration)" ออกจาก `AGENTS.md` (docs(agents): remove unrelated ARTEMIS section inherited from the initial commit) — เป็นกฎ Android UI-automation ที่ไม่เกี่ยวกับ PRP อยู่นอก R1–R10; ไม่มีไฟล์อื่นอ้างอิงส่วนนี้
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
