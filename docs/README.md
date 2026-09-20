@@ -25,6 +25,7 @@ Requirement IDs (PRP-FR/NFR/SEC/P2), acceptance IDs (PRP-AT-nnn), work packages 
 | [SDD-PRP-REPO](SDD-PRP-REPO.md) | โครงสร้าง repository, เอกสาร และ code; migration plan M1–M4 |
 | [API-PRP](API-PRP.md) | Client subset, worker adapter และ private management contract boundaries |
 | [STACK-EVALUATION-PRP](STACK-EVALUATION-PRP.md) | A/B/C candidates, fit-gap, experiments และ decision receipt |
+| [WP24-EXPERIMENT-PROCEDURE](WP24-EXPERIMENT-PROCEDURE.md) | ขั้นตอนทดลอง EV01–EV08 ต่อ candidate, เกณฑ์ PASS/FAIL/BLOCKED และ run-record template; ยังไม่มีผลการรัน |
 | [Coding Standards](standards/Coding-Standards.md) | Python/typing/async/process/dependency/test/TS frontend standards |
 | [SECURITY-DATA-PRP](SECURITY-DATA-PRP.md) | Keys, roles, threats, framework-private routes, retention/erasure |
 | [OPS-PRP](OPS-PRP.md) | Qualification, drain, restart, recovery, isolated environments และ migration |

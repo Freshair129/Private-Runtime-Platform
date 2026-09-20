@@ -8,7 +8,7 @@ from markdown_it import MarkdownIt
 from bs4 import BeautifulSoup, NavigableString, Tag
 ROOT=Path(__file__).resolve().parents[2]/'docs'
 MD=MarkdownIt('commonmark',{'html':True}).enable('table')
-ORDER=['PRD-PRP.md','SRS-PRP.md','ROADMAP-PRP.md','ARCH-PRP.md','SDD-PRP-REPO.md','API-PRP.md','STACK-EVALUATION-PRP.md','standards/Coding-Standards.md','SECURITY-DATA-PRP.md','OPS-PRP.md','ADR-PRP.md','TEST-PRP.md','TRACEABILITY-PRP.md','BASELINE-CHANGES-PRP.md','CHANGELOG-PRP.md','SOURCES-PRP.md']
+ORDER=['PRD-PRP.md','SRS-PRP.md','ROADMAP-PRP.md','ARCH-PRP.md','SDD-PRP-REPO.md','API-PRP.md','STACK-EVALUATION-PRP.md','WP24-EXPERIMENT-PROCEDURE.md','standards/Coding-Standards.md','SECURITY-DATA-PRP.md','OPS-PRP.md','ADR-PRP.md','TEST-PRP.md','TRACEABILITY-PRP.md','BASELINE-CHANGES-PRP.md','CHANGELOG-PRP.md','SOURCES-PRP.md']
 
 def body_md(path):
  s=path.read_text(encoding='utf-8')

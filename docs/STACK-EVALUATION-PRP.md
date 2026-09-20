@@ -79,6 +79,8 @@ Disposition: REUSE = ใช้ได้ผ่าน test; CONFIGURE = ตั้�
 
 EV01..08 เป็น experiment plan ไม่ใช่ test results และไม่แทน AT/W corpus ของ baseline Candidate ที่ speech ยังไม่พร้อมให้แสดง BLOCKED ก่อน G2 ไม่ใช้ stub เป็น proof คุณภาพเสียง
 
+ขั้นตอนปฏิบัติต่อ experiment, กติกาการรันร่วม, เกณฑ์ PASS / FAIL / BLOCKED และที่เก็บผลอยู่ใน [WP24-EXPERIMENT-PROCEDURE.md](WP24-EXPERIMENT-PROCEDURE.md) ส่วนโครง run record อยู่ใน `registry/wp24-run-record-template.json` (approved 2026-09-20; ยังไม่มี record จริง)
+
 ## 7. Selection rule and operator cost
 Mandatory security/identity/capacity/uncertainty gates ต้องผ่านก่อนเปรียบเทียบความสะดวก จากนั้นบันทึก deploy steps, services/datastores ที่ต้องดูแล, custom gap code, upgrade/rollback effort, required licenses และทักษะผู้ดูแล ไม่ประกาศผู้ชนะหรือเปอร์เซ็นต์ประหยัดเวลาถ้าไม่ได้วัด
 
