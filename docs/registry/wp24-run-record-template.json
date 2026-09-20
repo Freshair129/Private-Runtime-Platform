@@ -20,6 +20,28 @@
     "reviewer": null,
     "approver": null
   },
+  "scope_decisions": {
+    "litellm": {
+      "in_scope": true,
+      "candidate": "B",
+      "experiments": [
+        "EV04",
+        "EV03"
+      ],
+      "time_box_working_days": 1,
+      "decided_by": "owner",
+      "decided_on": "2026-09-20",
+      "note": "Key / proxy layer only; its routing never replaces the PRP Router (NFR-023). Unfinished parts at the time box end are BLOCKED, not extended."
+    },
+    "model_licensing": {
+      "mode": "BYOM",
+      "decided_by": "owner",
+      "decided_on": "2026-09-20",
+      "note": "Owner brings the model and holds its rights; a license receipt per SEC-007 / SECURITY-DATA section 8 is still required before activation and is recorded in shared_revision."
+    },
+    "candidate_C_in_scope": null,
+    "speech_in_scope": null
+  },
   "environment": {
     "control_host": {
       "host_id": null,
