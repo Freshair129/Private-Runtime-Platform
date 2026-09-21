@@ -1,7 +1,7 @@
 {
   "kind": "WP24_RUN_RECORD",
   "version": "0.4.0-draft",
-  "template_note": "Run record derived from registry/wp24-run-record-template.json. EV01 (all candidates) and EV02 for candidate B have been executed; every other experiment stays NOT_RUN. The EV02 status and gate_verdicts remain NOT_RUN because procedure section 3 item 4 reserves the verdict for the reviewer; the evidence to decide on is in experiments.EV02.per_candidate.B. Values come from the artifacts listed next to them.",
+  "template_note": "Run record derived from registry/wp24-run-record-template.json. EV01 (all candidates) and EV02 and EV04 for candidate B have been executed; every other experiment stays NOT_RUN. The EV02 and EV04 status and gate_verdicts remain NOT_RUN because procedure section 3 item 4 reserves the verdict for the reviewer; the evidence to decide on is in experiments.EV02 and experiments.EV04 under per_candidate.B. Values come from the artifacts listed next to them.",
   "procedure": "docs/WP24-EXPERIMENT-PROCEDURE.md",
   "record_id": "WP24-2026-09-20-run1",
   "prepared_from": {
@@ -294,14 +294,18 @@
       "version_manifest": {
         "images": [
           "vllm/vllm-openai:latest @ sha256:c2914767605584b6d8f45686b82de173ecc99e781897aa3d0a66dacd72c51ae1 (30.5 GB, image id c29147676055; vllm 0.29.0, torch 2.13.0+cu130, CUDA build 13.0, python 3.12.3, torch arch list sm_75/sm_80/sm_86/sm_90/sm_100/sm_120)",
-          "nvidia/cuda:12.8.1-base-ubuntu24.04 (GPU passthrough check only, not part of the runtime)"
+          "nvidia/cuda:12.8.1-base-ubuntu24.04 (GPU passthrough check only, not part of the runtime)",
+          "ghcr.io/berriai/litellm:v1.90.2 @ sha256:19a879f9c4ed466f2438aa08b22e2b472053ab57c6325db73c71d0624d2d4953 (EV04 key/proxy layer of candidate B)",
+          "postgres:16 (virtual-key store required by the LiteLLM proxy)"
         ],
         "python_packages": [],
         "config_files": [
           "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/launch-command.txt",
           "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV02/negative-test-launch-command.txt",
           "launch env: VLLM_API_KEY set (value never recorded); VLLM_WSL2_ENABLE_PIN_MEMORY=1, required on WSL2 per .brain/rca/RCA-2026-09-21-vllm-wsl2-uva.md",
-          "launch flags: --model /models --served-model-name typhoon2.5-qwen3-4b --max-model-len 8192 (baseline) or 4096 (step 3 negative test) --gpu-memory-utilization 0.70"
+          "launch flags: --model /models --served-model-name typhoon2.5-qwen3-4b --max-model-len 8192 (baseline) or 4096 (step 3 negative test) --gpu-memory-utilization 0.70",
+          "LiteLLM brought up from a working copy of tools/wp24/litellm_subspike/docker-compose.litellm.template.yml and litellm_config.template.yaml with <served-model-name> replaced by typhoon2.5-qwen3-4b; the working copy holds real credentials and therefore lives outside the repository. The templates in tools/ were not edited and stay TEMPLATE / NOT_QUALIFIED.",
+          "LITELLM_MASTER_KEY and POSTGRES_PASSWORD were generated per run and never recorded; both proxy and database were bound to 127.0.0.1 only."
         ]
       },
       "status": "NOT_RUN",
@@ -856,15 +860,111 @@
         },
         "B": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-20T23:44:00+00:00",
+          "finished_at": "2026-09-21T00:05:00+00:00",
+          "cold_or_warm": "Cold: the LiteLLM image and postgres:16 were pulled in this run and the proxy started from an empty database. Proxy reached /health/liveliness 200 about 21 s after compose up.",
+          "sample_count": "virtual keys created: 3 (one by ev04_keys.py, two by hand for the storage and isolation checks); readback endpoints probed: 2 (/key/info, /key/list); readback addressing modes: 2 (by plaintext, by sha256 hash); privilege-boundary calls with a virtual key: 4; revoke measurements: 1",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV04/FINDINGS.md (every command and its result is described there; the raw tool output is in the ev04_*.json artifacts)",
+          "source_observations": [
+            "SRC-03 (LiteLLM as the key/proxy layer of candidate B): the virtual-key mechanism behaves as the source describes for issuance, scoping and revocation. The /key/info cross-key metadata exposure and the plaintext-in-URL log channel are not covered by that source review and come from this run.",
+            "SRC-10 (Xinference key recovery) is the FR-005 gap recorded for candidate A and is untouched here: candidate A has not been run."
+          ],
+          "measurements": [
+            {
+              "name": "litellm_health_liveliness_seconds_after_compose_up",
+              "value": 21
+            },
+            {
+              "name": "key_generate_status",
+              "value": 200
+            },
+            {
+              "name": "key_generate_latency_ms",
+              "value": 156.0
+            },
+            {
+              "name": "v1_models_with_virtual_key_status",
+              "value": 200
+            },
+            {
+              "name": "key_delete_status",
+              "value": 200
+            },
+            {
+              "name": "revoke_to_rejected_seconds",
+              "value": 0.0
+            },
+            {
+              "name": "revoke_poll_attempts",
+              "value": 1
+            },
+            {
+              "name": "revoke_poll_interval_seconds",
+              "value": 0.2
+            },
+            {
+              "name": "db_token_column_length_chars",
+              "value": 64
+            },
+            {
+              "name": "db_token_equals_sha256_of_plaintext",
+              "value": true
+            },
+            {
+              "name": "key_info_by_hash.plaintext_present_in_body",
+              "value": false
+            },
+            {
+              "name": "key_list.plaintext_present_in_body",
+              "value": false
+            },
+            {
+              "name": "plaintext_in_url_occurrences_in_proxy_log",
+              "value": 1
+            },
+            {
+              "name": "virtual_key.get_key_list_status",
+              "value": 403
+            },
+            {
+              "name": "virtual_key.post_key_generate_status",
+              "value": 401
+            },
+            {
+              "name": "virtual_key.get_v1_models_status",
+              "value": 200
+            },
+            {
+              "name": "virtual_key_A.get_key_info_of_key_B_status",
+              "value": 200
+            },
+            {
+              "name": "verification_token_rows_after_cleanup",
+              "value": 0
+            }
+          ],
+          "observations": [
+            "Bare vLLM, step 1 and 2. vllm/entrypoints/serve/middleware/authenticate.py hashes each configured key with sha256 and compares with secrets.compare_digest, so in process it is a verifier. It is not verifier-only end to end: the plaintext must be supplied through --api-key or VLLM_API_KEY and remains in the process environment, and docker inspect --format '{{json .Config.Env}}' returned the exact key in plaintext (verified by exact-match comparison; the value was never printed).",
+            "Bare vLLM, step 2. api_key is a list[str] with no scope of any kind: no organization, application, model, capability, expiry or quota. Revocation means restarting the server; there is no revoke API.",
+            "Bare vLLM, step 2. Authentication covers only GUARDED_PREFIX = ('/v1', '/v2', '/inference', '/cohere'). The EV02 route table shows 16 routes outside it, including POST /invocations, POST /tokenize, POST /detokenize, POST /generative_scoring, POST /scale_elastic_ep, POST /is_scaling_elastic_ep, GET /metrics, GET /load, GET /version and the docs routes. vllm/entrypoints/launchers/cli_args.py:290 states this in its own docstring: /invocations 'exposes the same inference capabilities as /v1' and remains unauthenticated. Empirical confirmation that POST /invocations serves inference without a credential is deferred to EV03, which needs the runtime up anyway (owner decision 2026-09-21).",
+            "LiteLLM, step 1, correction to the tool's own reading. ev04_keys.py reported plaintext_reappeared_any_channel true and printed an FR-005 FAIL sentence. That is a false positive: line 148 of the script calls GET /key/info?key=<plaintext_key>, so the plaintext in the response is the script's own query parameter echoed back. See .brain/rca/RCA-2026-09-21-ev04-keys-readback-false-positive.md. No FR-005 verdict should be taken from that observation.",
+            "LiteLLM, step 1, measured properly. Addressed by sha256 hash, the way a caller who does not hold the key must address it, GET /key/info returns 200 with the plaintext absent from the entire body and $.key holding the hash that was asked with. GET /key/list returns no plaintext. In the database, LiteLLM_VerificationToken.token holds 64 hex characters equal to sha256(plaintext) and key_name holds only a redacted preview. LiteLLM stores and serves virtual keys as hashes.",
+            "LiteLLM, step 1, the real disclosure channel. The documented lookup convention GET /key/info?key=<key> places the plaintext key in the URL. Calling it that way once and then searching the proxy container log found the plaintext key in the log exactly once; the same call addressed by hash leaves nothing. This is an integration constraint rather than a storage defect: PRP must address /key/info by hash and keep plaintext out of URLs, or every access log, reverse proxy and log shipper in the path becomes a disclosure channel.",
+            "LiteLLM, step 2. Key generation accepted and echoed models, expires, max_budget, tpm_limit, rpm_limit and key_alias, and /key/info additionally exposes team, organization, project and budget fields, so the scope vocabulary FR-006..FR-009 needs exists.",
+            "LiteLLM, step 2, privilege boundaries. A virtual key gets 403 on GET /key/list and 401 on POST /key/generate, so it can neither enumerate keys nor mint one. But virtual key A reading GET /key/info?key=<hash of key B> returns 200 with key B's alias, models, expiry, budget and spend. /key/info is not scoped per key: any valid virtual key can read another key's metadata once it knows that key's hash, and LiteLLM documents that hash as the value stored as user_api_key_hash in spend logs. No plaintext is disclosed, but the tenant boundary is not enforced on this route.",
+            "LiteLLM, step 3. POST /key/delete returned 200 and the revoked key was already rejected by GET /v1/models on the first poll, 0.000 s later at a 0.2 s polling interval. No grace window was observed.",
+            "LiteLLM, step 4. The proxy and its database were brought up from nothing with only a generated master key and a Postgres instance: no Zuri, FUNG or Lalin Studio component and no business database was involved, satisfying what FR-001 asks of first-admin bootstrap.",
+            "Clean-up. Both hand-created keys were deleted through POST /key/delete (200 each) and SELECT count(*) FROM LiteLLM_VerificationToken returned 0 afterwards. No key value, master key or database password appears in any committed file."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV04/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV04/ev04_keys.result.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV04/ev04_key_generate.redacted.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV04/ev04_readback_attempts.redacted.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV04/ev04_key_delete.redacted.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV04/litellm-image-digest.txt",
+            ".brain/rca/RCA-2026-09-21-ev04-keys-readback-false-positive.md"
+          ],
           "gate_verdicts": {
             "PRP-FR-003": "NOT_RUN",
             "PRP-FR-004": "NOT_RUN",
@@ -874,8 +974,8 @@
             "PRP-FR-008": "NOT_RUN",
             "PRP-FR-009": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Split by layer, operator suggestion only. Bare vLLM: BUILD-GAP for FR-003..FR-009 — it has no scope vocabulary, no revoke API and authenticates only four path prefixes. LiteLLM: CONFIGURE for issuance, scoping, storage and revocation, with two conditions PRP must carry itself — address /key/info by hash so no plaintext enters a URL or a log, and do not rely on /key/info for tenant isolation. Whether that is enough to make LiteLLM the key authority, or whether PRP must be its own verifier per ADR (exactly one client-key authority), is the reviewer's call.",
+          "blocker": "EV04 steps 1-3 are complete for candidate B. Empirical confirmation that bare vLLM's POST /invocations serves inference without a credential is deferred to EV03 by owner decision (2026-09-21). status and gate_verdicts are left NOT_RUN pending the reviewer's decision."
         },
         "C": {
           "status": "BLOCKED",

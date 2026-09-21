@@ -1,0 +1,72 @@
+{
+  "artifacts": [
+    "ev04_key_generate.redacted.json",
+    "ev04_readback_attempts.redacted.json",
+    "ev04_key_delete.redacted.json"
+  ],
+  "base_url": "http://127.0.0.1:4000",
+  "command_line": [
+    "--base-url",
+    "http://127.0.0.1:4000",
+    "--master-key-env",
+    "LITELLM_MASTER_KEY",
+    "--models",
+    "wp24-litellm-subspike-host-a",
+    "--key-alias",
+    "wp24-litellm-subspike-ev04",
+    "--out",
+    "C:/Users/pc/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/wp24-out"
+  ],
+  "finished_at": "2026-09-20T23:46:34Z",
+  "key_alias": "wp24-litellm-subspike-ev04",
+  "key_fingerprint": "sha256:39baa0bf95cb",
+  "kind": "WP24_EV04_KEYS_RESULT",
+  "measurements": [
+    {
+      "name": "key_generate_status",
+      "value": 200
+    },
+    {
+      "name": "key_generate_latency_ms",
+      "value": 156.0
+    },
+    {
+      "name": "plaintext_reappeared_any_channel",
+      "value": true
+    },
+    {
+      "name": "v1_models_with_virtual_key_status",
+      "value": 200
+    },
+    {
+      "name": "v1_models_with_virtual_key_latency_ms",
+      "value": 15.0
+    },
+    {
+      "name": "key_delete_status",
+      "value": 200
+    },
+    {
+      "name": "revoke_rejected_within_timeout",
+      "value": true
+    },
+    {
+      "name": "revoke_to_rejected_seconds",
+      "value": 0.0
+    },
+    {
+      "name": "revoke_poll_attempts",
+      "value": 1
+    }
+  ],
+  "observations": [
+    "Generated virtual key fingerprint sha256:39baa0bf95cb (key_alias=wp24-litellm-subspike-ev04).",
+    "GET /key/info (status 200): plaintext reappeared=True at [$.key]. Doc: https://docs.litellm.ai/docs/proxy/virtual_keys#key-spend",
+    "GET /key/list (status 200): plaintext reappeared=False at [none]. Doc: https://docs.litellm.ai/docs/proxy/virtual_keys#endpoint-reference-spec",
+    "FR-005 gate: plaintext reappeared through at least one management endpoint after issuance -> FAIL per WP24-EXPERIMENT-PROCEDURE.md section 5 EV04 criteria ('FR-005 FAIL \u0e17\u0e31\u0e19\u0e17\u0e35\u0e16\u0e49\u0e32 key \u0e2d\u0e48\u0e32\u0e19\u0e01\u0e25\u0e31\u0e1a\u0e44\u0e14\u0e49\u0e2b\u0e25\u0e31\u0e07\u0e2d\u0e2d\u0e01').",
+    "GET /v1/models with the newly generated virtual key returned status 200 (expected 200 to prove the key authenticates).",
+    "POST /key/delete returned status 200.",
+    "Revoked key stopped being accepted by GET /v1/models after 0.000s (1 polls at 0.2s intervals)."
+  ],
+  "started_at": "2026-09-20T23:46:33Z"
+}

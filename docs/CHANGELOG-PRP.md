@@ -164,6 +164,18 @@ repository_integration: NOT_PERFORMED
 - `environment.gpu_hosts[B]` เติมครบจากการวัดจริง พร้อมบันทึกคำตัดสิน owner 2026-09-21 ว่าเครื่องนี้เป็น control/main และ DESKTOP-8UR61U8 เป็น worker ที่รับงานก่อน (ยังไม่ setup); `gpu_hosts[A]` ระบุว่า 12 GB เป็นค่าที่วางแผนไว้ ไม่ใช่ค่าที่วัด
 - **`status` และ `gate_verdicts` ของ EV02 ยังเป็น `NOT_RUN` ทั้งหมด** ตาม procedure §3 ข้อ 4 ที่สงวน PASS/FAIL/BLOCKED ไว้ให้ reviewer; operator ใส่ได้เพียง `disposition_hint: ADAPT` พร้อมเหตุผล
 
+### WP24 EV04 candidate B · key semantics ของ vLLM และ LiteLLM sub-spike (2026-09-21, C-2 / H3)
+- รัน EV04 ข้อ 1–4 ของ candidate B: ฝั่ง engine อ่านจากซอร์สของ vLLM เอง ฝั่ง key layer ยก LiteLLM `v1.90.2` + `postgres:16` ขึ้นจาก working copy ของ template ใน `tools/wp24/litellm_subspike/` (template ในรีโปไม่ถูกแก้ ยังเป็น TEMPLATE / NOT_QUALIFIED) proxy ถึง `/health/liveliness` 200 ใน ~21 s
+- **RCA-2026-09-21-ev04-keys-readback-false-positive**: `ev04_keys.py` รายงาน `plaintext_reappeared_any_channel: true` แล้วสรุปว่า FR-005 FAIL ซึ่ง **ไม่จริง** — บรรทัด 148 ยิง `GET /key/info?key=<plaintext_key>` เอง ค่าที่ "อ่านกลับได้" จึงเป็น echo ของ query parameter ตัวเอง ไม่ใช่การกู้ค่าจาก storage; กติกา §3 ข้อ 4 ที่สงวน verdict ไว้ให้ reviewer คือสิ่งที่กัน FAIL ปลอมไม่ให้เข้า record
+- วัดใหม่แบบที่ caller ไม่มี key: `GET /key/info?key=<sha256>` → 200 ไม่มี plaintext ในทั้ง body, `GET /key/list` → ไม่มี plaintext, คอลัมน์ `LiteLLM_VerificationToken.token` = 64 hex เท่ากับ `sha256(plaintext)` พอดี และ `key_name` เก็บแค่ preview ที่ redact แล้ว → **LiteLLM เป็น verifier-only จริง**
+- ช่องรั่วจริงคือ convention ที่ vendor เอกสารไว้เอง: `GET /key/info?key=<plaintext>` วาง key ใน URL แล้ว **plaintext ปรากฏใน log ของ proxy 1 ครั้ง** ส่วนการเรียกด้วย hash ไม่ทิ้งอะไร — เป็นข้อบังคับเชิง integration ที่ PRP ต้องถือเอง ไม่ใช่ข้อบกพร่องของ storage
+- privilege boundary: virtual key ได้ **403** บน `GET /key/list` และ **401** บน `POST /key/generate` (enumerate ไม่ได้ ยกระดับสิทธิ์ไม่ได้) แต่ virtual key A อ่าน `GET /key/info?key=<hash ของ key B>` ได้ **200** พร้อม alias / models / expiry / budget / spend ของ key B — `/key/info` ไม่ scope ต่อ key ไม่รั่ว plaintext แต่ขอบเขต tenant ตาม FR-006..009 ไม่ถูกบังคับบน route นี้
+- revoke: `POST /key/delete` → 200 และ key ถูกปฏิเสธตั้งแต่ poll แรก **0.000 s** (interval 0.2 s) ไม่มี grace window; bootstrap ตาม FR-001 ทำได้โดยไม่มี Zuri / FUNG / Lalin Studio และไม่มีฐานข้อมูลธุรกิจใด ๆ
+- vLLM เปล่า ๆ: hash key ด้วย sha256 ใน memory และเทียบด้วย `secrets.compare_digest` (verifier ระดับ process) แต่ plaintext ต้องอยู่ใน environment ตลอดอายุ process (`docker inspect .Config.Env` คืนค่าตรงตัว) `api_key: list[str]` **ไม่มี scope ใด ๆ** และ revoke ต้อง restart; auth ครอบเฉพาะ `GUARDED_PREFIX = ('/v1','/v2','/inference','/cohere')` ทำให้ 16 route อยู่นอกเขต รวม `POST /invocations`, `/tokenize`, `/detokenize`, `/generative_scoring`, `/scale_elastic_ep` ตามที่ `cli_args.py:290` เตือนไว้เอง
+- การยืนยันด้วยการยิงจริงว่า `POST /invocations` ทำ inference ได้โดยไม่มี credential **เลื่อนไปรวมกับ EV03** ตามคำตัดสิน owner 2026-09-21 เพราะ EV03 ต้องใช้ runtime อยู่แล้ว
+- `disposition_hint` แยกตาม layer: vLLM เปล่า = BUILD-GAP สำหรับ FR-003..009; LiteLLM = CONFIGURE โดยมีสองเงื่อนไขที่ PRP ต้องถือเอง (เรียก `/key/info` ด้วย hash เท่านั้น และห้ามพึ่ง `/key/info` เป็น tenant isolation) — **`status` และ `gate_verdicts` ยัง `NOT_RUN` ทั้งหมด** รอ reviewer
+- key ทดสอบทั้งหมดถูกลบ (`SELECT count(*)` = 0) ไม่มี key value / master key / database password อยู่ในไฟล์ที่ commit
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
