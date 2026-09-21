@@ -1,0 +1,87 @@
+[
+  {
+    "deployment_headers": {
+      "x-litellm-model-api-base": "http://host.docker.internal:8000/v1",
+      "x-litellm-model-group": "wp24-litellm-subspike-host-b",
+      "x-litellm-model-id": "wp24-host-b"
+    },
+    "deployment_mismatch": false,
+    "latency_ms": 625.0,
+    "raw_headers": {},
+    "request_index": 0,
+    "response_model_field": "wp24-litellm-subspike-host-b",
+    "retry_headers": {
+      "x-litellm-attempted-fallbacks": "0",
+      "x-litellm-attempted-retries": "0"
+    },
+    "status": 200
+  },
+  {
+    "deployment_headers": {
+      "x-litellm-model-api-base": "http://host.docker.internal:8000/v1",
+      "x-litellm-model-group": "wp24-litellm-subspike-host-b",
+      "x-litellm-model-id": "wp24-host-b"
+    },
+    "deployment_mismatch": false,
+    "latency_ms": 31.0,
+    "raw_headers": {},
+    "request_index": 1,
+    "response_model_field": "wp24-litellm-subspike-host-b",
+    "retry_headers": {
+      "x-litellm-attempted-fallbacks": "0",
+      "x-litellm-attempted-retries": "0"
+    },
+    "status": 200
+  },
+  {
+    "deployment_headers": {
+      "x-litellm-model-api-base": "http://host.docker.internal:8000/v1",
+      "x-litellm-model-group": "wp24-litellm-subspike-host-b",
+      "x-litellm-model-id": "wp24-host-b"
+    },
+    "deployment_mismatch": false,
+    "latency_ms": 47.0,
+    "raw_headers": {},
+    "request_index": 2,
+    "response_model_field": "wp24-litellm-subspike-host-b",
+    "retry_headers": {
+      "x-litellm-attempted-fallbacks": "0",
+      "x-litellm-attempted-retries": "0"
+    },
+    "status": 200
+  },
+  {
+    "deployment_headers": {
+      "x-litellm-model-api-base": "http://host.docker.internal:8000/v1",
+      "x-litellm-model-group": "wp24-litellm-subspike-host-b",
+      "x-litellm-model-id": "wp24-host-b"
+    },
+    "deployment_mismatch": false,
+    "latency_ms": 31.0,
+    "raw_headers": {},
+    "request_index": 3,
+    "response_model_field": "wp24-litellm-subspike-host-b",
+    "retry_headers": {
+      "x-litellm-attempted-fallbacks": "0",
+      "x-litellm-attempted-retries": "0"
+    },
+    "status": 200
+  },
+  {
+    "deployment_headers": {
+      "x-litellm-model-api-base": "http://host.docker.internal:8000/v1",
+      "x-litellm-model-group": "wp24-litellm-subspike-host-b",
+      "x-litellm-model-id": "wp24-host-b"
+    },
+    "deployment_mismatch": false,
+    "latency_ms": 47.0,
+    "raw_headers": {},
+    "request_index": 4,
+    "response_model_field": "wp24-litellm-subspike-host-b",
+    "retry_headers": {
+      "x-litellm-attempted-fallbacks": "0",
+      "x-litellm-attempted-retries": "0"
+    },
+    "status": 200
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "alias": "wp24-litellm-subspike-host-b",
+  "artifacts": [
+    "ev03_retry_probe.requests.json"
+  ],
+  "base_url": "http://127.0.0.1:4000",
+  "command_line": [
+    "--base-url",
+    "http://127.0.0.1:4000",
+    "--key-env",
+    "WP24_LITELLM_VIRTUAL_KEY",
+    "--alias",
+    "wp24-litellm-subspike-host-b",
+    "--expect-deployment",
+    "wp24-host-b",
+    "--count",
+    "5",
+    "--mode",
+    "normal",
+    "--out",
+    "C:/Users/pc/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/wp24-out"
+  ],
+  "expect_deployment": "wp24-host-b",
+  "finished_at": "2026-09-21T00:19:17Z",
+  "kind": "WP24_EV03_RETRY_PROBE_RESULT",
+  "measurements": [
+    {
+      "name": "request_count",
+      "value": 5
+    },
+    {
+      "name": "success_count",
+      "value": 5
+    },
+    {
+      "name": "distinct_x_litellm_model_id_seen",
+      "value": 1
+    },
+    {
+      "name": "latency_ms_min",
+      "value": 31.0
+    },
+    {
+      "name": "latency_ms_max",
+      "value": 625.0
+    },
+    {
+      "name": "expect_deployment_mismatch_count",
+      "value": 0
+    }
+  ],
+  "mode": "normal",
+  "observations": [
+    "Sent 5 request(s) to alias 'wp24-litellm-subspike-host-b' in --mode normal (manual host-A condition; see README.md EV03 section for what this mode means operationally).",
+    "x-litellm-model-id values observed: wp24-host-b. https://docs.litellm.ai/docs/proxy/response_headers#litellm-specific-headers"
+  ],
+  "started_at": "2026-09-21T00:19:16Z"
+}

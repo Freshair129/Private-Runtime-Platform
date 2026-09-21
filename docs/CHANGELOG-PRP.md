@@ -176,6 +176,17 @@ repository_integration: NOT_PERFORMED
 - `disposition_hint` แยกตาม layer: vLLM เปล่า = BUILD-GAP สำหรับ FR-003..009; LiteLLM = CONFIGURE โดยมีสองเงื่อนไขที่ PRP ต้องถือเอง (เรียก `/key/info` ด้วย hash เท่านั้น และห้ามพึ่ง `/key/info` เป็น tenant isolation) — **`status` และ `gate_verdicts` ยัง `NOT_RUN` ทั้งหมด** รอ reviewer
 - key ทดสอบทั้งหมดถูกลบ (`SELECT count(*)` = 0) ไม่มี key value / master key / database password อยู่ในไฟล์ที่ commit
 
+### WP24 EV03 candidate B · target binding และการยืนยัน `/invocations` (2026-09-21, C-2 / H3)
+- รัน EV03 ของ candidate B บน GPU host เดียว โดยใช้ alias `wp24-litellm-subspike-host-a` ชี้พอร์ต 8010 ที่ไม่มีอะไร listen (down ถาวร) และ `host-b` ชี้ vLLM ที่รันอยู่จริง — การมี host ตายถาวรเป็นเงื่อนไขที่ **แรงกว่า** "kill A" ของ procedure ข้อ 2 ไม่ใช่อ่อนกว่า การออกแบบและขอบเขตที่เอื้อมไม่ถึงบันทึกไว้ใน `B/EV03/test-design.md`
+- **binding ยึดจริง**: 5 requests ไป `host-b` สำเร็จ 5/5 และ access log ของ vLLM บันทึก **5 × `POST /v1/chat/completions` 200 พอดี** — 5 client call = 5 upstream call ไม่มี retry amplification
+- **ไม่มี hidden failover**: 5 requests ไป `host-a` ที่ตาย ล้ม 5/5 (client เห็น 500) และ **0 request หลุดไปโดน host B ที่เป็นอยู่** เป็นหลักฐาน NFR-023 ที่เด็ดที่สุดที่ทำได้ด้วย GPU เครื่องเดียว
+- retry / fallback ปิดได้ครบ ยืนยันด้วยการรันไม่ใช่การอ่าน config และ error ของ proxy บอกเอง `Available Model Group Fallbacks=None`; **บันทึกกับดักไว้ด้วย** — log มีคำว่า "fallback" 25 บรรทัดแต่เป็น stack-trace frame ของ `async_function_with_fallbacks` ถ้านับคำใน log จะสรุปตรงข้ามกับที่วัดได้
+- kill กลางคัน: generation 2000 tokens ถูก kill ที่วินาทีที่ 4 → client ได้ **500 ใน 4.215 s** พร้อม `Server disconnected` ไม่มี replay ไม่มี completion ที่สอง; caveat ที่บันทึกตรง ๆ คือ vLLM เขียน access log ตอน request จบ upstream count ของเทสต์นี้จึงว่าง **โดยโครงสร้าง** ไม่ใช่หลักฐานว่าเป็นศูนย์
+- **ยืนยัน `/invocations` ตามที่เลื่อนมาจาก EV04**: ยิงตรงที่ vLLM โดยไม่มี `Authorization` เลย `POST /v1/chat/completions` → **401** แต่ `POST /invocations` → **200 พร้อม completion จริง** `--api-key` ข้ามได้ด้วยการเปลี่ยน path → network policy หน้า runtime เป็นข้อบังคับของ candidate B ไม่ใช่ข้อแนะนำ
+- ข้อจำกัดที่ต้องเข้า design ของ PRP: LiteLLM `v1.90.2` **ไม่ส่ง header `x-litellm-model-id` / `x-litellm-model-api-base` / `x-litellm-model-group`** เลย (ยืนยัน binding ต้อง cross-check กับ access log ของ engine), upstream failure ทุกแบบออกมาเป็น **HTTP 500 เหมือนกันหมด** ไม่ใช่ 502/503/504, และ error body **รั่ว topology ของ vendor** (hostname:port, IP, `Hosted_vllmException`, ชื่อ model group) ซึ่งห้าม forward ตรงตาม NFR-024
+- อัปเดต `blocker` ของ EV04 ให้ชี้ว่ารายการที่เลื่อนมาถูกปิดแล้วและหลักฐานอยู่ที่ไหน — **`status` และ `gate_verdicts` ของ EV03 (`PRP-NFR-023`) ยัง `NOT_RUN`** `disposition_hint` = CONFIGURE พร้อมสองเงื่อนไขที่ PRP ต้องถือเอง
+- เอื้อมไม่ถึงในรอบนี้ (DEV-03 ไม่ใช่ผลลัพธ์): balancing ระหว่างสอง deployment ที่ healthy, การย้ายงานกลางคันไปเครื่องที่สอง, และ procedure ข้อ 4 เรื่อง attempt ที่สองคง deadline เดิม — ไม่มี attempt ที่สองเกิดขึ้นเลยซึ่งคือพฤติกรรมที่ถูกต้องของ config ที่ปิด retry
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

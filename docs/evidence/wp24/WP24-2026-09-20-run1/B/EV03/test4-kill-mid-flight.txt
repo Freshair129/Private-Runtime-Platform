@@ -1,0 +1,12 @@
+# EV03 test 4 - kill the bound runtime mid-generation
+client_http_status=500 client_wall_seconds=4.215212
+--- client-visible body (first 600 chars) ---
+{"error":{"message":"litellm.InternalServerError: InternalServerError: Hosted_vllmException - Server disconnected. Received Model Group=wp24-litellm-subspike-host-b\nAvailable Model Group Fallbacks=None","type":null,"param":null,"code":"500"}}
+--- upstream requests vLLM logged during this test ---
+(a single POST means no blind replay; two or more means the proxy resent the work)
+
+--- note on the empty upstream count above ---
+vLLM writes its access-log line when a request completes. The container was killed while the
+generation was still in flight, so the line for that POST was never written. The count is therefore
+empty by construction and is NOT evidence of zero upstream requests. The evidence that no replay
+happened is the client side: one client call, one error, 4.2 s wall clock, no second completion.

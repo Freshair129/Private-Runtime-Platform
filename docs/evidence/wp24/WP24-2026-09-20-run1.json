@@ -1,7 +1,7 @@
 {
   "kind": "WP24_RUN_RECORD",
   "version": "0.4.0-draft",
-  "template_note": "Run record derived from registry/wp24-run-record-template.json. EV01 (all candidates) and EV02 and EV04 for candidate B have been executed; every other experiment stays NOT_RUN. The EV02 and EV04 status and gate_verdicts remain NOT_RUN because procedure section 3 item 4 reserves the verdict for the reviewer; the evidence to decide on is in experiments.EV02 and experiments.EV04 under per_candidate.B. Values come from the artifacts listed next to them.",
+  "template_note": "Run record derived from registry/wp24-run-record-template.json. EV01 (all candidates) and EV02, EV03 and EV04 for candidate B have been executed; every other experiment stays NOT_RUN. Their status and gate_verdicts remain NOT_RUN because procedure section 3 item 4 reserves the verdict for the reviewer; the evidence to decide on is under per_candidate.B of each. Values come from the artifacts listed next to them.",
   "procedure": "docs/WP24-EXPERIMENT-PROCEDURE.md",
   "record_id": "WP24-2026-09-20-run1",
   "prepared_from": {
@@ -788,20 +788,122 @@
         },
         "B": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-21T00:10:00+00:00",
+          "finished_at": "2026-09-21T00:22:00+00:00",
+          "cold_or_warm": "Warm: the vLLM container was restarted from its existing filesystem, so the AOT compile cache for the 4096 profile was reused and the runtime was serving in about 5 s of polling. The LiteLLM proxy had been up since EV04 and was recreated once to pick up the real upstream credential.",
+          "sample_count": "test 1 (live target): 5 requests; test 2 (down target): 5 requests plus 1 manual call to capture the full error body; test 4 (kill mid-generation): 1 request; unauthenticated probe: 2 requests (one per path)",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/FINDINGS.md and docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test-design.md",
+          "source_observations": [
+            "SRC-03: the STACK-EVALUATION-PRP section 4 concern that LiteLLM gateway retries could readmit work without PRP knowing is addressed for this configuration — retries and fallbacks are disabled by config and the disabling was confirmed by execution. The absent routing response headers and the HTTP 500 collapsing of distinct upstream failures are not covered by that source review and come from this run.",
+            "SRC-02: the vLLM api-key insufficiency recorded at EV02 and EV04 is now confirmed at its strongest form — POST /invocations serves inference with no credential at all."
+          ],
+          "measurements": [
+            {
+              "name": "test1.request_count",
+              "value": 5
+            },
+            {
+              "name": "test1.success_count",
+              "value": 5
+            },
+            {
+              "name": "test1.upstream_requests_logged_by_vllm",
+              "value": 5
+            },
+            {
+              "name": "test1.distinct_deployments_seen",
+              "value": 1
+            },
+            {
+              "name": "test1.expect_deployment_mismatch_count",
+              "value": 0
+            },
+            {
+              "name": "test1.latency_ms_min",
+              "value": 31.0
+            },
+            {
+              "name": "test1.latency_ms_max",
+              "value": 625.0
+            },
+            {
+              "name": "test1.litellm_routing_response_headers_present",
+              "value": false
+            },
+            {
+              "name": "test2.request_count",
+              "value": 5
+            },
+            {
+              "name": "test2.success_count",
+              "value": 0
+            },
+            {
+              "name": "test2.client_visible_status",
+              "value": 500
+            },
+            {
+              "name": "test2.requests_that_reached_the_live_peer",
+              "value": 0
+            },
+            {
+              "name": "test4.client_visible_status",
+              "value": 500
+            },
+            {
+              "name": "test4.client_wall_clock_seconds",
+              "value": 4.215
+            },
+            {
+              "name": "test4.replayed_completions",
+              "value": 0
+            },
+            {
+              "name": "invocations.v1_chat_completions_no_credential_status",
+              "value": 401
+            },
+            {
+              "name": "invocations.invocations_no_credential_status",
+              "value": 200
+            },
+            {
+              "name": "invocations.invocations_no_credential_returned_completion",
+              "value": true
+            }
+          ],
+          "observations": [
+            "Test 1, binding. Five requests addressed to wp24-litellm-subspike-host-b all succeeded and vLLM's own access log recorded exactly five POST /v1/chat/completions 200. Five client calls produced five upstream calls, so with num_retries 0 there is no retry amplification and every request landed on the deployment it was addressed to.",
+            "Test 1, limitation. No x-litellm-model-id, x-litellm-model-api-base or x-litellm-model-group response header was present on this build, so binding could not be confirmed from the documented response headers and was confirmed by correlating with the upstream engine's access log instead. PRP cannot rely on those headers to learn which node served a request on LiteLLM v1.90.2.",
+            "Test 2, no hidden failover. wp24-litellm-subspike-host-a points at port 8010 where nothing listens (connection refused, verified from inside the proxy container) while the live host B runtime stayed healthy. All five requests failed with a client-visible 500 and zero requests reached the live peer. This is the decisive NFR-023 observation obtainable with one GPU: a request bound to a down target is not silently re-routed onto a healthy one.",
+            "Test 3, retry and fallback switches confirmed by execution rather than by reading the config: 5 client calls produced 5 upstream calls (no retry), 5 failures produced 0 requests on the peer (no fallback), and the client-visible error states it directly with 'Available Model Group Fallbacks=None'.",
+            "Test 3, a counting trap worth recording. The proxy log contains 25 lines matching the word 'fallback', but they are stack-trace frames from litellm/router.py async_function_with_fallbacks — the code path's name, not fallback attempts. Counting the word in logs would have produced the opposite conclusion to the measurements.",
+            "Test 3, hedging. No hedging switch exists in the documented surface and no raced duplicate request was observed: the upstream count matched the client count exactly in test 1.",
+            "Test 4, kill mid-generation. A 2000-token generation was started against the live host B and the container was killed 4 s in. The client received HTTP 500 after 4.215 s with 'Hosted_vllmException - Server disconnected' and 'Available Model Group Fallbacks=None'. The failure surfaced immediately rather than hanging, and there was no second completion and no replay.",
+            "Test 4, caveat recorded rather than glossed. vLLM writes its access-log line when a request completes, so the killed request never produced one. The upstream request count for this test is empty by construction and is not itself evidence of zero upstream requests; the no-replay evidence is the client side.",
+            "Cross-cutting, deferred from EV04 by owner decision and now confirmed by request. Straight at the vLLM runtime with no Authorization header, POST /v1/chat/completions returns 401 but POST /invocations returns 200 with a real completion (9 prompt tokens, 2 completion tokens). vLLM's --api-key is bypassable by changing the path, so an unauthenticated caller with network reach to the runtime can consume GPU capacity. A network policy in front of the runtime is mandatory for candidate B, not advisory.",
+            "Error shape for the PRP envelope design. Connection refused, a mid-flight disconnect and a genuine internal error all surface as HTTP 500, never 502/503/504, so PRP cannot map LiteLLM status codes onto its own error taxonomy without parsing the message.",
+            "Vendor leakage, relevant to NFR-024. The client-visible error body contains the upstream hostname and port (host.docker.internal:8010), the resolved IP (192.168.65.254), the provider class name (Hosted_vllmException) and the internal model-group alias. It must never be forwarded verbatim through the PRP public contract.",
+            "Not reachable in this run window, recorded as limits rather than results (DEV-03): no evidence about balancing or shuffling between two healthy deployments, none about mid-flight relocation onto a second live host, and procedure step 4 (a second attempt keeping the original deadline and being readmitted) could not be observed because no second attempt was ever made — which is the correct behaviour for the retry-disabled configuration under test."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test1-live-host-b.result.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test1-live-host-b.requests.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test1-upstream-request-count.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test2-down-host-a.result.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test2-down-host-a.requests.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test2-upstream-requests-on-live-host.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/test4-kill-mid-flight.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/client-visible-error-bodies.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/proxy-retry-log-summary.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/invocations-no-credential.txt"
+          ],
           "gate_verdicts": {
             "PRP-NFR-023": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "CONFIGURE for the binding property itself: with num_retries 0, empty fallback lists, enable_weighted_failover false and disable_cooldowns true, target binding held on every request and nothing was re-routed. Two conditions PRP must carry regardless of the verdict: a network policy in front of the runtime, because POST /invocations bypasses --api-key entirely, and its own error mapping, because every upstream failure arrives as HTTP 500 carrying vendor topology. Operator suggestion only; the verdict is the reviewer's.",
+          "blocker": "Single GPU host (DEV-03): no evidence about two healthy deployments, mid-flight relocation, or procedure step 4's readmitted second attempt. status and gate_verdicts are left NOT_RUN pending the reviewer's decision."
         },
         "C": {
           "status": "BLOCKED",
@@ -975,7 +1077,7 @@
             "PRP-FR-009": "NOT_RUN"
           },
           "disposition_hint": "Split by layer, operator suggestion only. Bare vLLM: BUILD-GAP for FR-003..FR-009 — it has no scope vocabulary, no revoke API and authenticates only four path prefixes. LiteLLM: CONFIGURE for issuance, scoping, storage and revocation, with two conditions PRP must carry itself — address /key/info by hash so no plaintext enters a URL or a log, and do not rely on /key/info for tenant isolation. Whether that is enough to make LiteLLM the key authority, or whether PRP must be its own verifier per ADR (exactly one client-key authority), is the reviewer's call.",
-          "blocker": "EV04 steps 1-3 are complete for candidate B. Empirical confirmation that bare vLLM's POST /invocations serves inference without a credential is deferred to EV03 by owner decision (2026-09-21). status and gate_verdicts are left NOT_RUN pending the reviewer's decision."
+          "blocker": "EV04 steps 1-4 are complete for candidate B. The empirical confirmation that bare vLLM's POST /invocations serves inference without a credential was deferred to EV03 by owner decision (2026-09-21) and is now recorded there: 200 with a real completion against 401 on /v1/chat/completions (see experiments.EV03.per_candidate.B and docs/evidence/wp24/WP24-2026-09-20-run1/B/EV03/invocations-no-credential.txt). status and gate_verdicts are left NOT_RUN pending the reviewer's decision."
         },
         "C": {
           "status": "BLOCKED",
