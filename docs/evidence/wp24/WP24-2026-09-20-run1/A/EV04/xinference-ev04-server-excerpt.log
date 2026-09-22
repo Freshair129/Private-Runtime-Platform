@@ -1,0 +1,12 @@
+2026-09-22T21:20:39.512Z INFO xinference.api.oauth2.advanced.cache pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ Loaded 0 API keys into cache
+  Create the initial admin account at POST /v1/admin/setup
+  (or via the web UI's setup page).
+2026-09-22T21:21:22.526Z INFO uvicorn.access pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ 127.0.0.1:59625 - "POST /v1/admin/setup HTTP/1.1" 201
+2026-09-22T21:21:22.530Z ERROR xinference.api.restful_api pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ Handling request http://127.0.0.1:9997/token failed: Expecting value: line 1 
+2026-09-22T21:21:22.537Z INFO uvicorn.access pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ 127.0.0.1:59629 - "POST /token HTTP/1.1" 500
+2026-09-22T21:21:22.537Z ERROR uvicorn.error pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ Exception in ASGI application
+2026-09-22T21:21:45.287Z INFO uvicorn.access pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ 127.0.0.1:59746 - "POST /v1/admin/setup HTTP/1.1" 403
+2026-09-22T21:21:45.477Z INFO uvicorn.access pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ 127.0.0.1:59748 - "POST /token HTTP/1.1" 200
+2026-09-22T21:21:45.492Z INFO uvicorn.access pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ 127.0.0.1:59750 - "POST /v1/admin/keys HTTP/1.1" 201
+2026-09-22T21:21:45.497Z INFO uvicorn.access pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ 127.0.0.1:59751 - "GET /v1/admin/keys/1/reveal HTTP/1.1" 200
+2026-09-22T21:21:45.507Z INFO uvicorn.access pid:58676 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ 127.0.0.1:59752 - "GET /v1/admin/keys HTTP/1.1" 200
