@@ -1,0 +1,34 @@
+{
+  "kind": "WP24_EV02_GPU_BINDING",
+  "generated_at_utc": "2026-09-22T19:26:45Z",
+  "command_line": "tools/wp24/ev02_gpu_binding.py --host-id A --process-pattern vllm|xinference|python --out docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02",
+  "host_id": "A",
+  "process_pattern": "vllm|xinference|python",
+  "gpu_list": [
+    {
+      "uuid": "GPU-38430611-f42d-0296-a887-d75649b21f25",
+      "index": "0"
+    }
+  ],
+  "matched_processes": [],
+  "unrelated_process_count": 22,
+  "measurements": [
+    {
+      "name": "gpu_count",
+      "value": 1
+    },
+    {
+      "name": "matched_process_count",
+      "value": 0
+    },
+    {
+      "name": "unrelated_process_count",
+      "value": 22
+    }
+  ],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev02_gpu_binding_A_20260922T192645Z.json"
+  ]
+}

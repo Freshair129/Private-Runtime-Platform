@@ -1,0 +1,8 @@
+# EV02 candidate A - inference smoke through the Xinference OpenAI-compatible route
+# note: curl on this shell mangled the UTF-8 body (Internal Server Error, invalid start byte);
+# the request below was sent from Python with an explicit utf-8 body. Not an Xinference fault.
+## request
+{"model": "prp-a-llm", "messages": [{"role": "user", "content": "2+2 ตอบสั้นๆ"}], "max_tokens": 20}
+## response
+{"id":"chat4de3ab18-11d1-42e1-8ff7-a67d93a1a08d","object":"chat.completion","created":1790107795,"model":"prp-a-llm","choices":[{"index":0,"message":{"role":"assistant","content":"4"},"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":18,"completion_tokens":1,"total_tokens":19}}
+# wall_seconds=1.366 (warm, model already loaded)

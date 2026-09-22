@@ -1,0 +1,115 @@
+{
+  "kind": "WP24_EV02_RESTART_IDENTITY_DIFF",
+  "generated_at_utc": "2026-09-22T20:11:56Z",
+  "command_line": "tools/wp24/ev02_restart_identity.py --before docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_probe_A_A_20260922T200855Z.json --after docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_probe_A_A_20260922T201150Z.json --out docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02",
+  "candidate": "A",
+  "host_id": "A",
+  "before_file": "ev02_probe_A_A_20260922T200855Z.json",
+  "after_file": "ev02_probe_A_A_20260922T201150Z.json",
+  "diff": {
+    "added": {},
+    "removed": {},
+    "changed": {
+      "list_running_models.no_credential.data[0].address": {
+        "before": "127.0.0.1:62147",
+        "after": "127.0.0.1:63318"
+      },
+      "workers_info.no_credential.[0].models.prp-a-llm-rep0.address": {
+        "before": "127.0.0.1:62147",
+        "after": "127.0.0.1:63318"
+      }
+    },
+    "unchanged": {
+      "list_model_registrations_llm.no_credential.[0].model_name": "baichuan-2",
+      "list_model_registrations_llm.no_credential.[10].model_name": "cogagent",
+      "list_model_registrations_llm.no_credential.[11].model_name": "deepseek",
+      "list_model_registrations_llm.no_credential.[12].model_name": "deepseek-chat",
+      "list_model_registrations_llm.no_credential.[13].model_name": "deepseek-coder",
+      "list_model_registrations_llm.no_credential.[14].model_name": "deepseek-coder-instruct",
+      "list_model_registrations_llm.no_credential.[15].model_name": "deepseek-prover-v2",
+      "list_model_registrations_llm.no_credential.[16].model_name": "deepseek-r1",
+      "list_model_registrations_llm.no_credential.[17].model_name": "deepseek-r1-0528",
+      "list_model_registrations_llm.no_credential.[18].model_name": "deepseek-r1-0528-qwen3",
+      "list_model_registrations_llm.no_credential.[19].model_name": "deepseek-r1-distill-llama",
+      "list_model_registrations_llm.no_credential.[1].model_name": "baichuan-2-chat",
+      "list_model_registrations_llm.no_credential.[20].model_name": "deepseek-r1-distill-qwen",
+      "list_model_registrations_llm.no_credential.[21].model_name": "deepseek-v2-chat",
+      "list_model_registrations_llm.no_credential.[22].model_name": "deepseek-v2-chat-0628",
+      "list_model_registrations_llm.no_credential.[23].model_name": "deepseek-v2.5",
+      "list_model_registrations_llm.no_credential.[24].model_name": "deepseek-v3",
+      "list_model_registrations_llm.no_credential.[25].model_name": "deepseek-v3-0324",
+      "list_model_registrations_llm.no_credential.[26].model_name": "Deepseek-V3.1",
+      "list_model_registrations_llm.no_credential.[27].model_name": "DeepSeek-V3.2",
+      "list_model_registrations_llm.no_credential.[28].model_name": "DeepSeek-V3.2-Exp",
+      "list_model_registrations_llm.no_credential.[29].model_name": "DeepSeek-V4-Flash",
+      "list_model_registrations_llm.no_credential.[2].model_name": "Baichuan-M2",
+      "list_model_registrations_llm.no_credential.[30].model_name": "DeepSeek-V4-Flash-0731",
+      "list_model_registrations_llm.no_credential.[31].model_name": "DeepSeek-V4-Pro",
+      "list_model_registrations_llm.no_credential.[32].model_name": "deepseek-vl2",
+      "list_model_registrations_llm.no_credential.[33].model_name": "DianJin-R1",
+      "list_model_registrations_llm.no_credential.[34].model_name": "Ernie4.5",
+      "list_model_registrations_llm.no_credential.[35].model_name": "fin-r1",
+      "list_model_registrations_llm.no_credential.[36].model_name": "gemma-3-1b-it",
+      "list_model_registrations_llm.no_credential.[37].model_name": "gemma-3-it",
+      "list_model_registrations_llm.no_credential.[38].model_name": "gemma-4",
+      "list_model_registrations_llm.no_credential.[39].model_name": "glm-4.1v-thinking",
+      "list_model_registrations_llm.no_credential.[3].model_name": "code-llama",
+      "list_model_registrations_llm.no_credential.[40].model_name": "glm-4.5",
+      "list_model_registrations_llm.no_credential.[41].model_name": "glm-4.5v",
+      "list_model_registrations_llm.no_credential.[42].model_name": "GLM-4.6",
+      "list_model_registrations_llm.no_credential.[43].model_name": "GLM-4.7",
+      "list_model_registrations_llm.no_credential.[44].model_name": "GLM-4.7-Flash",
+      "list_model_registrations_llm.no_credential.[45].model_name": "glm-4v",
+      "list_model_registrations_llm.no_credential.[46].model_name": "glm-5",
+      "list_model_registrations_llm.no_credential.[47].model_name": "glm-5.1",
+      "list_model_registrations_llm.no_credential.[48].model_name": "glm-5.2",
+      "list_model_registrations_llm.no_credential.[49].model_name": "glm-edge-chat",
+      "list_model_registrations_llm.no_credential.[4].model_name": "code-llama-instruct",
+      "list_model_registrations_llm.no_credential.[5].model_name": "code-llama-python",
+      "list_model_registrations_llm.no_credential.[6].model_name": "codegeex4",
+      "list_model_registrations_llm.no_credential.[7].model_name": "codeqwen1.5",
+      "list_model_registrations_llm.no_credential.[8].model_name": "codeqwen1.5-chat",
+      "list_model_registrations_llm.no_credential.[9].model_name": "codestral-v0.1",
+      "list_running_models.no_credential.data[0].created": "0",
+      "list_running_models.no_credential.data[0].id": "prp-a-llm",
+      "list_running_models.no_credential.data[0].model_name": "prp-typhoon25-qwen3-4b",
+      "list_running_models.no_credential.data[0].object": "model",
+      "list_running_models.no_credential.data[0].owned_by": "xinference",
+      "list_running_models.no_credential.object": "list",
+      "workers_info.no_credential.[0].models.prp-a-llm-rep0.model_name": "prp-typhoon25-qwen3-4b"
+    }
+  },
+  "measurements": [
+    {
+      "name": "identifiers_before_count",
+      "value": 59
+    },
+    {
+      "name": "identifiers_after_count",
+      "value": 59
+    },
+    {
+      "name": "identifiers_added_count",
+      "value": 0
+    },
+    {
+      "name": "identifiers_removed_count",
+      "value": 0
+    },
+    {
+      "name": "identifiers_changed_count",
+      "value": 2
+    },
+    {
+      "name": "identifiers_unchanged_count",
+      "value": 57
+    }
+  ],
+  "observations": [
+    "identifiers differ between the before/after snapshots; review WP24-EXPERIMENT-PROCEDURE.md EV02 step 2 / EV06 for whether this is a restart epoch the candidate exposes or something else"
+  ],
+  "source_observations": [],
+  "artifacts": [
+    "ev02_restart_identity_A_A_20260922T201156Z.json"
+  ]
+}

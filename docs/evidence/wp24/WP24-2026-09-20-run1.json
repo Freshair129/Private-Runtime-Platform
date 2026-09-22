@@ -119,6 +119,16 @@
       "reviewer_action": "Accept the same-host import, or require a repeat on a second host with a Docker GPU runtime.",
       "resolution": null,
       "status": "OPEN"
+    },
+    {
+      "id": "DEV-07",
+      "experiment": "EV02 (candidate A, and every later candidate-A experiment)",
+      "requirement": "procedure section 3 item 1: the same hardware and revision for every candidate",
+      "observed": "Candidate B ran vLLM inside a Linux container on Docker; candidate A runs natively on Windows with the transformers backend, because vLLM has no Windows build and the only WSL distro on this host is Docker's own. The model revision, the weights and the GPU are the same.",
+      "mitigation": "EV02 asks about identity, registration and placement reporting, which do not depend on the engine, so this gate's comparison stands. Any measurement of time or throughput between candidates A and B is not comparable and must not be read as one.",
+      "reviewer_action": "Accept for the identity gates, or require candidate A to be redeployed on a Linux host with the same engine before any performance comparison is recorded.",
+      "resolution": null,
+      "status": "OPEN"
     }
   ],
   "environment": {
@@ -258,28 +268,16 @@
       "version_manifest": {
         "images": [],
         "python_packages": [
-          "aiohappyeyeballs==2.7.1",
-          "aiohttp==3.14.3",
-          "aiosignal==1.4.0",
-          "annotated-types==0.8.0",
-          "attrs==26.1.0",
-          "certifi==2026.7.22",
-          "charset-normalizer==3.5.1",
-          "frozenlist==1.8.0",
-          "idna==3.20",
-          "multidict==6.9.0",
-          "pip==25.0.1",
-          "propcache==0.5.4",
-          "pydantic==2.13.5",
-          "pydantic_core==2.46.5",
-          "requests==2.34.2",
-          "typing_extensions==4.16.0",
-          "typing-inspection==0.4.4",
-          "urllib3==2.8.0",
-          "xinference-client==3.4.0",
-          "yarl==1.25.1"
+          "xinference==3.4.0",
+          "torch==2.14.0+cu130 (reinstalled: the xinference install replaced the CUDA wheel with torch 2.14.0+cpu)",
+          "transformers==5.17.0",
+          "accelerate==1.15.0"
         ],
-        "config_files": []
+        "config_files": [
+          "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/launch-command.txt",
+          "custom LLM registration posted to /v1/model_registrations/LLM with persist=false: model_family qwen3, context_length 8192, model_specs pytorch/4b/none over F:/prp-models/typhoon2.5-qwen3-4b@ce0a741, chat_template taken from the model's own chat_template.jinja",
+          "launch env: XINFERENCE_HOME=F:/prp-xinference-a/home; XINFERENCE_AUTH_ADVANCED=0 (the default is auth ON, see EV02 step 4)"
+        ]
       },
       "status": "NOT_RUN",
       "gate_failures": [],
@@ -296,9 +294,9 @@
         "operator_skills_required": []
       },
       "reset_between_candidates": {
-        "performed": null,
-        "nvidia_smi_clean": null,
-        "notes": null
+        "performed": true,
+        "nvidia_smi_clean": true,
+        "notes": "Candidate B was fully stopped and removed before A was launched: no prp-wp24-vllm-b container existed and the prp-mvp vLLM was not running. ev02_gpu_binding_A_20260922T192645Z.json matched no candidate process (22 unrelated Windows desktop processes hold the GPU). Model weights cache on F:/prp-models was KEPT, which procedure section 3 item 1 allows when recorded. Evidence: docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/reset-between-candidates.txt"
       }
     },
     {
@@ -695,15 +693,98 @@
       "per_candidate": {
         "A": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-22T19:26:44+00:00",
+          "finished_at": "2026-09-22T20:15:40+00:00",
+          "cold_or_warm": "Cold: first deployment on this host. The server accepted requests about 44 s after start and the model took 100 s to load (2026-09-22T20:07:03Z to 20:08:43Z). One warm chat completion answered in 1.4 s.",
+          "sample_count": "six documented endpoints probed three times (default auth, after auth was disabled, and after a model restart); one GPU-binding join; one restart-identity diff over 59 identifiers; two negative tests; two chat completions",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/launch-command.txt and the command_line field of each ev02_*_A_*.json",
+          "source_observations": [
+            "SRC-10: the auth system is documented as opt-in, but xinference 3.4.0 authenticates by default and requires a first-run administrator setup; XINFERENCE_AUTH_ADVANCED=0 removes all authentication. Observed in this run, not in the source.",
+            "SRC-09: the supervisor/worker split is visible through /v1/workers and /v1/supervisor as the source describes; what the source does not say is that the per-replica address is the only identifier that changes on restart."
+          ],
+          "measurements": [
+            {
+              "name": "model_cold_load_seconds",
+              "value": 100
+            },
+            {
+              "name": "server_ready_seconds",
+              "value": 44
+            },
+            {
+              "name": "vram_after_load_mib",
+              "value": 10956
+            },
+            {
+              "name": "vram_total_mib",
+              "value": 16311
+            },
+            {
+              "name": "warm_chat_completion_seconds",
+              "value": 1.4
+            },
+            {
+              "name": "endpoints_401_with_challenge_default_auth",
+              "value": 4
+            },
+            {
+              "name": "endpoints_open_without_credential_default_auth",
+              "value": [
+                "/v1/cluster/auth",
+                "/v1/admin/setup/status"
+              ]
+            },
+            {
+              "name": "restart_identity_changed_fields",
+              "value": [
+                "/v1/models data[0].address",
+                "/v1/workers [0].models.prp-a-llm-rep0.address"
+              ]
+            },
+            {
+              "name": "restart_identity_unchanged_fields",
+              "value": 57
+            },
+            {
+              "name": "physical_gpu_exposed_by_candidate",
+              "value": "device index only (accelerators: [\"0\"]); no GPU UUID"
+            },
+            {
+              "name": "same_alias_second_profile",
+              "value": "refused: HTTP 400 Model prp-typhoon25-qwen3-4b already registered"
+            },
+            {
+              "name": "second_uid_launch",
+              "value": "failed before start: Windows paging file too small (os error 1455); capacity counting unobserved"
+            }
+          ],
+          "observations": [
+            "Placement: unlike candidate B, Xinference reports where a model runs. /v1/models and /v1/workers return accelerators [\"0\"] and a per-replica address, and /v1/workers lists each replica (prp-a-llm-rep0) under its worker. It still reports the device INDEX, not the GPU UUID, so PRP must join index to UUID from nvidia-smi itself.",
+            "Restart identity: terminating and relaunching the model changed the replica address (127.0.0.1:62147 to 127.0.0.1:63318) while 57 other identifiers stayed the same. That is a usable restart signal; candidate B had none in its API and only process_start_time_seconds in /metrics.",
+            "There is no epoch field and created is 0 in /v1/models, so the address is the only restart signal the candidate offers.",
+            "Negative test 1: registering the same model_name with a different context_length was refused with HTTP 400 (already registered); a second name over the same weights was accepted and kept separate. The candidate does not merge two profiles under one alias.",
+            "Negative test 2 did not run: the second model_uid failed with a Windows paging-file error before any model was loaded, on a host with 31.8 GiB RAM and 5.7 GiB free. The first model kept serving and VRAM was unchanged, so whether the cluster counts one capacity or two remains unobserved.",
+            "Authentication: xinference 3.4.0 authenticates by default, which its documentation describes as opt-in. With the default, /v1/models, /v1/model_registrations/LLM, /v1/workers and /v1/supervisor all return 401 with a WWW-Authenticate challenge, and only /v1/cluster/auth and /v1/admin/setup/status answer. That is stricter than candidate B, where /metrics and POST /invocations served without any credential. One environment variable, XINFERENCE_AUTH_ADVANCED=0, removes all authentication; the measurements in steps 1-3 were taken in that state because the default path requires creating an administrator account.",
+            "Deployment: installing xinference==3.4.0 replaced the CUDA torch wheel with torch 2.14.0+cpu, after which the cluster reported gpu_count 0 and refused to launch on GPU. Reinstalling torch 2.14.0+cu130 fixed it. An operator following the obvious install order gets a CPU-only cluster with no warning.",
+            "Deployment: the launch path symlinks the weights into its cache and failed with the Windows symlink privilege error (WinError 1314 / 'A required privilege is not held by the client'). A directory junction at the same path needs no privilege change and the launch then succeeded.",
+            "The server logs a pre-launch VRAM check (Pre-launch VRAM low ... free_ratio=0.79), so the candidate has an admission signal of its own; this is carried into EV05."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_gpu_binding_A_20260922T192645Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_gpu_binding_A_20260922T200855Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_probe_A_A_20260922T195816Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_probe_A_A_20260922T200855Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_probe_A_A_20260922T201150Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/ev02_restart_identity_A_A_20260922T201156Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/inference-smoke.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/negative-test1-same-alias-different-profile.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/negative-test2-two-uids-one-weights.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/reset-between-candidates.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/xinference-server-excerpt.log"
+          ],
           "gate_verdicts": {
             "PRP-FR-010": "NOT_RUN",
             "PRP-FR-011": "NOT_RUN",
@@ -712,8 +793,8 @@
             "PRP-FR-014": "NOT_RUN",
             "PRP-FR-015": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only: ADAPT, and better than candidate B on this gate. The candidate reports its own placement (accelerators index, per-replica address, worker to replica mapping) and gives a restart signal PRP can use, but PRP must still join device index to GPU UUID itself and must record its own epoch, since the candidate has none.",
+          "blocker": "Capacity counting (procedure step 3, second case) is unobserved: the second replica could not start on this host. One GPU host only (DEV-03) and a Windows-native transformers deployment (DEV-07), so no timing comparison with candidate B is valid."
         },
         "B": {
           "status": "NOT_RUN",

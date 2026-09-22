@@ -241,6 +241,16 @@ repository_integration: NOT_PERFORMED
 - licenses ที่ตรวจจริง: vLLM 0.29.0 = Apache-2.0 (LICENSE ใน image), โมเดล = Apache-2.0 (tag ของ revision, SEC-007 receipt ยังต้องยื่น); **LiteLLM และ PostgreSQL ยังไม่ได้ตรวจในรอบนี้** บันทึกตามนั้น
 - ไม่เปลี่ยน verdict ใด — ทุก EV ยัง `NOT_RUN`, acceptance ยัง `NOT_RUN` ครบ 92
 
+### WP24 EV02 candidate A (Xinference) รันจริง (2026-09-22, C-2 / H3)
+- deploy candidate A ด้วย venv บน F: (`xinference==3.4.0`, transformers 5.17.0, torch 2.14.0+cu130) ตามที่ owner ตัดสิน เพราะ C: เหลือไม่ถึง 17 GB และ Docker เก็บข้อมูลที่นั่น; **DEV-07** (OPEN): A รัน Windows-native + transformers ส่วน B รัน vLLM ใน container Linux — **ตัวเลขเวลาระหว่างสอง candidate เทียบกันไม่ได้** แต่คำถาม identity / placement ของ EV02 ไม่ขึ้นกับ engine
+- reset ก่อนเริ่ม A บันทึกแล้ว: ไม่มี container ของ B เหลือ, `ev02_gpu_binding` ไม่เจอ process ของ candidate, คง weights cache ไว้ (procedure §3 ข้อ 1 อนุญาตเมื่อบันทึก)
+- **A รายงาน placement ของตัวเอง ต่างจาก B**: `/v1/models` และ `/v1/workers` ให้ `accelerators: ["0"]`, `address` ต่อ replica และ mapping worker → replica (`prp-a-llm-rep0`) — แต่ยังเป็น device **index** ไม่ใช่ GPU UUID PRP จึง join เองอยู่ดี
+- **restart identity ใช้ได้จริง**: terminate แล้ว launch ใหม่ `address` เปลี่ยน (62147 → 63318) ขณะที่ identifier อื่น 57 ตัวเท่าเดิม (B ไม่มี identity ใน API เลย มีแค่ `process_start_time_seconds` ใน `/metrics`); ไม่มี epoch และ `created` = 0
+- negative test 1: ลง `model_name` เดิมด้วย profile ต่าง → **ถูกปฏิเสธ 400 already registered**; ชื่อที่สองบน weights เดียวกันแยกกันชัดเจน — ไม่มีการรวม alias; negative test 2 (นับ capacity ซ้ำ) **ไม่ได้ผล**: uid ที่สอง fail ด้วย Windows paging file (os error 1455) ก่อนโหลดโมเดล ตัวแรกยังตอบปกติ
+- **auth**: xinference 3.4.0 **เปิด auth เป็น default** (เอกสารบอกว่า opt-in) — 4 endpoint ตอบ 401 พร้อม `WWW-Authenticate` เปิดเฉพาะ `/v1/cluster/auth` กับ `/v1/admin/setup/status` เข้มกว่าของ B ที่ `/metrics` และ `POST /invocations` ไม่ต้องใช้ credential; แต่ `XINFERENCE_AUTH_ADVANCED=0` ปิด auth ทั้งหมดได้ด้วย env เดียว (รันขั้นตอน 1–3 ในโหมดนี้ เพราะ default ต้องสร้างบัญชี admin)
+- ข้อสังเกต deploy ที่วัดได้: ติดตั้ง `xinference` **ทับ torch CUDA ด้วย `torch 2.14.0+cpu`** ทำให้ `gpu_count 0` ต้องลง `torch==2.14.0+cu130` ใหม่; launch พยายามทำ **symlink** เข้าที่ cache แล้วติด Windows privilege (WinError 1314) แก้ด้วย directory junction ที่ไม่ต้องใช้สิทธิ์; server log มี **pre-launch VRAM check** (`free_ratio=0.79`) ซึ่งเป็น admission signal ของ candidate เอง (ยกไป EV05)
+- เติม `experiments.EV02.per_candidate.A` (artifacts 14 ไฟล์, `disposition_hint` = ADAPT และดีกว่า B ใน gate นี้), `candidates[A].version_manifest` / `reset_between_candidates` และ DEV-07 — **`status` และ `gate_verdicts` (`PRP-FR-010`..`015`) ยัง `NOT_RUN`**
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
