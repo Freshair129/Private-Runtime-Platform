@@ -217,6 +217,12 @@ repository_integration: NOT_PERFORMED
 - ระหว่างรัน: kill / restart รอบแรกยังไม่เก็บ error object ใน stream → ขยาย probe ให้เก็บ `error_chunk` (unit test เพิ่ม 1 เคส รวม 37 ผ่าน) แล้วรันสองกรณีนั้นใหม่ รอบแรกเก็บไว้ใต้ `B/EV06/superseded/` พร้อมหมายเหตุ
 - เติม `experiments.EV06.per_candidate.B` ใน run record (`disposition_hint` = ADAPT พร้อมสิ่งที่ PRP ต้อง reconcile เอง, artifacts 13 ไฟล์) — **`status` และ `gate_verdicts` (`PRP-FR-020`..`022`) ยัง `NOT_RUN`**; ไม่แตะ field อื่นของ record
 
+### WP24 EV08 candidate B · design และเครื่องมือ (2026-09-22, C-2 / H2)
+- เพิ่ม `B/EV08/test-design.md` (owner อนุมัติ 2026-09-22) gate `PRP-NFR-024`: (1) mapping ชื่อ public → `ModelProfile` → `RuntimeDeployment` → ID ของ vLLM และ leak scan 6 ชนิด response หา field / header ที่เปิดเผย vendor; (2) export `docker inspect` เป็น spec ที่ redact แล้ว launch ใหม่จาก export อย่างเดียวและเทียบ fingerprint (เสนอ DEV-06: "host สะอาด" ได้แค่ container ใหม่บนเครื่องเดิม); (3) แผน rotate key + ทดสอบ overlap → drop จริง; (4) หา datastore ที่ vendor ถือด้วย marker, `docker diff` และ `docker logs` — LiteLLM ไม่รันใน EV08 ตาม sub-spike
+- เพิ่ม `tools/wp24/ev08_exit_probe.py` (stdlib เท่านั้น 7 subcommands ไม่คำนวณ verdict ไม่ print key) และ unit test 9 เคส (รวม 46 เคสผ่าน); จากการอ่าน source ใน image: `VLLM_API_KEY` รับได้ key เดียว หลาย key ต้องผ่าน `--api-key` ซึ่งจะโผล่ใน `docker inspect` จึงส่งผ่าน `--config` YAML ที่ mount แบบ read-only นอก repo
+- dry run ทุก subcommand กับ fake server ใน container **จับบั๊กได้สามตัวและแก้แล้ว** (command เอาจาก `Args` ทำให้ program หาย, `launch` อ่าน spec ผิดชั้น, mount ใต้ home ถูก redact จนใช้ไม่ได้) หลังแก้ launch จาก spec แล้ว fingerprint ตรงครบ 4 field และไม่มี key ใน output — validate เครื่องมือเท่านั้น **ไม่ใช่หลักฐานของ vLLM**; ข้อสังเกตที่ต้องยืนยันกับ vLLM: key เดียวผ่าน env **โผล่เป็น plaintext ใน `docker inspect`** แต่ผ่าน `--config` ไม่โผล่
+- **EV08 `status` และ `gate_verdicts` (`PRP-NFR-024`) ยัง `NOT_RUN`**; ยังไม่ได้เปิด vLLM
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
