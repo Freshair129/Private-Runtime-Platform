@@ -202,6 +202,12 @@ repository_integration: NOT_PERFORMED
 - ขั้นตอน 1 ตรวจซ้ำกับ container นี้ได้ผลเดิม (ทุก process บน host เข้าถึงได้ `/invocations` และ `/metrics` ไม่ต้องใช้ key) ขั้นตอน 1b owner เลื่อนไว้ก่อน
 - เติม `experiments.EV05.per_candidate.B` ใน run record (measurements, observations, artifacts 10 ไฟล์, `disposition_hint` = FR-018 CONFIGURE พร้อมเงื่อนไข) — **`status` และ `gate_verdicts` ยัง `NOT_RUN`**; ไม่แตะ field อื่นของ record
 
+### WP24 EV06 candidate B · design และเครื่องมือ (2026-09-22, C-2 / H2)
+- เพิ่ม `B/EV06/test-design.md` (owner อนุมัติ 2026-09-22) gate `PRP-FR-020`..`022`: 5 กรณี — client ยกเลิก streaming / non-streaming, `kill -9` EngineCore ใน container, ยกเลิก request ที่ค้างใน queue (FR-021 queued cancel), `docker restart` — แต่ละกรณีบันทึกสิ่งที่ client เห็น, compute หยุดจริงหรือไม่ (`num_requests_running`, `generation_tokens_total`), เวลาจนพร้อมรับงาน (cold / warm) และเฝ้า 30 s โดยไม่มี client เพื่อจับ blind replay; ขั้นตอน 3 ค้น `/openapi.json` หา route cancel / abort / status และดูว่ามี request id ให้ reconcile หรือไม่
+- เพิ่ม `tools/wp24/ev06_interrupt_probe.py` (stdlib เท่านั้น ไม่คำนวณ verdict ไม่ print key) และ unit test 6 เคส (รวม 37 เคสผ่าน); ระหว่างเขียนเพิ่มสองข้อ: นับ "พร้อม" ต่อเมื่อ `/health` ล้มก่อนแล้วกลับมา และหา PID ด้วย `grep -l '[E]ngineCore'` กันเจอตัวเอง
+- dry run ทั้ง 5 กรณีกับ fake server ใน container `python:3.12-alpine` **จับบั๊กได้สองตัวและแก้แล้ว** (cancel ไม่ตัดจริงเพราะ `http.client` ทิ้ง `conn.sock` เมื่อ response เป็น `Connection: close`; idle time คำนวณก่อน sample ถัดไป) หลังแก้ทุกกรณีทำงานตาม design และ token rise ใน replay window เป็น 0 — validate เครื่องมือเท่านั้น **ไม่ใช่หลักฐานของ vLLM**
+- **EV06 `status` และ `gate_verdicts` (`PRP-FR-020`..`022`) ยัง `NOT_RUN`**; ยังไม่ได้เปิด vLLM
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

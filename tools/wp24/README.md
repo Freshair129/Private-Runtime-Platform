@@ -154,11 +154,37 @@ python tools/wp24/ev05_admission_load.py --base-url http://127.0.0.1:8000 \
     --processes 3 --per-process 4 --label run-B --container prp-wp24-vllm-b --out wp24-out
 ```
 
+### `ev06_interrupt_probe.py`
+
+EV06 (gate `PRP-FR-020`..`022`), per the design in
+`docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/test-design.md`. It runs one interrupt case per
+invocation:
+
+- `cancel-stream`, `cancel-nonstream`: the client closes the socket mid-generation;
+- `kill-engine`: `kill -9` of the EngineCore process inside `--container`;
+- `cancel-queued`: fillers occupy the limit, and the queued request is closed;
+- `restart`: `docker restart` of `--container`.
+
+For every case it:
+
+- records each request's client-visible ending;
+- samples `/metrics` (`num_requests_running` / `waiting`, `generation_tokens_total`,
+  `process_start_time_seconds`);
+- waits for `/health` to fail and then recover, issuing `docker start` only if the container
+  stopped;
+- watches a replay window with no client request in flight;
+- searches `/openapi.json` for cancel / abort / status routes.
+
+```
+python tools/wp24/ev06_interrupt_probe.py --case kill-engine --container prp-wp24-vllm-b \
+    --token-env VLLM_API_KEY --model typhoon2.5-qwen3-4b --out wp24-out
+```
+
 ## Environment variables
 
 | Name | Used by | Meaning |
 |---|---|---|
-| any name passed to `--token-env` (e.g. `WP24_RUNTIME_TOKEN`) | `ev02_probe.py`, `ev05_admission_load.py` | Bearer token for the credentialed request. Never pass the token value itself on the command line; only the variable *name*. |
+| any name passed to `--token-env` (e.g. `WP24_RUNTIME_TOKEN`) | `ev02_probe.py`, `ev05_admission_load.py`, `ev06_interrupt_probe.py` | Bearer token for the credentialed request. Never pass the token value itself on the command line; only the variable *name*. |
 
 No other script reads an environment variable for a secret.
 

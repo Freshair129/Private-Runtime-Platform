@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import ev02_gpu_binding  # noqa: E402
 import ev05_admission_load as ev05  # noqa: E402
+import ev06_interrupt_probe as ev06  # noqa: E402
 import host_inventory  # noqa: E402
 import wp24_common as common  # noqa: E402
 
@@ -266,6 +267,48 @@ class TestEv05AdmissionLoad(unittest.TestCase):
         self.assertEqual(ev05.find_max_num_seqs(log), [4])
         self.assertEqual(ev05.find_max_num_seqs('{"max_num_seqs": 256}'), [256])
         self.assertEqual(ev05.find_max_num_seqs('{"max_model_len": 8192}'), [])
+
+
+def _sample(t: float, gen: float | None, proc: float = 1.0, running: float = 0.0) -> dict:
+    return {"t": t, "gen_tokens": gen, "proc_start": proc, "running": running, "waiting": 0.0}
+
+
+class TestEv06InterruptProbe(unittest.TestCase):
+    def test_classify_ending(self) -> None:
+        cases = [
+            ({"status": None}, "no_response"),
+            ({"status": None, "client_cancel_at": 5.0}, "client_cancelled_before_response"),
+            ({"status": 500}, "http_500"),
+            ({"status": 200, "finish_reason": "length"}, "completed"),
+            ({"status": 200, "client_cancel_at": 5.0}, "client_cancelled"),
+            ({"status": 200}, "cut_without_finish_reason"),
+        ]
+        for record, expected in cases:
+            self.assertEqual(ev06.classify_ending(record), expected, record)
+
+    def test_counter_rise_within_one_process_and_window(self) -> None:
+        samples = [_sample(0, 10), _sample(1, 15), _sample(2, 15), _sample(3, 40), _sample(9, 99)]
+        self.assertEqual(ev06.counter_rise(samples, 0, 5), 30.0)
+        self.assertEqual(ev06.counter_rise(samples, 2, 2), 0.0)
+
+    def test_counter_rise_ignores_reset_on_restart(self) -> None:
+        samples = [_sample(0, 500, proc=1), _sample(1, 0, proc=2), _sample(2, 7, proc=2)]
+        self.assertEqual(ev06.counter_rise(samples, 0, 5), 7.0)
+        self.assertEqual(ev06.counter_rise([_sample(0, None), _sample(1, 3)], 0, 5), 0.0)
+
+    def test_first_idle_after(self) -> None:
+        samples = [_sample(0, 0, running=1), _sample(1, 0, running=0), _sample(2, 0, running=0)]
+        self.assertEqual(ev06.first_idle_after(samples, 0.5), 1)
+        self.assertIsNone(ev06.first_idle_after(samples[:1], 0))
+
+    def test_engine_pids_from_grep_output(self) -> None:
+        out = "/proc/131/cmdline\n/proc/131/comm\n/proc/1/cmdline\n/proc/self/cmdline\n"
+        self.assertEqual(ev06.engine_pids(out), [1, 131])
+
+    def test_find_routes(self) -> None:
+        spec = {"paths": {"/v1/chat/completions": {}, "/abort_request": {}, "/health": {}}}
+        self.assertEqual(ev06.find_routes(spec), ["/abort_request"])
+        self.assertEqual(ev06.find_routes({}), [])
 
 
 if __name__ == "__main__":
