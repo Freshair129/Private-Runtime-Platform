@@ -394,6 +394,16 @@ class TestEv08ExitProbe(unittest.TestCase):
         self.assertEqual([r["kind"] for r in rows], ["C", "A", "D"])
         self.assertEqual(rows[1]["path"], "/root/.cache/x")
 
+    def test_diff_search_roots(self) -> None:
+        rows = ev08.parse_docker_diff(
+            "C /root\nA /root/.cache\nA /root/.cache/vllm/x.json\nC /etc\nC /etc/hosts\n"
+            "C /tmp/changed.txt\nD /gone\nA /new.txt\n"
+        )
+        self.assertEqual(
+            ev08.diff_search_roots(rows),
+            ["/etc/hosts", "/new.txt", "/root/.cache", "/tmp/changed.txt"],
+        )
+
     def test_non_default_args_takes_last_line(self) -> None:
         log = "x non-default args: {'a': 1}\ny non-default args: {'a': 2, 'b': 3}\n"
         self.assertEqual(ev08.non_default_args(log), "{'a': 2, 'b': 3}")

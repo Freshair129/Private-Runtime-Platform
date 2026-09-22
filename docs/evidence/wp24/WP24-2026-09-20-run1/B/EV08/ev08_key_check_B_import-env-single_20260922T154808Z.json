@@ -1,0 +1,32 @@
+{
+  "generated_at_utc": "2026-09-22T15:48:08Z",
+  "command_line": "tools/wp24/ev08_exit_probe.py --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08 --label import-env-single key-check --stage import-single-key-in-env --key-env KEY_A --key-env KEY_B",
+  "candidate": "B",
+  "ev": "EV08",
+  "subcommand": "key-check",
+  "label": "import-env-single",
+  "result": {
+    "stage": "import-single-key-in-env",
+    "status_by_key": {
+      "no key": 401,
+      "KEY_A": 200,
+      "KEY_B": 401
+    },
+    "key_value_exposure": {
+      "KEY_A": {
+        "in_docker_logs": false,
+        "in_docker_inspect": true
+      },
+      "KEY_B": {
+        "in_docker_logs": false,
+        "in_docker_inspect": false
+      }
+    }
+  },
+  "measurements": [],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev08_key_check_B_import-env-single_20260922T154808Z.json"
+  ]
+}

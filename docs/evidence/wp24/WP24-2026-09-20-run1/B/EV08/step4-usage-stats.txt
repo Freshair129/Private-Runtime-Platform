@@ -1,0 +1,26 @@
+# EV08 step 4 - vLLM usage statistics (telemetry), observed 2026-09-22 on the EV08 source container
+# Only field NAMES are recorded here; no values from the host are copied.
+
+file written in the container: /root/.config/vllm/usage_stats.json (1 JSON line after startup)
+fields: all2all_backend, architecture, attention_backend, block_size, compilation_mode, context,
+  cpu_family_model_stepping, cpu_type, cuda_runtime, data_parallel_size, disable_custom_all_reduce,
+  dtype, enable_eplb, enable_expert_parallel, enable_lora, enable_prefix_caching, enforce_eager,
+  env_var_json, gpu_count, gpu_memory_per_device, gpu_memory_utilization, gpu_type, kv_cache_dtype,
+  kv_cache_memory_bytes, kv_connector, log_time, max_model_len, max_num_batched_tokens, max_num_seqs,
+  model_architecture, num_cpu, num_experts, num_redundant_experts, num_speculative_tokens,
+  pipeline_parallel_size, platform, provider, quantization, source, spec_decode_method,
+  tensor_parallel_size, total_memory, uuid, vllm_version, xpu_runtime
+env_var_json names: VLLM_ENABLE_V1_MULTIPROCESSING, VLLM_PP_LAYER_PARTITION, VLLM_USE_FLASHINFER_SAMPLER,
+  VLLM_USE_MODELSCOPE, VLLM_USE_TRITON_AWQ
+API key value present in the file: False
+prompt / completion content in the file: none (no such field; the EV08 marker search found no hit)
+
+vLLM source in the image (vllm/usage/usage_lib.py, vllm/envs.py):
+  _USAGE_STATS_SERVER = envs.VLLM_USAGE_STATS_SERVER, default "https://stats.vllm.ai"
+  _send_to_server posts the same data with client.post(_USAGE_STATS_SERVER, json=data)
+  _report_continuous_usage loops: while True: time.sleep(600) ... report again
+  opt-out: VLLM_NO_USAGE_STATS=1, VLLM_DO_NOT_TRACK=1, DO_NOT_TRACK=1, or a do_not_track file in the config dir
+container environment: none of the opt-out variables set (VLLM_USAGE_SOURCE=production-docker-image only)
+
+Not verified: whether the POST actually left the host (no egress capture was taken). The code path is
+enabled by default and nothing in this launch disables it.

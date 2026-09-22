@@ -150,6 +150,28 @@ def parse_docker_diff(text: str) -> list[dict[str, str]]:
     return rows
 
 
+def diff_search_roots(rows: list[dict[str, str]]) -> list[str]:
+    """Smallest set of paths that covers every added or changed file in a ``docker diff``.
+
+    An added path is a root unless an added ancestor already covers it. A changed (``C``) path is
+    kept only when nothing in the diff lies below it: that makes it a modified file, whereas a
+    changed directory only means something was added inside it, and searching it would re-read
+    unchanged image content.
+    """
+    live = [r for r in rows if r["kind"] != "D"]
+    added = {r["path"] for r in live if r["kind"] == "A"}
+    paths = {r["path"] for r in live}
+    roots = []
+    for r in live:
+        p = r["path"]
+        parents = [p[:i] for i in range(1, len(p)) if p[i] == "/"]
+        added_root = r["kind"] == "A" and not any(q in added for q in parents)
+        changed_leaf = r["kind"] == "C" and not any(q.startswith(p + "/") for q in paths)
+        if added_root or changed_leaf:
+            roots.append(p)
+    return sorted(roots)
+
+
 def non_default_args(log_text: str) -> str | None:
     """The last ``non-default args: {...}`` payload in a vLLM log, or None."""
     found = _NON_DEFAULT_RE.findall(log_text)
@@ -439,7 +461,7 @@ def cmd_datastore_scan(a: argparse.Namespace) -> dict[str, Any]:
     after = parse_docker_diff(_docker("diff", a.container, timeout=60)["stdout"])
     before_paths = {r["path"] for r in before}
     new_rows = [r for r in after if r["path"] not in before_paths]
-    changed = [r["path"] for r in after if r["kind"] != "D"]
+    changed = diff_search_roots(after)
     hits: list[str] = []
     if changed:
         grep = _docker(
@@ -449,15 +471,17 @@ def cmd_datastore_scan(a: argparse.Namespace) -> dict[str, Any]:
             "-c",
             'grep -rlF "$0" "$@" 2>/dev/null; true',
             marker,
-            *changed[:500],
+            *changed,
             timeout=120,
         )
         hits = [ln for ln in grep["stdout"].splitlines() if ln]
     logs = _docker("logs", a.container, timeout=60)
     inspect = _inspect(a.container)
     return {
+        "marker": marker,
         "marker_request_status": status,
         "diff_entries_total": len(after),
+        "search_roots": changed,
         "diff_entries_new_after_request": new_rows[:100],
         "diff_paths_sample": [r["path"] for r in after][:60],
         "changed_files_containing_marker": hits,

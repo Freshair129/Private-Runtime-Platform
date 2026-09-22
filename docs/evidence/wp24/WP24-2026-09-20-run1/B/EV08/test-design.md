@@ -148,6 +148,19 @@ It also showed one behaviour worth checking on vLLM: with one key passed through
 `key-check` found the key value in `docker inspect` (`Config.Env`); through the `--config` file it
 did not.
 
+### Change during the run (2026-09-22)
+
+On the real container, `docker diff` listed 11875 entries, and `datastore-scan` searched only the
+first 500 for the marker. It also did not record the marker it used. `datastore-scan` was changed
+to:
+
+- search a minimal covering set of paths (`diff_search_roots`): added subtrees, plus changed
+  entries with nothing below them, which gave 1292 roots on this container;
+- record the marker.
+
+One more unit test covers this (47/47 pass). The scan was repeated on the same container. The
+first scan is kept under `superseded/`.
+
 ## What this cannot reach
 
 - **A truly clean second host** (proposed DEV-06).

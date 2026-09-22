@@ -1,0 +1,74 @@
+{
+  "generated_at_utc": "2026-09-22T15:42:41Z",
+  "command_line": "tools/wp24/ev08_exit_probe.py --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08 --token-env KEY_A --label src export --weights-dir F:/prp-models/typhoon2.5-qwen3-4b@ce0a741",
+  "candidate": "B",
+  "ev": "EV08",
+  "subcommand": "export",
+  "label": "src",
+  "result": {
+    "spec": {
+      "image": "vllm/vllm-openai:latest",
+      "image_id": "sha256:c2914767605584b6d8f45686b82de173ecc99e781897aa3d0a66dacd72c51ae1",
+      "entrypoint": null,
+      "args": [
+        "--model",
+        "/models",
+        "--served-model-name",
+        "typhoon2.5-qwen3-4b",
+        "--max-model-len",
+        "8192",
+        "--gpu-memory-utilization",
+        "0.70",
+        "--max-num-seqs",
+        "4"
+      ],
+      "env": [
+        {
+          "name": "VLLM_API_KEY",
+          "value": "<REDACTED>"
+        },
+        {
+          "name": "VLLM_WSL2_ENABLE_PIN_MEMORY",
+          "value": "1"
+        }
+      ],
+      "ports": [
+        {
+          "container": "8000/tcp",
+          "host_ip": "127.0.0.1",
+          "host_port": "8000"
+        }
+      ],
+      "mounts": [
+        {
+          "source": "F:/prp-models/typhoon2.5-qwen3-4b@ce0a741",
+          "target": "/models",
+          "ro": true
+        }
+      ],
+      "gpus": "all",
+      "ipc_mode": "host",
+      "image_digest": "vllm/vllm-openai@sha256:c2914767605584b6d8f45686b82de173ecc99e781897aa3d0a66dacd72c51ae1",
+      "model_files_sha256": {
+        "config.json": "0286f989c9b445e1db89f1914df15b40063ed073e686146bb3087bcde6c2441d",
+        "generation_config.json": null,
+        "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "tokenizer_config.json": "4b5f2f80f84faefe8420e1616671adb1dd3d7e632038d34b1f0e3a1363a51059",
+        "chat_template.jinja": "64f85b198065d0fba2a81f37e10ed68161ce2c19a754c7100e67e0ca2ee9c326",
+        "model.safetensors.index.json": "720f387e8fcf08bd6295dc8d6cc0ff215e02785a3ce1268232404ef49cc26016"
+      }
+    },
+    "checks": {
+      "secret_env_checked": [
+        "KEY_A"
+      ],
+      "plaintext_secret_present": false
+    }
+  },
+  "measurements": [],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev08_export_B_src_20260922T154241Z.json"
+  ]
+}
