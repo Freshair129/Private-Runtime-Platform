@@ -332,15 +332,126 @@
       "gate_failures": [],
       "blocked_items": [],
       "operator_cost_measurements": {
-        "deploy_steps_count": null,
-        "deploy_wall_clock_minutes_cold": null,
-        "services_to_operate": [],
-        "datastores_to_operate": [],
-        "custom_gap_code": [],
+        "deploy_steps_count": {
+          "prerequisites_once_per_host_not_timed": 3,
+          "per_deployment_performed": 5,
+          "detail": "docs/evidence/wp24/WP24-2026-09-20-run1/B/OPERATOR-COST.md"
+        },
+        "deploy_wall_clock_minutes_cold": {
+          "container_create_to_health_200": [
+            3.6,
+            3.7,
+            3.75,
+            3.8,
+            4.3
+          ],
+          "note": "five launches across EV05, EV06 and EV08, each a new container with no compile cache; a restart of an existing container took 93 s and a docker start of an exited one 73 s (EV06). Deploy time from a clean host, including the 30.5 GB image pull and the 7.49 GiB weights download, was not measured: both were already local."
+        },
+        "services_to_operate": [
+          "vLLM runtime, one container per GPU host",
+          "a supervisor to restart it: vLLM does not restart its own engine, and after kill -9 the API server exits and the container stops (EV06). This run used no restart policy",
+          "LiteLLM key/proxy layer, only if candidate B's key layer is used, because bare vLLM cannot issue or revoke client keys (EV04); not run in EV05-EV08",
+          "PostgreSQL 16, required by that proxy as the virtual-key store",
+          "a host-level network policy in front of the runtime: every local process can otherwise reach it, and /invocations and /metrics answer without a key (EV05 step 1, EV03). Not implemented on this host"
+        ],
+        "datastores_to_operate": [
+          "PostgreSQL virtual keys and spend rows, with the proxy layer; persistent and PRP-controlled",
+          "container writable layer compile caches; no job data (an EV08 marker request left no trace in 1292 searched roots); lost on recreate, which is why a recreate costs 3.7-4.3 min instead of 93 s",
+          "docker logs json-file on the host: request counts, no prompt content (EV06, EV08); kept until the container is removed",
+          "/root/.config/vllm/usage_stats.json plus the report vLLM posts to https://stats.vllm.ai at startup and every 600 s: host and config telemetry, no prompts, and it leaves the platform unless VLLM_NO_USAGE_STATS=1 or DO_NOT_TRACK=1 is set at launch (EV08 step 4)",
+          "GPU memory prefix cache: prompt tokens, volatile, cannot be deleted on request, gone on restart (EV06)"
+        ],
+        "custom_gap_code": [
+          {
+            "requirement": "PRP-FR-003..PRP-FR-009",
+            "work": "the whole client-key authority: issuing, scoping, expiry, quota and revocation; bare vLLM has a flat key list, no scopes and no revoke API",
+            "observed_in": "EV04"
+          },
+          {
+            "requirement": "PRP-NFR-023 boundary",
+            "work": "a host-level network policy in front of the runtime",
+            "observed_in": "EV05 step 1, EV03"
+          },
+          {
+            "requirement": "PRP-NFR-023",
+            "work": "binding confirmation from the engine's own access log, because LiteLLM v1.90.2 sends none of the documented routing headers",
+            "observed_in": "EV03"
+          },
+          {
+            "requirement": "PRP-FR-017",
+            "work": "the durable admission transaction with PostgreSQL and fencing; nothing on the candidate side provides it",
+            "observed_in": "EV05"
+          },
+          {
+            "requirement": "PRP-FR-018",
+            "work": "hold max_num_seqs in PRP's own config since no API returns it, treat the running/waiting gauges as a signal that can under-count at burst edges, and respect the KV-cache ceiling of 1.71 requests at 8192 tokens",
+            "observed_in": "EV05"
+          },
+          {
+            "requirement": "PRP-FR-020..PRP-FR-022",
+            "work": "UNKNOWN / QUARANTINED reconciliation: after HTTP 200 only an in-stream error object means failed, a cut stream means nothing, and there is no request-status API",
+            "observed_in": "EV06"
+          },
+          {
+            "requirement": "PRP-NFR-024",
+            "work": "an adapter that strips or rewrites every vendor field: model, chatcmpl ids, system_fingerprint (vendor and version), a dozen extra response fields, owned_by and root in the model list, and the server: uvicorn header",
+            "observed_in": "EV08 step 1"
+          },
+          {
+            "requirement": "PRP-NFR-024",
+            "work": "a normalised error mapping: vLLM's 401 body is a bare string while 400 and 404 are objects",
+            "observed_in": "EV08 step 1"
+          },
+          {
+            "requirement": "PRP-NFR-024 / security",
+            "work": "key delivery through a read-only config file instead of VLLM_API_KEY, which docker inspect shows in plaintext, plus rotation orchestration (overlap then drop, each step a relaunch)",
+            "observed_in": "EV08 step 3"
+          },
+          {
+            "requirement": "PRP-NFR-024 / privacy",
+            "work": "VLLM_NO_USAGE_STATS=1 in every launch",
+            "observed_in": "EV08 step 4"
+          }
+        ],
         "upgrade_steps_tried": null,
         "rollback_steps_tried": null,
-        "licenses_required": [],
-        "operator_skills_required": []
+        "upgrade_rollback_note": "Not attempted (owner decision 2026-09-22): a real version upgrade needs a second vLLM image of about 30.5 GB. Related facts from other runs, not a substitute: a deployment is one docker run from a digest-pinned image plus a redacted export, and an import from that export alone reproduced the source exactly (EV08 step 2), so a rollback to a previous configuration is one relaunch; any relaunch costs a cold start of 3.7-4.3 min; and no job state or queue survives it (EV06).",
+        "licenses_required": [
+          {
+            "item": "vLLM 0.29.0 in the pinned image",
+            "license": "Apache-2.0",
+            "checked": "LICENSE file inside the image's vllm-*.dist-info/licenses/"
+          },
+          {
+            "item": "model typhoon-ai/typhoon2.5-qwen3-4b@ce0a741",
+            "license": "Apache-2.0",
+            "checked": "Hugging Face license tag at that revision (shared_revision); the SEC-007 licence receipt is still to be filed before activation"
+          },
+          {
+            "item": "LiteLLM v1.90.2 (key layer)",
+            "license": null,
+            "checked": "not verified in this run: the image carries no package metadata at the expected path"
+          },
+          {
+            "item": "PostgreSQL 16",
+            "license": null,
+            "checked": "not verified in this run"
+          }
+        ],
+        "operator_skills_required": [
+          "containers with GPU passthrough, including the WSL2 quirk that kept vLLM from starting until VLLM_WSL2_ENABLE_PIN_MEMORY=1 was set (.brain/rca/RCA-2026-09-21-vllm-wsl2-uva.md)",
+          "reading engine logs for what the API does not return: the concurrency limit, the EngineDeadError behind a cut stream, the abort-on-shutdown mode",
+          "Prometheus metrics, and knowing which of them may under-count",
+          "key handling that keeps a key out of docker inspect, logs and command lines",
+          "YAML/CLI configuration of the runtime and hash verification of model files"
+        ],
+        "evidence": "docs/evidence/wp24/WP24-2026-09-20-run1/B/OPERATOR-COST.md",
+        "not_covered": [
+          "deploy time from a genuinely clean host (image and weights were already local)",
+          "upgrade and rollback (not attempted)",
+          "candidate A, which has not run (DEV-02), so there is no A versus B comparison",
+          "speech services (WP10)"
+        ]
       },
       "reset_between_candidates": {
         "performed": null,

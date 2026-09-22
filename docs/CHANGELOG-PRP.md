@@ -232,6 +232,15 @@ repository_integration: NOT_PERFORMED
 - ระหว่างรัน: `datastore-scan` ค้นแค่ 500 path แรกและไม่บันทึก marker → แก้เป็นค้น minimal covering set + บันทึก marker (unit test +1 รวม 47 ผ่าน) แล้วรันซ้ำ รอบแรกเก็บใต้ `B/EV08/superseded/`
 - เติม `experiments.EV08.per_candidate.B` (`disposition_hint` = ADAPT พร้อมสิ่งที่ PRP ต้องถือเอง, artifacts 18 ไฟล์) และ DEV-06 — **`status` และ `gate_verdicts` (`PRP-NFR-024`) ยัง `NOT_RUN`**; ไม่แตะ field อื่นของ record
 
+### WP24 operator cost ของ candidate B (2026-09-22, C-2 / H2)
+- mandatory gates ของ B ครบแล้ว (EV02–EV06, EV08) จึงบันทึก operator cost ตาม procedure หมวด 5 ที่ `B/OPERATOR-COST.md` และเติม `candidates[B].operator_cost_measurements` — **นับ / วัดจริงเท่านั้น ไม่มีตัวเลขเป็นเปอร์เซ็นต์หรือ "ประหยัดเวลา"**
+- deploy: prerequisite 3 ขั้น (ไม่จับเวลา: driver + container runtime, pull image **30.5 GB**, ดึง weights **7.49 GiB**) และต่อการ deploy 5 ขั้นที่ทำจริง; create → `/health` 200 แบบ cold วัดได้ **217 / 223 / 225 / 226 / 260 s** (≈3.7–4.3 นาที) จาก 5 ครั้งใน EV05 / EV06 / EV08 · restart container เดิม 93 s · `docker start` หลัง exit 73 s · **เวลา deploy จาก host สะอาดจริงยังไม่ได้วัด** (image กับ weights อยู่เครื่องแล้ว)
+- services ที่ต้องดูแล: vLLM หนึ่ง container ต่อ GPU host, **supervisor** (vLLM ไม่ restart engine เอง), LiteLLM + PostgreSQL เฉพาะเมื่อใช้ key layer, และ network policy ระดับ host ที่ยังไม่มี; datastores: Postgres ของ proxy, compile cache ในชั้นเขียนของ container (ไม่มี job data), `docker logs` (ไม่มีเนื้อหา prompt), usage stats ที่ออกไป `stats.vllm.ai` ถ้าไม่ปิด, prefix cache ใน GPU (ลบตามคำสั่งไม่ได้)
+- custom gap code 10 รายการผูกกับ requirement และ EV ที่สังเกตได้ (FR-003..009 key authority ทั้งชุด, FR-017 admission, FR-018 pressure signal, FR-020..022 UNKNOWN reconciliation, NFR-023 network policy + binding จาก access log, NFR-024 adapter strip list / error mapping / key delivery + rotation / ปิด telemetry)
+- **upgrade / rollback ไม่ได้ทดลอง** (owner ตัดสิน 2026-09-22: ต้อง pull image อีก ~30.5 GB) `upgrade_steps_tried` / `rollback_steps_tried` ยัง null พร้อมเหตุผลและสิ่งที่รู้จาก EV08 (import จาก export ซ้ำได้เป๊ะ) และ EV06 (ไม่มี state ค้างข้าม relaunch)
+- licenses ที่ตรวจจริง: vLLM 0.29.0 = Apache-2.0 (LICENSE ใน image), โมเดล = Apache-2.0 (tag ของ revision, SEC-007 receipt ยังต้องยื่น); **LiteLLM และ PostgreSQL ยังไม่ได้ตรวจในรอบนี้** บันทึกตามนั้น
+- ไม่เปลี่ยน verdict ใด — ทุก EV ยัง `NOT_RUN`, acceptance ยัง `NOT_RUN` ครบ 92
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
