@@ -1,0 +1,24 @@
+# EV02 candidate A - reset between candidates (procedure section 3 item 1), 2026-09-22T19:26:44Z
+## docker ps -a (no candidate B runtime must be present)
+prp-mvp-edge | nginx:1.27-alpine | Up 14 hours
+prp-mvp-blind | python:3.12-alpine | Up 14 hours (healthy)
+prp-mvp-litellm | ghcr.io/berriai/litellm:v1.90.2 | Up 14 hours
+prp-mvp-db | postgres:16 | Up 14 hours (healthy)
+zuri-ai-line-worker-1 | zuri-ai-web-ki17:release-e88c53df-ki17-overlay | Up 15 hours
+zuri-ai-web-1 | zuri-ai-web-ki17:release-e88c53df-ki17-overlay | Up 15 hours (healthy)
+zuri-ai-genesis-worker-1 | zuri-ai-genesis-worker:release-a9039-msp-68e6169-genesis-5156f41 | Up 15 hours (healthy)
+selfhost-goal-service-1 | selfhost-goal-service | Exited (137) 15 hours ago
+selfhost-postgres-1 | postgres:16-alpine | Exited (0) 15 hours ago
+selfhost-caddy-1 | caddy:2-alpine | Exited (0) 15 hours ago
+zuri-ai-ngrok-1 | ngrok/ngrok:3 | Up 29 hours
+## nvidia-smi compute processes
+pid, process_name, used_gpu_memory [MiB]
+10852, C:\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\CrossDeviceResume.exe, [N/A]
+11020, C:\Windows\explorer.exe, [N/A]
+12652, C:\Windows\SystemApps\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\StartMenuExperienceHost.exe, [N/A]
+12612, C:\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\SearchHost.exe, [N/A]
+## GPU memory
+3205 MiB, 16311 MiB
+## model weights cache KEPT at F:/prp-models (allowed by section 3 item 1, recorded here)
+typhoon2.5-qwen3-4b-gguf@386874d
+typhoon2.5-qwen3-4b@ce0a741

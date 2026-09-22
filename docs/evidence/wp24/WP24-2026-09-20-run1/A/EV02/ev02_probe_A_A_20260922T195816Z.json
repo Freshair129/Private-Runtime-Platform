@@ -1,0 +1,227 @@
+{
+  "kind": "WP24_EV02_PROBE",
+  "generated_at_utc": "2026-09-22T19:58:16Z",
+  "command_line": "tools/wp24/ev02_probe.py --candidate A --base-url http://127.0.0.1:9997 --host-id A --out docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02",
+  "candidate": "A",
+  "host_id": "A",
+  "base_url": "http://127.0.0.1:9997",
+  "results": [
+    {
+      "endpoint": {
+        "name": "list_running_models",
+        "method": "GET",
+        "path": "/v1/models",
+        "doc_url": "https://inference.readthedocs.io/en/latest/getting_started/using_xinference.html",
+        "verified": true
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 401,
+          "error": null,
+          "www_authenticate_present": true,
+          "response_size_bytes": 43,
+          "latency_ms": 19.76,
+          "body_sample": "{\"detail\":\"Could not validate credentials\"}",
+          "identifiers": {},
+          "request_headers_sent": []
+        }
+      }
+    },
+    {
+      "endpoint": {
+        "name": "list_model_registrations_llm",
+        "method": "GET",
+        "path": "/v1/model_registrations/LLM",
+        "doc_url": "https://inference.readthedocs.io/en/latest/getting_started/using_xinference.html",
+        "verified": true
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 401,
+          "error": null,
+          "www_authenticate_present": true,
+          "response_size_bytes": 43,
+          "latency_ms": 1.83,
+          "body_sample": "{\"detail\":\"Could not validate credentials\"}",
+          "identifiers": {},
+          "request_headers_sent": []
+        }
+      }
+    },
+    {
+      "endpoint": {
+        "name": "workers_info",
+        "method": "GET",
+        "path": "/v1/workers",
+        "doc_url": "https://inference.readthedocs.io/en/stable/_modules/xinference/client/restful/restful_client.html",
+        "verified": true,
+        "note": "confirmed from the shipped client source, not the narrative docs page"
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 401,
+          "error": null,
+          "www_authenticate_present": true,
+          "response_size_bytes": 43,
+          "latency_ms": 2.64,
+          "body_sample": "{\"detail\":\"Could not validate credentials\"}",
+          "identifiers": {},
+          "request_headers_sent": []
+        }
+      }
+    },
+    {
+      "endpoint": {
+        "name": "supervisor_info",
+        "method": "GET",
+        "path": "/v1/supervisor",
+        "doc_url": "https://inference.readthedocs.io/en/stable/_modules/xinference/client/restful/restful_client.html",
+        "verified": true,
+        "note": "confirmed from the shipped client source, not the narrative docs page"
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 401,
+          "error": null,
+          "www_authenticate_present": true,
+          "response_size_bytes": 43,
+          "latency_ms": 2.31,
+          "body_sample": "{\"detail\":\"Could not validate credentials\"}",
+          "identifiers": {},
+          "request_headers_sent": []
+        }
+      }
+    },
+    {
+      "endpoint": {
+        "name": "cluster_auth",
+        "method": "GET",
+        "path": "/v1/cluster/auth",
+        "doc_url": "https://inference.readthedocs.io/en/stable/_modules/xinference/client/restful/restful_client.html",
+        "verified": true,
+        "note": "confirmed from the shipped client source, not the narrative docs page"
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 200,
+          "error": null,
+          "www_authenticate_present": false,
+          "response_size_bytes": 13,
+          "latency_ms": 1.46,
+          "body_sample": "{\"auth\":true}",
+          "identifiers": {},
+          "request_headers_sent": []
+        }
+      }
+    },
+    {
+      "endpoint": {
+        "name": "admin_setup_status",
+        "method": "GET",
+        "path": "/v1/admin/setup/status",
+        "doc_url": "https://inference.readthedocs.io/en/latest/user_guide/auth_system.html",
+        "verified": true,
+        "note": "documented as unauthenticated by design (bootstrap status check)"
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 200,
+          "error": null,
+          "www_authenticate_present": false,
+          "response_size_bytes": 64,
+          "latency_ms": 2.09,
+          "body_sample": "{\"needs_setup\":true,\"initialized\":false,\"password_min_length\":8}",
+          "identifiers": {},
+          "request_headers_sent": []
+        }
+      }
+    }
+  ],
+  "extracted_identifiers": {},
+  "measurements": [
+    {
+      "name": "list_running_models.no_credential.status_code",
+      "value": 401
+    },
+    {
+      "name": "list_running_models.no_credential.latency_ms",
+      "value": 19.76
+    },
+    {
+      "name": "list_running_models.no_credential.response_size_bytes",
+      "value": 43
+    },
+    {
+      "name": "list_model_registrations_llm.no_credential.status_code",
+      "value": 401
+    },
+    {
+      "name": "list_model_registrations_llm.no_credential.latency_ms",
+      "value": 1.83
+    },
+    {
+      "name": "list_model_registrations_llm.no_credential.response_size_bytes",
+      "value": 43
+    },
+    {
+      "name": "workers_info.no_credential.status_code",
+      "value": 401
+    },
+    {
+      "name": "workers_info.no_credential.latency_ms",
+      "value": 2.64
+    },
+    {
+      "name": "workers_info.no_credential.response_size_bytes",
+      "value": 43
+    },
+    {
+      "name": "supervisor_info.no_credential.status_code",
+      "value": 401
+    },
+    {
+      "name": "supervisor_info.no_credential.latency_ms",
+      "value": 2.31
+    },
+    {
+      "name": "supervisor_info.no_credential.response_size_bytes",
+      "value": 43
+    },
+    {
+      "name": "cluster_auth.no_credential.status_code",
+      "value": 200
+    },
+    {
+      "name": "cluster_auth.no_credential.latency_ms",
+      "value": 1.46
+    },
+    {
+      "name": "cluster_auth.no_credential.response_size_bytes",
+      "value": 13
+    },
+    {
+      "name": "admin_setup_status.no_credential.status_code",
+      "value": 200
+    },
+    {
+      "name": "admin_setup_status.no_credential.latency_ms",
+      "value": 2.09
+    },
+    {
+      "name": "admin_setup_status.no_credential.response_size_bytes",
+      "value": 64
+    }
+  ],
+  "observations": [
+    "--token-env not provided; every endpoint was probed without credential only",
+    "workers_info: confirmed from the shipped client source, not the narrative docs page",
+    "supervisor_info: confirmed from the shipped client source, not the narrative docs page",
+    "cluster_auth: confirmed from the shipped client source, not the narrative docs page",
+    "admin_setup_status: documented as unauthenticated by design (bootstrap status check)",
+    "no probed endpoint's response exposed a physical GPU UUID mapping; per WP24-EXPERIMENT-PROCEDURE.md EV02 step 2 this absence is itself a finding for the reviewer, not an error of this tool"
+  ],
+  "source_observations": [],
+  "artifacts": [
+    "ev02_probe_A_A_20260922T195816Z.json"
+  ]
+}

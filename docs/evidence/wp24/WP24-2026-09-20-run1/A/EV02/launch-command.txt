@@ -1,0 +1,16 @@
+# EV02 candidate A - launch commands as executed (no credentials involved: XINFERENCE_AUTH_ADVANCED=0)
+# host: DESKTOP-VETATMQ | venv F:\prp-xinference-a | xinference 3.4.0, torch 2.14.0+cu130, transformers 5.17.0
+
+# 1. server (supervisor + local worker)
+set XINFERENCE_HOME=F:/prp-xinference-a/home
+set XINFERENCE_AUTH_ADVANCED=0   # default is auth ON; see FINDINGS.md step 4
+F:\prp-xinference-a\Scripts\xinference-local.exe --host 127.0.0.1 --port 9997
+
+# 2. weights made reachable without the Windows symlink privilege
+New-Item -ItemType Junction -Path "F:\prp-xinference-a\home\cache\v2\prp-typhoon25-qwen3-4b-pytorch-4b-none" -Target "F:\prp-models\typhoon2.5-qwen3-4b@ce0a741"
+
+# 3. custom model registration (POST /v1/model_registrations/LLM, persist=false)
+#    model_family qwen3, context_length 8192, chat_template from the model's own chat_template.jinja
+
+# 4. launch (POST /v1/models)
+{"model_uid":"prp-a-llm","model_name":"prp-typhoon25-qwen3-4b","model_type":"LLM","model_engine":"transformers","model_format":"pytorch","model_size_in_billions":4,"quantization":"none","n_gpu":1}

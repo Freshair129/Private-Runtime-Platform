@@ -1,0 +1,14 @@
+# EV02 candidate A step 3 negative test 1 - same alias, different profile (2026-09-22T20:12:11Z)
+## re-register the SAME model_name with context_length 4096 instead of 8192
+register 400 {"detail":"[address=127.0.0.1:63525, pid=49136] Model prp-typhoon25-qwen3-4b already registered"}
+## registrations now (custom only):
+    prp-typhoon25-qwen3-4b | ctx in listing: None
+## what the running model reports after the re-registration:
+   uid prp-a-llm | name prp-typhoon25-qwen3-4b | ctx 8192 | address 127.0.0.1:63318 | replica 1
+
+## 1b - a SECOND name with a different profile (ctx 4096) over the same weights
+register 200 null
+## registrations now:
+    prp-typhoon25-qwen3-4b
+    prp-typhoon25-qwen3-4b-ctx4096
+   => two different profiles over the same weights stay separate names; the candidate never merges them
