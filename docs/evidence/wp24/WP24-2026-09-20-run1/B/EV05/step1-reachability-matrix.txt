@@ -1,0 +1,9 @@
+# EV05 step 1 - who can reach the runtime? (published as 127.0.0.1:8000 only)
+## from the Windows host
+  127.0.0.1:8000  OPEN     (loopback on the host itself)
+  192.168.1.100:8000  refused  (this host's LAN address) [ConnectionRefusedError]
+  100.76.19.65:8000  refused  (this host's tailnet address) [ConnectionRefusedError]
+## from an UNRELATED container on the same Docker host (the LiteLLM proxy)
+  192.168.1.100:8000 refused  (host LAN address) [ConnectionRefusedError]
+  100.76.19.65:8000 refused  (host tailnet address) [ConnectionRefusedError]
+  host.docker.internal:8000 OPEN     (Docker Desktop host alias)

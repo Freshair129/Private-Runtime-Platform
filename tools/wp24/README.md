@@ -132,11 +132,33 @@ python tools/wp24/ev02_restart_identity.py \
     --out wp24-out
 ```
 
+### `ev05_admission_load.py`
+
+EV05 steps 2–3 (gate `PRP-FR-017` / `PRP-FR-018`), per the design in
+`docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/test-design.md`. It calls the vLLM server directly,
+never through LiteLLM.
+
+- `--processes` OS processes, each with `--per-process` concurrent streaming requests of
+  identical length (`max_tokens` + `ignore_eos`), released together.
+- `/metrics` is polled every `--poll-interval` seconds for `vllm:num_requests_running` /
+  `vllm:num_requests_waiting`.
+- Each scrape is compared with the client-side bounds on requests that could have been inside the
+  server during that scrape. The script reports scrapes above those bounds (over-count) or above
+  `--limit`.
+- Step 3: records where `max_num_seqs` is readable, checking `/metrics`, `/v1/models`, `/version`
+  and, with `--container`, `docker logs`.
+
+```
+python tools/wp24/ev05_admission_load.py --base-url http://127.0.0.1:8000 \
+    --token-env VLLM_API_KEY --model typhoon2.5-qwen3-4b --limit 4 \
+    --processes 3 --per-process 4 --label run-B --container prp-wp24-vllm-b --out wp24-out
+```
+
 ## Environment variables
 
 | Name | Used by | Meaning |
 |---|---|---|
-| any name passed to `--token-env` (e.g. `WP24_RUNTIME_TOKEN`) | `ev02_probe.py` | Bearer token for the credentialed request. Never pass the token value itself on the command line; only the variable *name*. |
+| any name passed to `--token-env` (e.g. `WP24_RUNTIME_TOKEN`) | `ev02_probe.py`, `ev05_admission_load.py` | Bearer token for the credentialed request. Never pass the token value itself on the command line; only the variable *name*. |
 
 No other script reads an environment variable for a secret.
 

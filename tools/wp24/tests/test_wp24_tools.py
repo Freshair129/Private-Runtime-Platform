@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import ev02_gpu_binding  # noqa: E402
+import ev05_admission_load as ev05  # noqa: E402
 import host_inventory  # noqa: E402
 import wp24_common as common  # noqa: E402
 
@@ -208,6 +209,63 @@ class TestHostInventoryNtpParsing(unittest.TestCase):
         observations: list[str] = []
         self.assertIsNone(host_inventory.collect_ntp_offset(False, None, observations))
         self.assertEqual(observations, [])
+
+
+def _req(sent: float, first: float | None, done: float | None) -> dict[str, float | None]:
+    return {"sent": sent, "first_token": first, "done": done}
+
+
+class TestEv05AdmissionLoad(unittest.TestCase):
+    METRICS = (
+        "# HELP vllm:num_requests_running Number of requests in model execution batches.\n"
+        "# TYPE vllm:num_requests_running gauge\n"
+        'vllm:num_requests_running{engine="0",model_name="typhoon"} 4.0\n'
+        'vllm:num_requests_waiting{engine="0",model_name="typhoon"} 8.0\n'
+        "vllm:num_requests_waiting_by_reason NaN\n"
+        "broken line without value\n"
+    )
+
+    def test_parse_prometheus_sums_label_sets_and_skips_comments(self) -> None:
+        parsed = ev05.parse_prometheus(self.METRICS + 'vllm:num_requests_running{engine="1"} 1\n')
+        self.assertEqual(parsed[ev05.RUNNING], 5.0)
+        self.assertEqual(parsed[ev05.WAITING], 8.0)
+        self.assertNotIn("broken", parsed)
+
+    def test_client_bounds_upper_lower_streaming(self) -> None:
+        requests = [
+            _req(0.0, 1.0, 10.0),  # inside the whole window
+            _req(4.5, None, None),  # failed at send, inside window -> upper only
+            _req(6.0, 7.0, 8.0),  # sent after the window
+            _req(0.0, 0.5, 2.0),  # finished before the window
+        ]
+        bounds = ev05.client_bounds(requests, 4.0, 5.0)
+        self.assertEqual(bounds, {"upper": 2, "lower": 1, "streaming_upper": 1})
+
+    def test_compare_flags_over_count_and_limit(self) -> None:
+        requests = [_req(0.0, 0.1, 10.0) for _ in range(5)]
+        samples = [
+            {"t0": 1.0, "t1": 1.1, "status": 200, "running": 4.0, "waiting": 1.0},  # exact
+            {"t0": 2.0, "t1": 2.1, "status": 200, "running": 5.0, "waiting": 2.0},  # over + limit
+            {"t0": 3.0, "t1": 3.1, "status": 500, "running": None, "waiting": None},  # unscored
+        ]
+        stats = ev05.compare(samples, requests, limit=4)
+        self.assertEqual(stats["samples_scored"], 2)
+        self.assertEqual(stats["samples_total_above_client_upper"], 1)
+        self.assertEqual(stats["samples_running_above_client_upper"], 0)
+        self.assertEqual(stats["samples_running_above_limit"], 1)
+        self.assertEqual(stats["max_waiting"], 2.0)
+
+    def test_compare_counts_under_count(self) -> None:
+        requests = [_req(0.0, 0.1, 10.0) for _ in range(3)]
+        samples = [{"t0": 1.0, "t1": 1.1, "status": 200, "running": 1.0, "waiting": 0.0}]
+        stats = ev05.compare(samples, requests, None)
+        self.assertEqual(stats["samples_total_below_client_lower"], 1)
+
+    def test_find_max_num_seqs_in_log_json_and_absence(self) -> None:
+        log = "INFO args: Namespace(max_num_seqs=4, max_model_len=8192)"
+        self.assertEqual(ev05.find_max_num_seqs(log), [4])
+        self.assertEqual(ev05.find_max_num_seqs('{"max_num_seqs": 256}'), [256])
+        self.assertEqual(ev05.find_max_num_seqs('{"max_model_len": 8192}'), [])
 
 
 if __name__ == "__main__":

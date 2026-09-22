@@ -187,6 +187,13 @@ repository_integration: NOT_PERFORMED
 - อัปเดต `blocker` ของ EV04 ให้ชี้ว่ารายการที่เลื่อนมาถูกปิดแล้วและหลักฐานอยู่ที่ไหน — **`status` และ `gate_verdicts` ของ EV03 (`PRP-NFR-023`) ยัง `NOT_RUN`** `disposition_hint` = CONFIGURE พร้อมสองเงื่อนไขที่ PRP ต้องถือเอง
 - เอื้อมไม่ถึงในรอบนี้ (DEV-03 ไม่ใช่ผลลัพธ์): balancing ระหว่างสอง deployment ที่ healthy, การย้ายงานกลางคันไปเครื่องที่สอง, และ procedure ข้อ 4 เรื่อง attempt ที่สองคง deadline เดิม — ไม่มี attempt ที่สองเกิดขึ้นเลยซึ่งคือพฤติกรรมที่ถูกต้องของ config ที่ปิด retry
 
+### WP24 EV05 candidate B · ขั้นตอน 1 และเครื่องมือขั้นตอน 2–3 (2026-09-22, C-2 / H2)
+- ขั้นตอน 1 (bypass) วัดแล้ว `B/EV05/step1-reachability-matrix.txt`: vLLM publish ที่ `127.0.0.1:8000` เท่านั้น → ที่อยู่ LAN และ tailnet ของ host ถูก refuse แต่ **ทุก process บน host รวมถึง container ผ่าน `host.docker.internal` เข้าถึงได้** และ `/invocations` ไม่ต้องใช้ key (EV03) กำแพงเดียวบน host นี้จึงคือ "ไม่ได้อยู่บนเครื่องนี้"; ขั้นตอน 1b (ยิงจากเครื่อง LAN อีกเครื่อง) ยังไม่รัน
+- เพิ่ม `B/EV05/test-design.md` (owner อนุมัติ 2026-09-22): จำกัด `--max-num-seqs 4` (DEV-05) แล้วส่ง 3 process × 4 concurrent streaming requests ความยาวเท่ากัน เทียบ `vllm:num_requests_running` / `waiting` จาก `/metrics` ทุก 250 ms กับขอบเขตจำนวน request ที่ค้างจริงฝั่ง client; ขั้นตอน 3 หาว่าอ่าน `max_num_seqs` กลับจากช่องทางไหนได้บ้าง
+- เพิ่ม `tools/wp24/ev05_admission_load.py` (stdlib เท่านั้น ไม่คำนวณ verdict ไม่ print key) และ unit test 5 เคสใน `tools/wp24/tests/` (รวม 31 เคสผ่าน); dry run กับ fake server ที่ใช้ limit 4 + FIFO queue: metric ตรง → flag **0** sample, fake ที่รายงาน `waiting` เกิน 2 → flag **28/28** — เป็นการ validate เครื่องมือ **ไม่ใช่หลักฐานของ vLLM**
+- ข้อจำกัดที่บันทึกไว้: FR-017 ต้องใช้ PostgreSQL admission ของ PRP + fault injection (M4) AT-017 จึงยัง `NOT_RUN`; มี GPU host ของ candidate เดียว
+- **EV05 `status` และ `gate_verdicts` (`PRP-FR-017` / `018`) ยัง `NOT_RUN`**; ยังไม่ได้เปิด vLLM เพื่อรันขั้นตอน 2–3
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
