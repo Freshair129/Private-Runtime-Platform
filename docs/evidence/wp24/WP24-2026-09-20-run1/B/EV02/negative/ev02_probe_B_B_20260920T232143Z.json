@@ -1,0 +1,155 @@
+{
+  "kind": "WP24_EV02_PROBE",
+  "generated_at_utc": "2026-09-20T23:21:43Z",
+  "command_line": "tools/wp24/ev02_probe.py --candidate B --base-url http://localhost:8001 --host-id B --token-env PRP_WP24_B_TOKEN --out <home>/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/wp24-out",
+  "candidate": "B",
+  "host_id": "B",
+  "base_url": "http://localhost:8001",
+  "results": [
+    {
+      "endpoint": {
+        "name": "list_models",
+        "method": "GET",
+        "path": "/v1/models",
+        "doc_url": "https://docs.vllm.ai/en/latest/serving/online_serving/openai_compatible_server/",
+        "verified": true
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 401,
+          "error": null,
+          "www_authenticate_present": false,
+          "response_size_bytes": 24,
+          "latency_ms": 2072.95,
+          "body_sample": "{\"error\":\"Unauthorized\"}",
+          "identifiers": {},
+          "request_headers_sent": []
+        },
+        "with_credential": {
+          "status_code": 200,
+          "error": null,
+          "www_authenticate_present": false,
+          "response_size_bytes": 460,
+          "latency_ms": 2066.01,
+          "body_sample": "{\"object\":\"list\",\"data\":[{\"id\":\"typhoon2.5-qwen3-4b\",\"object\":\"model\",\"created\":1789946498,\"owned_by\":\"vllm\",\"root\":\"/models\",\"parent\":null,\"max_model_len\":4096,\"permission\":[{\"id\":\"modelperm-b2aea5b95855cda9\",\"object\":\"model_permission\",\"created\":1789946498,\"allow_create_engine\":false,\"allow_sampling\":true,\"allow_logprobs\":true,\"allow_search_indices\":false,\"allow_view\":true,\"allow_fine_tuning\":false,\"organization\":\"*\",\"group\":null,\"is_blocking\":false}]}]}",
+          "identifiers": {
+            "object": "list",
+            "data[0].id": "typhoon2.5-qwen3-4b",
+            "data[0].object": "model",
+            "data[0].created": "1789946498",
+            "data[0].owned_by": "vllm",
+            "data[0].permission[0].id": "modelperm-b2aea5b95855cda9",
+            "data[0].permission[0].object": "model_permission",
+            "data[0].permission[0].created": "1789946498"
+          },
+          "request_headers_sent": [
+            "Authorization: <redacted>"
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": {
+        "name": "metrics",
+        "method": "GET",
+        "path": "/metrics",
+        "doc_url": "https://docs.vllm.ai/en/latest/usage/metrics.html",
+        "verified": true,
+        "note": "Prometheus text, not JSON; not covered by --api-key per https://docs.vllm.ai/en/latest/usage/security/"
+      },
+      "variants": {
+        "no_credential": {
+          "status_code": 200,
+          "error": null,
+          "www_authenticate_present": false,
+          "response_size_bytes": 51772,
+          "latency_ms": 2064.54,
+          "body_sample": "# HELP python_gc_objects_collected_total Objects collected during gc\n# TYPE python_gc_objects_collected_total counter\npython_gc_objects_collected_total{generation=\"0\"} 13830.0\npython_gc_objects_collected_total{generation=\"1\"} 3599.0\npython_gc_objects_collected_total{generation=\"2\"} 436.0\n# HELP python_gc_objects_uncollectable_total Uncollectable objects found during GC\n# TYPE python_gc_objects_uncollectable_total counter\npython_gc_objects_uncollectable_total{generation=\"0\"} 0.0\npython_gc_objects_uncollectable_total{generation=\"1\"} 0.0\npython_gc_objects_uncollectable_total{generation=\"2\"} 0.0\n# HELP python_gc_collections_total Number of times this generation was collected\n# TYPE python_gc_collections_total counter\npython_gc_collections_total{generation=\"0\"} 2022.0\npython_gc_collections_total{generation=\"1\"} 184.0\npython_gc_collections_total{generation=\"2\"} 11.0\n# HELP python_info Python platform information\n# TYPE python_info gauge\npython_info{implementation=\"CPython\",major=\"3\",minor=\"12\",patchlevel=\"3\",version=\"3.12.3\"} 1.0\n# HELP process_virtual_memory_bytes Virtual memory size in bytes.\n# TYPE process_virtual_memory_bytes gauge\nprocess_virtual_memory_bytes 1.2528181248e+010\n# HELP process_resident_memory_bytes Resident memory size in bytes.\n# TYPE process_resident_memory_bytes gauge\nprocess_resident_memory_bytes 1.50104064e+09\n# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.\n# TYPE process_start_time_seconds gauge\nprocess_start_time_seconds 1.78994622059e+09\n# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.\n# TYPE process_cpu_seconds_total counter\nprocess_cpu_seconds_total 24.549999999999997\n# HELP process_open_fds Number of open file descriptors.\n# TYPE process_open_fds gauge\nprocess_open_fds 38.0\n# HELP process_max_fds Maximum number of open file descriptors.\n# TYPE process_max_fds gauge\nprocess_max_fds 1.048576e+06\n# HELP vllm:estimated_flops_per_gpu_total Estimated number of floating point operations per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_flops_per_gpu_total counter\nvllm:estimated_flops_per_gpu_total{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:estimated_flops_per_gpu_created Estimated number of floating point operations per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_flops_per_gpu_created gauge\nvllm:estimated_flops_per_gpu_created{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 1.789946469764391e+09\n# HELP vllm:estimated_read_bytes_per_gpu_total Estimated number of bytes read from memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_read_bytes_per_gpu_total counter\nvllm:estimated_read_bytes_per_gpu_total{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:estimated_read_bytes_per_gpu_created Estimated number of bytes read from memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_read_bytes_per_gpu_created gauge\nvllm:estimated_read_bytes_per_gpu_created{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 1.7899464697644367e+09\n# HELP vllm:estimated_write_bytes_per_gpu_total Estimated number of bytes written to memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_write_bytes_per_gpu_total counter\nvllm:estimated_write_bytes_per_gpu_total{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:estimated_write_bytes_per_gpu_created Estimated number of bytes written to memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_write_bytes_per_gpu_created gauge\nvllm:estimated_write_bytes_per_gpu_created{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 1.7899464697644699e+09\n# HELP vllm:num_requests_running Number of requests in model execution batches.\n# TYPE vllm:num_requests_running gauge\nvllm:num_requests_running{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:num_requests_waiting Number of requests waiting to be processed.\n# TYPE vllm:num_requests_waiting gauge\nvllm:num_requests_waiting{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:num_req",
+          "identifiers": {},
+          "request_headers_sent": []
+        },
+        "with_credential": {
+          "status_code": 200,
+          "error": null,
+          "www_authenticate_present": false,
+          "response_size_bytes": 51772,
+          "latency_ms": 2044.84,
+          "body_sample": "# HELP python_gc_objects_collected_total Objects collected during gc\n# TYPE python_gc_objects_collected_total counter\npython_gc_objects_collected_total{generation=\"0\"} 13830.0\npython_gc_objects_collected_total{generation=\"1\"} 3599.0\npython_gc_objects_collected_total{generation=\"2\"} 436.0\n# HELP python_gc_objects_uncollectable_total Uncollectable objects found during GC\n# TYPE python_gc_objects_uncollectable_total counter\npython_gc_objects_uncollectable_total{generation=\"0\"} 0.0\npython_gc_objects_uncollectable_total{generation=\"1\"} 0.0\npython_gc_objects_uncollectable_total{generation=\"2\"} 0.0\n# HELP python_gc_collections_total Number of times this generation was collected\n# TYPE python_gc_collections_total counter\npython_gc_collections_total{generation=\"0\"} 2022.0\npython_gc_collections_total{generation=\"1\"} 184.0\npython_gc_collections_total{generation=\"2\"} 11.0\n# HELP python_info Python platform information\n# TYPE python_info gauge\npython_info{implementation=\"CPython\",major=\"3\",minor=\"12\",patchlevel=\"3\",version=\"3.12.3\"} 1.0\n# HELP process_virtual_memory_bytes Virtual memory size in bytes.\n# TYPE process_virtual_memory_bytes gauge\nprocess_virtual_memory_bytes 1.2528181248e+010\n# HELP process_resident_memory_bytes Resident memory size in bytes.\n# TYPE process_resident_memory_bytes gauge\nprocess_resident_memory_bytes 1.50104064e+09\n# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.\n# TYPE process_start_time_seconds gauge\nprocess_start_time_seconds 1.78994622059e+09\n# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.\n# TYPE process_cpu_seconds_total counter\nprocess_cpu_seconds_total 24.549999999999997\n# HELP process_open_fds Number of open file descriptors.\n# TYPE process_open_fds gauge\nprocess_open_fds 38.0\n# HELP process_max_fds Maximum number of open file descriptors.\n# TYPE process_max_fds gauge\nprocess_max_fds 1.048576e+06\n# HELP vllm:estimated_flops_per_gpu_total Estimated number of floating point operations per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_flops_per_gpu_total counter\nvllm:estimated_flops_per_gpu_total{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:estimated_flops_per_gpu_created Estimated number of floating point operations per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_flops_per_gpu_created gauge\nvllm:estimated_flops_per_gpu_created{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 1.789946469764391e+09\n# HELP vllm:estimated_read_bytes_per_gpu_total Estimated number of bytes read from memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_read_bytes_per_gpu_total counter\nvllm:estimated_read_bytes_per_gpu_total{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:estimated_read_bytes_per_gpu_created Estimated number of bytes read from memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_read_bytes_per_gpu_created gauge\nvllm:estimated_read_bytes_per_gpu_created{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 1.7899464697644367e+09\n# HELP vllm:estimated_write_bytes_per_gpu_total Estimated number of bytes written to memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_write_bytes_per_gpu_total counter\nvllm:estimated_write_bytes_per_gpu_total{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:estimated_write_bytes_per_gpu_created Estimated number of bytes written to memory per GPU (for Model Flops Utilization calculations).\n# TYPE vllm:estimated_write_bytes_per_gpu_created gauge\nvllm:estimated_write_bytes_per_gpu_created{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 1.7899464697644699e+09\n# HELP vllm:num_requests_running Number of requests in model execution batches.\n# TYPE vllm:num_requests_running gauge\nvllm:num_requests_running{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:num_requests_waiting Number of requests waiting to be processed.\n# TYPE vllm:num_requests_waiting gauge\nvllm:num_requests_waiting{engine=\"0\",model_name=\"typhoon2.5-qwen3-4b\"} 0.0\n# HELP vllm:num_req",
+          "identifiers": {},
+          "request_headers_sent": [
+            "Authorization: <redacted>"
+          ]
+        }
+      }
+    }
+  ],
+  "extracted_identifiers": {
+    "list_models.with_credential.object": "list",
+    "list_models.with_credential.data[0].id": "typhoon2.5-qwen3-4b",
+    "list_models.with_credential.data[0].object": "model",
+    "list_models.with_credential.data[0].created": "1789946498",
+    "list_models.with_credential.data[0].owned_by": "vllm",
+    "list_models.with_credential.data[0].permission[0].id": "modelperm-b2aea5b95855cda9",
+    "list_models.with_credential.data[0].permission[0].object": "model_permission",
+    "list_models.with_credential.data[0].permission[0].created": "1789946498"
+  },
+  "measurements": [
+    {
+      "name": "list_models.no_credential.status_code",
+      "value": 401
+    },
+    {
+      "name": "list_models.no_credential.latency_ms",
+      "value": 2072.95
+    },
+    {
+      "name": "list_models.no_credential.response_size_bytes",
+      "value": 24
+    },
+    {
+      "name": "list_models.with_credential.status_code",
+      "value": 200
+    },
+    {
+      "name": "list_models.with_credential.latency_ms",
+      "value": 2066.01
+    },
+    {
+      "name": "list_models.with_credential.response_size_bytes",
+      "value": 460
+    },
+    {
+      "name": "metrics.no_credential.status_code",
+      "value": 200
+    },
+    {
+      "name": "metrics.no_credential.latency_ms",
+      "value": 2064.54
+    },
+    {
+      "name": "metrics.no_credential.response_size_bytes",
+      "value": 51772
+    },
+    {
+      "name": "metrics.with_credential.status_code",
+      "value": 200
+    },
+    {
+      "name": "metrics.with_credential.latency_ms",
+      "value": 2044.84
+    },
+    {
+      "name": "metrics.with_credential.response_size_bytes",
+      "value": 51772
+    }
+  ],
+  "observations": [
+    "list_models.no_credential: returned 401 without a WWW-Authenticate (or equivalent) challenge header",
+    "metrics: Prometheus text, not JSON; not covered by --api-key per https://docs.vllm.ai/en/latest/usage/security/",
+    "no probed endpoint's response exposed a physical GPU UUID mapping; per WP24-EXPERIMENT-PROCEDURE.md EV02 step 2 this absence is itself a finding for the reviewer, not an error of this tool"
+  ],
+  "source_observations": [],
+  "artifacts": [
+    "ev02_probe_B_B_20260920T232143Z.json"
+  ]
+}

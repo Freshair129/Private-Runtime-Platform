@@ -1,0 +1,59 @@
+{
+  "alias": "wp24-litellm-subspike-host-a",
+  "artifacts": [
+    "ev03_retry_probe.requests.json"
+  ],
+  "base_url": "http://127.0.0.1:4000",
+  "command_line": [
+    "--base-url",
+    "http://127.0.0.1:4000",
+    "--key-env",
+    "WP24_LITELLM_VIRTUAL_KEY",
+    "--alias",
+    "wp24-litellm-subspike-host-a",
+    "--expect-deployment",
+    "wp24-host-a",
+    "--count",
+    "5",
+    "--mode",
+    "down",
+    "--out",
+    "C:/Users/pc/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/wp24-out"
+  ],
+  "expect_deployment": "wp24-host-a",
+  "finished_at": "2026-09-21T00:19:18Z",
+  "kind": "WP24_EV03_RETRY_PROBE_RESULT",
+  "measurements": [
+    {
+      "name": "request_count",
+      "value": 5
+    },
+    {
+      "name": "success_count",
+      "value": 0
+    },
+    {
+      "name": "distinct_x_litellm_model_id_seen",
+      "value": 0
+    },
+    {
+      "name": "latency_ms_min",
+      "value": 31.0
+    },
+    {
+      "name": "latency_ms_max",
+      "value": 94.0
+    },
+    {
+      "name": "expect_deployment_mismatch_count",
+      "value": 0
+    }
+  ],
+  "mode": "down",
+  "observations": [
+    "Sent 5 request(s) to alias 'wp24-litellm-subspike-host-a' in --mode down (manual host-A condition; see README.md EV03 section for what this mode means operationally).",
+    "No response carried the documented x-litellm-model-id / x-litellm-model-api-base / x-litellm-model-group headers (https://docs.litellm.ai/docs/proxy/response_headers). Raw response headers were recorded per request (Authorization-shaped values redacted) in ev03_retry_probe.requests.json instead; unverified which proxy build/version this is -- observe at run time.",
+    "5 of 5 request(s) did not return status 200."
+  ],
+  "started_at": "2026-09-21T00:19:18Z"
+}

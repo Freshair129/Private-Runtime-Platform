@@ -1,0 +1,24 @@
+# EV03 - what the client sees when a bound target is unavailable (LiteLLM v1.90.2)
+
+## Bound target permanently down (alias wp24-litellm-subspike-host-a -> :8010)
+HTTP 500
+{"error":{"message":"litellm.InternalServerError: InternalServerError: Hosted_vllmException -
+Cannot connect to host host.docker.internal:8010 ssl:<ssl.SSLContext object at 0x...>
+[Connect call failed ('192.168.65.254', 8010)]. Received Model Group=wp24-litellm-subspike-host-a
+Available Model Group Fallbacks=None","type":null,"param":null,"code":"500"}}
+
+## Bound target killed mid-generation (alias wp24-litellm-subspike-host-b -> :8000)
+HTTP 500, 4.2 s wall clock
+{"error":{"message":"litellm.InternalServerError: InternalServerError: Hosted_vllmException -
+Server disconnected. Received Model Group=wp24-litellm-subspike-host-b
+Available Model Group Fallbacks=None","type":null,"param":null,"code":"500"}}
+
+## Two things to carry into the PRP error envelope design
+
+1. Both upstream conditions surface as HTTP 500, not 502/503/504. A connection refused, a
+   mid-flight disconnect and a genuine internal error are indistinguishable by status code, so
+   PRP cannot map LiteLLM status codes onto its own error taxonomy without parsing the message.
+2. The message leaks the vendor topology to the caller: the upstream hostname and port
+   (host.docker.internal:8010), the resolved IP (192.168.65.254), the provider class name
+   (Hosted_vllmException) and the internal model-group alias. NFR-024 requires that vendor
+   identifiers stay out of the PRP public contract, so this body must never be forwarded verbatim.

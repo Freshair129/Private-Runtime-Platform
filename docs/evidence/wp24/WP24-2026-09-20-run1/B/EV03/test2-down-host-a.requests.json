@@ -1,0 +1,117 @@
+[
+  {
+    "deployment_headers": {},
+    "deployment_mismatch": false,
+    "latency_ms": 94.0,
+    "raw_headers": {
+      "Connection": "close",
+      "content-length": "276",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/json",
+      "date": "Mon, 21 Sep 2026 00:19:17 GMT",
+      "server": "uvicorn",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-litellm-call-id": "9e46151a-be62-43e7-8a26-98bbc4a7c60f",
+      "x-litellm-key-spend": "sha256:8aed642bf511",
+      "x-litellm-response-cost": "0",
+      "x-litellm-timeout": "6000.0"
+    },
+    "request_index": 0,
+    "response_model_field": null,
+    "retry_headers": {},
+    "status": 500
+  },
+  {
+    "deployment_headers": {},
+    "deployment_mismatch": false,
+    "latency_ms": 31.0,
+    "raw_headers": {
+      "Connection": "close",
+      "content-length": "276",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/json",
+      "date": "Mon, 21 Sep 2026 00:19:17 GMT",
+      "server": "uvicorn",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-litellm-call-id": "3c325ad8-b36a-4ceb-96aa-1f71e6cc5175",
+      "x-litellm-key-spend": "sha256:8aed642bf511",
+      "x-litellm-response-cost": "0",
+      "x-litellm-timeout": "6000.0"
+    },
+    "request_index": 1,
+    "response_model_field": null,
+    "retry_headers": {},
+    "status": 500
+  },
+  {
+    "deployment_headers": {},
+    "deployment_mismatch": false,
+    "latency_ms": 63.0,
+    "raw_headers": {
+      "Connection": "close",
+      "content-length": "276",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/json",
+      "date": "Mon, 21 Sep 2026 00:19:17 GMT",
+      "server": "uvicorn",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-litellm-call-id": "d4b2e87a-2d01-49fd-88c9-1dca8c46295b",
+      "x-litellm-key-spend": "sha256:8aed642bf511",
+      "x-litellm-response-cost": "0",
+      "x-litellm-timeout": "6000.0"
+    },
+    "request_index": 2,
+    "response_model_field": null,
+    "retry_headers": {},
+    "status": 500
+  },
+  {
+    "deployment_headers": {},
+    "deployment_mismatch": false,
+    "latency_ms": 47.0,
+    "raw_headers": {
+      "Connection": "close",
+      "content-length": "276",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/json",
+      "date": "Mon, 21 Sep 2026 00:19:17 GMT",
+      "server": "uvicorn",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-litellm-call-id": "2dd74f8d-3f21-4571-905b-7dd005e96d85",
+      "x-litellm-key-spend": "sha256:8aed642bf511",
+      "x-litellm-response-cost": "0",
+      "x-litellm-timeout": "6000.0"
+    },
+    "request_index": 3,
+    "response_model_field": null,
+    "retry_headers": {},
+    "status": 500
+  },
+  {
+    "deployment_headers": {},
+    "deployment_mismatch": false,
+    "latency_ms": 47.0,
+    "raw_headers": {
+      "Connection": "close",
+      "content-length": "276",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/json",
+      "date": "Mon, 21 Sep 2026 00:19:17 GMT",
+      "server": "uvicorn",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-litellm-call-id": "50847ee7-4efb-4337-b5d3-dec8c93237bf",
+      "x-litellm-key-spend": "sha256:8aed642bf511",
+      "x-litellm-response-cost": "0",
+      "x-litellm-timeout": "6000.0"
+    },
+    "request_index": 4,
+    "response_model_field": null,
+    "retry_headers": {},
+    "status": 500
+  }
+]

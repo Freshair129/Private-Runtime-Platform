@@ -1,0 +1,65 @@
+{
+ "captured_at_utc": "2026-09-20T23:21:29.474580+00:00",
+ "origins": {
+  "http://127.0.0.1:8000": {
+   "object": "list",
+   "data": [
+    {
+     "id": "typhoon2.5-qwen3-4b",
+     "object": "model",
+     "created": 1789946489,
+     "owned_by": "vllm",
+     "root": "/models",
+     "parent": null,
+     "max_model_len": 4096,
+     "permission": [
+      {
+       "id": "modelperm-b7fb58673e5b11ff",
+       "object": "model_permission",
+       "created": 1789946489,
+       "allow_create_engine": false,
+       "allow_sampling": true,
+       "allow_logprobs": true,
+       "allow_search_indices": false,
+       "allow_view": true,
+       "allow_fine_tuning": false,
+       "organization": "*",
+       "group": null,
+       "is_blocking": false
+      }
+     ]
+    }
+   ]
+  },
+  "http://localhost:8001": {
+   "object": "list",
+   "data": [
+    {
+     "id": "typhoon2.5-qwen3-4b",
+     "object": "model",
+     "created": 1789946491,
+     "owned_by": "vllm",
+     "root": "/models",
+     "parent": null,
+     "max_model_len": 4096,
+     "permission": [
+      {
+       "id": "modelperm-9a91bb3f39a5c5ce",
+       "object": "model_permission",
+       "created": 1789946491,
+       "allow_create_engine": false,
+       "allow_sampling": true,
+       "allow_logprobs": true,
+       "allow_search_indices": false,
+       "allow_view": true,
+       "allow_fine_tuning": false,
+       "organization": "*",
+       "group": null,
+       "is_blocking": false
+      }
+     ]
+    }
+   ]
+  }
+ }
+}
