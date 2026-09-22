@@ -223,6 +223,15 @@ repository_integration: NOT_PERFORMED
 - dry run ทุก subcommand กับ fake server ใน container **จับบั๊กได้สามตัวและแก้แล้ว** (command เอาจาก `Args` ทำให้ program หาย, `launch` อ่าน spec ผิดชั้น, mount ใต้ home ถูก redact จนใช้ไม่ได้) หลังแก้ launch จาก spec แล้ว fingerprint ตรงครบ 4 field และไม่มี key ใน output — validate เครื่องมือเท่านั้น **ไม่ใช่หลักฐานของ vLLM**; ข้อสังเกตที่ต้องยืนยันกับ vLLM: key เดียวผ่าน env **โผล่เป็น plaintext ใน `docker inspect`** แต่ผ่าน `--config` ไม่โผล่
 - **EV08 `status` และ `gate_verdicts` (`PRP-NFR-024`) ยัง `NOT_RUN`**; ยังไม่ได้เปิด vLLM
 
+### WP24 EV08 candidate B · รันกับ vLLM จริง (2026-09-22, C-2 / H3)
+- เปิด vLLM ด้วย launch เดียวกับ EV05 รัน 4 ขั้นตอน แล้วหยุดและลบ container ที่ 15:55:46Z; key สองตัวสุ่มใหม่เฉพาะรอบนี้ ไม่อยู่ในไฟล์ใดใน repo
+- **ขั้นตอน 1**: `prp-client.yaml` ไม่มีชื่อ vendor (0 match) และ inventory ไม่เปลี่ยน; leak scan พบของ vendor ที่ adapter ต้องตัด / เขียนใหม่: header `server: uvicorn` ทุก response, `model` = served-model-name, id `chatcmpl-*`, **`system_fingerprint` = `vllm-0.29.0-…` (เปิดเผยทั้ง vendor และ version)**, field เกินอีกหลายตัว (`kv_transfer_params`, `prompt_token_ids`, `routed_experts`, `token_ids` …) ที่ schema ของ client (`additionalProperties: false`) ไม่รับ, `/v1/models` มี `owned_by: vllm` และ `root: /models`; error body ของ vLLM เองไม่รั่ว host / port / stack แต่ 401 เป็น string ขณะที่ 400 / 404 เป็น object
+- **ขั้นตอน 2**: export ที่ redact แล้ว (ไม่มี key) launch ใหม่จาก export อย่างเดียว **fingerprint ตรงครบ 4 field** (startup args, `/v1/models`, `cache_config_info`, คำตอบ greedy); เพิ่ม **DEV-06** (import บน container ใหม่เครื่องเดิม แทน host สะอาด) สถานะ OPEN
+- **ขั้นตอน 3**: overlap แล้ว drop ใช้ได้จริง (old + new ผ่านทั้งคู่ → หลัง relaunch old ได้ 401) แต่ทุกครั้งที่เปลี่ยน key ต้องสร้าง container ใหม่ ~220 s (cold); **`VLLM_API_KEY` อ่านได้เป็น plaintext จาก `docker inspect`** และรับได้ key เดียว ส่วน `--config` YAML แบบ read-only ไม่โผล่; ไม่มี key ใน `docker logs` ทุกขั้น
+- **ขั้นตอน 4**: marker ไม่อยู่ในไฟล์ใดที่ container เขียน (ค้น 1292 roots จาก 11875 diff entries) และไม่อยู่ใน `docker logs`; **vLLM ส่ง telemetry (hardware / config / uuid ไม่มี prompt) ไป `https://stats.vllm.ai` เป็น default ตอนเริ่มและทุก 600 s** ต้องปิดด้วย `VLLM_NO_USAGE_STATS=1` หรือ `DO_NOT_TRACK=1` — ไม่ได้ดัก egress จริง
+- ระหว่างรัน: `datastore-scan` ค้นแค่ 500 path แรกและไม่บันทึก marker → แก้เป็นค้น minimal covering set + บันทึก marker (unit test +1 รวม 47 ผ่าน) แล้วรันซ้ำ รอบแรกเก็บใต้ `B/EV08/superseded/`
+- เติม `experiments.EV08.per_candidate.B` (`disposition_hint` = ADAPT พร้อมสิ่งที่ PRP ต้องถือเอง, artifacts 18 ไฟล์) และ DEV-06 — **`status` และ `gate_verdicts` (`PRP-NFR-024`) ยัง `NOT_RUN`**; ไม่แตะ field อื่นของ record
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

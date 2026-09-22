@@ -1,0 +1,32 @@
+{
+  "generated_at_utc": "2026-09-22T15:55:35Z",
+  "command_line": "tools/wp24/ev08_exit_probe.py --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08 --label new-only key-check --stage new-key-only --key-env KEY_A --key-env KEY_B",
+  "candidate": "B",
+  "ev": "EV08",
+  "subcommand": "key-check",
+  "label": "new-only",
+  "result": {
+    "stage": "new-key-only",
+    "status_by_key": {
+      "no key": 401,
+      "KEY_A": 401,
+      "KEY_B": 200
+    },
+    "key_value_exposure": {
+      "KEY_A": {
+        "in_docker_logs": false,
+        "in_docker_inspect": false
+      },
+      "KEY_B": {
+        "in_docker_logs": false,
+        "in_docker_inspect": true
+      }
+    }
+  },
+  "measurements": [],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev08_key_check_B_new-only_20260922T155535Z.json"
+  ]
+}

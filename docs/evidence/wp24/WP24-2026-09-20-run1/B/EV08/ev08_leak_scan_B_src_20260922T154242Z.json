@@ -1,0 +1,178 @@
+{
+  "generated_at_utc": "2026-09-22T15:42:42Z",
+  "command_line": "tools/wp24/ev08_exit_probe.py --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08 --token-env KEY_A --label src leak-scan",
+  "candidate": "B",
+  "ev": "EV08",
+  "subcommand": "leak-scan",
+  "label": "src",
+  "result": {
+    "markers_searched": [
+      "typhoon2.5-qwen3-4b",
+      "vllm",
+      "chatcmpl",
+      "system_fingerprint",
+      "/models",
+      "uvicorn",
+      "dist-packages",
+      "traceback",
+      "kv_transfer_params",
+      "prompt_logprobs",
+      "service_tier",
+      "127.0.0.1",
+      "172.17.",
+      "engine",
+      "typhoon",
+      "qwen"
+    ],
+    "responses": {
+      "chat": {
+        "status": 200,
+        "headers": {
+          "date": "Tue, 22 Sep 2026 15:42:41 GMT",
+          "server": "uvicorn",
+          "content-length": "721",
+          "content-type": "application/json",
+          "connection": "close"
+        },
+        "top_level_fields": [
+          "choices",
+          "created",
+          "ec_transfer_params",
+          "id",
+          "kv_transfer_params",
+          "metrics",
+          "model",
+          "object",
+          "prompt_logprobs",
+          "prompt_text",
+          "prompt_token_ids",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "body": "{\"id\":\"chatcmpl-a9aff8dc9b7c4e84\",\"object\":\"chat.completion\",\"created\":1790091761,\"model\":\"typhoon2.5-qwen3-4b\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"hi! how can i assist you today\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.29.0-de711e39\",\"usage\":{\"prompt_tokens\":9,\"total_tokens\":17,\"completion_tokens\":8,\"prompt_tokens_details\":null,\"completion_tokens_details\":null},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+        "markers_in_body": [
+          "typhoon2.5-qwen3-4b",
+          "vllm",
+          "chatcmpl",
+          "system_fingerprint",
+          "kv_transfer_params",
+          "prompt_logprobs",
+          "service_tier",
+          "typhoon",
+          "qwen"
+        ],
+        "markers_in_headers": [
+          "uvicorn"
+        ]
+      },
+      "stream": {
+        "status": 200,
+        "headers": {
+          "date": "Tue, 22 Sep 2026 15:42:41 GMT",
+          "server": "uvicorn",
+          "content-type": "text/event-stream; charset=utf-8",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "top_level_fields": null,
+        "body": "data: {\"id\":\"chatcmpl-bb7bdc83de7a9f6f\",\"object\":\"chat.completion.chunk\",\"created\":1790091761,\"model\":\"typhoon2.5-qwen3-4b\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"},\"logprobs\":null,\"finish_reason\":null}],\"prompt_token_ids\":null,\"prompt_text\":null}\n",
+        "markers_in_body": [
+          "typhoon2.5-qwen3-4b",
+          "chatcmpl",
+          "typhoon",
+          "qwen"
+        ],
+        "markers_in_headers": [
+          "uvicorn"
+        ]
+      },
+      "models": {
+        "status": 200,
+        "headers": {
+          "date": "Tue, 22 Sep 2026 15:42:41 GMT",
+          "server": "uvicorn",
+          "content-length": "460",
+          "content-type": "application/json",
+          "connection": "close"
+        },
+        "top_level_fields": [
+          "data",
+          "object"
+        ],
+        "body": "{\"object\":\"list\",\"data\":[{\"id\":\"typhoon2.5-qwen3-4b\",\"object\":\"model\",\"created\":1790091762,\"owned_by\":\"vllm\",\"root\":\"/models\",\"parent\":null,\"max_model_len\":8192,\"permission\":[{\"id\":\"modelperm-823b24628a1767bd\",\"object\":\"model_permission\",\"created\":1790091762,\"allow_create_engine\":false,\"allow_sampling\":true,\"allow_logprobs\":true,\"allow_search_indices\":false,\"allow_view\":true,\"allow_fine_tuning\":false,\"organization\":\"*\",\"group\":null,\"is_blocking\":false}]}]}",
+        "markers_in_body": [
+          "typhoon2.5-qwen3-4b",
+          "vllm",
+          "/models",
+          "engine",
+          "typhoon",
+          "qwen"
+        ],
+        "markers_in_headers": [
+          "uvicorn"
+        ]
+      },
+      "bad_request_400": {
+        "status": 400,
+        "headers": {
+          "date": "Tue, 22 Sep 2026 15:42:41 GMT",
+          "server": "uvicorn",
+          "content-length": "161",
+          "content-type": "application/json",
+          "connection": "close"
+        },
+        "top_level_fields": [
+          "error"
+        ],
+        "body": "{\"error\":{\"message\":\"temperature must be non-negative, got -5.0. (parameter=temperature, value=-5.0)\",\"type\":\"BadRequestError\",\"param\":\"temperature\",\"code\":400}}",
+        "markers_in_body": [],
+        "markers_in_headers": [
+          "uvicorn"
+        ]
+      },
+      "unknown_model_404": {
+        "status": 404,
+        "headers": {
+          "date": "Tue, 22 Sep 2026 15:42:41 GMT",
+          "server": "uvicorn",
+          "content-length": "115",
+          "content-type": "application/json",
+          "connection": "close"
+        },
+        "top_level_fields": [
+          "error"
+        ],
+        "body": "{\"error\":{\"message\":\"The model `no-such-model` does not exist.\",\"type\":\"NotFoundError\",\"param\":\"model\",\"code\":404}}",
+        "markers_in_body": [],
+        "markers_in_headers": [
+          "uvicorn"
+        ]
+      },
+      "no_key_401": {
+        "status": 401,
+        "headers": {
+          "date": "Tue, 22 Sep 2026 15:42:41 GMT",
+          "server": "uvicorn",
+          "content-length": "24",
+          "content-type": "application/json",
+          "connection": "close"
+        },
+        "top_level_fields": [
+          "error"
+        ],
+        "body": "{\"error\":\"Unauthorized\"}",
+        "markers_in_body": [],
+        "markers_in_headers": [
+          "uvicorn"
+        ]
+      }
+    }
+  },
+  "measurements": [],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev08_leak_scan_B_src_20260922T154242Z.json"
+  ]
+}

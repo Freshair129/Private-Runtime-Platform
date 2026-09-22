@@ -1,0 +1,26 @@
+{
+  "generated_at_utc": "2026-09-22T15:51:55Z",
+  "command_line": "tools/wp24/ev08_exit_probe.py --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08 --label overlap launch --spec docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_export_B_src_20260922T154241Z.json --replace --key-env KEY_A --key-env KEY_B --secrets-dir <home>/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/ev08-secrets --ready-timeout 600",
+  "candidate": "B",
+  "ev": "EV08",
+  "subcommand": "launch",
+  "label": "overlap",
+  "result": {
+    "name": "prp-wp24-vllm-b",
+    "key_mode": "--config YAML with 2 keys",
+    "key_env_names": [
+      "KEY_A",
+      "KEY_B"
+    ],
+    "docker_run": "docker run -d --name prp-wp24-vllm-b --gpus all --ipc=host -p 127.0.0.1:8000:8000 -v F:/prp-models/typhoon2.5-qwen3-4b@ce0a741:/models:ro -e VLLM_WSL2_ENABLE_PIN_MEMORY=1 -v <home>/AppData/Local/Temp/claude/F--Private-Runtime-Platform/991cf1b0-51ce-424b-8ab5-cc3ceb06011d/scratchpad/ev08-secrets/prp-wp24-vllm-b-keys.yaml:/run/prp/keys.yaml:ro vllm/vllm-openai@sha256:c2914767605584b6d8f45686b82de173ecc99e781897aa3d0a66dacd72c51ae1 --model /models --served-model-name typhoon2.5-qwen3-4b --max-model-len 8192 --gpu-memory-utilization 0.70 --max-num-seqs 4 --config /run/prp/keys.yaml",
+    "return_code": 0,
+    "stderr": "",
+    "ready_s_from_docker_run": 226.1
+  },
+  "measurements": [],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev08_launch_B_overlap_20260922T155155Z.json"
+  ]
+}

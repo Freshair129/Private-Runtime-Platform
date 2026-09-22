@@ -1,0 +1,25 @@
+{
+  "generated_at_utc": "2026-09-22T15:47:56Z",
+  "command_line": "tools/wp24/ev08_exit_probe.py --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08 --label import launch --spec docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_export_B_src_20260922T154241Z.json --replace --key-env KEY_A --ready-timeout 600",
+  "candidate": "B",
+  "ev": "EV08",
+  "subcommand": "launch",
+  "label": "import",
+  "result": {
+    "name": "prp-wp24-vllm-b",
+    "key_mode": "env VLLM_API_KEY",
+    "key_env_names": [
+      "KEY_A"
+    ],
+    "docker_run": "docker run -d --name prp-wp24-vllm-b --gpus all --ipc=host -p 127.0.0.1:8000:8000 -v F:/prp-models/typhoon2.5-qwen3-4b@ce0a741:/models:ro -e VLLM_WSL2_ENABLE_PIN_MEMORY=1 -e VLLM_API_KEY vllm/vllm-openai@sha256:c2914767605584b6d8f45686b82de173ecc99e781897aa3d0a66dacd72c51ae1 --model /models --served-model-name typhoon2.5-qwen3-4b --max-model-len 8192 --gpu-memory-utilization 0.70 --max-num-seqs 4",
+    "return_code": 0,
+    "stderr": "",
+    "ready_s_from_docker_run": 223.2
+  },
+  "measurements": [],
+  "observations": [],
+  "source_observations": [],
+  "artifacts": [
+    "ev08_launch_B_import_20260922T154756Z.json"
+  ]
+}

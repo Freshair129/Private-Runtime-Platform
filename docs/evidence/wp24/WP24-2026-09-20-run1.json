@@ -109,6 +109,16 @@
       "reviewer_action": "Accept the reduced limit, or require a repeat at the default limit with a load generator able to exceed it.",
       "resolution": null,
       "status": "OPEN"
+    },
+    {
+      "id": "DEV-06",
+      "experiment": "EV08",
+      "requirement": "procedure EV08 step 2: import the exported config on a clean host",
+      "observed": "The import ran as a new container with no cache on the same host that produced the export. The only other machine (the RTX 3060 worker) runs Ollama and has no Docker GPU runtime.",
+      "mitigation": "The source container was removed before the import, the import used only the export file plus a key supplied at launch, and it matched the source on all four fingerprint fields. What a same-host import cannot show is a dependency on host state outside the container (driver version, weights directory contents beyond the hashed files).",
+      "reviewer_action": "Accept the same-host import, or require a repeat on a second host with a Docker GPU runtime.",
+      "resolution": null,
+      "status": "OPEN"
     }
   ],
   "environment": {
@@ -1522,20 +1532,124 @@
         },
         "B": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-22T15:38:33+00:00",
+          "finished_at": "2026-09-22T15:55:46+00:00",
+          "cold_or_warm": "Cold throughout: the export source and every relaunch (import, overlap, new-only) were new containers with no cache, ready in 225, 223, 226 and 217 s.",
+          "sample_count": "one export and one import with a four-field fingerprint each; six leak-scan responses; four key-check stages with three credentials each (no key, old, new); one marker request for the datastore scan (the scan was repeated after a tool fix)",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/test-design.md and the command_line field of each ev08_*_B_*.json",
+          "source_observations": [
+            "SRC-02: nothing in the source register covers vLLM's response extensions, its usage-statistics reporting to stats.vllm.ai or its single-key VLLM_API_KEY; these come from this run and from the vLLM source in the pinned image."
+          ],
+          "measurements": [
+            {
+              "name": "client_contract_vendor_name_matches",
+              "value": 0
+            },
+            {
+              "name": "export_plaintext_secret_present",
+              "value": false
+            },
+            {
+              "name": "import_vs_source_fingerprint_equal",
+              "value": true
+            },
+            {
+              "name": "import_ready_s",
+              "value": 223.2
+            },
+            {
+              "name": "rotation_overlap_status",
+              "value": {
+                "no key": 401,
+                "old": 200,
+                "new": 200
+              }
+            },
+            {
+              "name": "rotation_new_only_status",
+              "value": {
+                "no key": 401,
+                "old": 401,
+                "new": 200
+              }
+            },
+            {
+              "name": "rotation_relaunch_ready_s",
+              "value": [
+                226.1,
+                217.1
+              ]
+            },
+            {
+              "name": "key_in_docker_inspect_via_VLLM_API_KEY",
+              "value": true
+            },
+            {
+              "name": "key_in_docker_inspect_via_config_yaml",
+              "value": false
+            },
+            {
+              "name": "key_in_docker_logs_any_stage",
+              "value": false
+            },
+            {
+              "name": "leak_scan_system_fingerprint",
+              "value": "vllm-0.29.0-de711e39"
+            },
+            {
+              "name": "datastore_marker_found_in_files",
+              "value": 0
+            },
+            {
+              "name": "datastore_marker_in_docker_logs",
+              "value": false
+            },
+            {
+              "name": "datastore_search_roots",
+              "value": 1292
+            },
+            {
+              "name": "usage_stats_server_default",
+              "value": "https://stats.vllm.ai"
+            },
+            {
+              "name": "usage_stats_report_interval_s",
+              "value": 600
+            }
+          ],
+          "observations": [
+            "Step 1: prp-client.yaml names no vendor model, manager or datastore, and the client inventory is unchanged. The public name maps to ModelProfile (revision typhoon-ai/typhoon2.5-qwen3-4b@ce0a741) and RuntimeDeployment inside PRP; vLLM's served-model-name, mount path and image digest stay behind the adapter.",
+            "Step 1: vLLM responses carry vendor content outside the client schemas, all of which set additionalProperties false: server: uvicorn on every response; model = served-model-name; chatcmpl ids; system_fingerprint vllm-0.29.0-de711e39 (vendor and version); extra fields kv_transfer_params, ec_transfer_params, metrics, prompt_logprobs, prompt_text, prompt_token_ids, service_tier, routed_experts, stop_reason, token_ids and more; /v1/models owned_by vllm, root /models, permission[]. The adapter must rewrite or strip each of these. vLLM's own error bodies carry no host, port or stack trace, but the 401 body is a bare string while 400 and 404 are objects.",
+            "Step 2: a container launched only from the redacted export matched the source on startup args, /v1/models, cache_config_info and a fixed greedy answer. The export holds no plaintext key; the key is supplied at launch. This revision has no generation_config.json.",
+            "Step 3: rotation by overlap then drop works: with old and new keys both accepted, then only the new one, the old key returned 401 after the second relaunch. Each key change needed a new container, about 220 s cold here. VLLM_API_KEY holds one key and is readable in plaintext through docker inspect; passing keys through a read-only --config YAML keeps them out of docker inspect. No key appeared in docker logs at any stage.",
+            "Step 4: the marker request left no trace in any added or changed file of the container or in docker logs. The writable layer holds compile caches only. vLLM writes usage_stats.json and, by default, posts host and config telemetry (no prompts) to https://stats.vllm.ai at startup and every 600 s; the opt-outs were not set in this launch. Actual egress was not captured.",
+            "During the run the datastore scan was found to search only 500 of 11875 diff paths; it was changed to search a minimal covering set (1292 roots) and repeated. The first scan is kept under superseded/."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/step4-usage-stats.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/superseded/README.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_compare_B_src-vs-import_20260922T154757Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_datastore_scan_B_src_20260922T154345Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_export_B_src_20260922T154241Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_fingerprint_B_import_20260922T154757Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_fingerprint_B_src_20260922T154241Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_key_check_B_import-env-single_20260922T154808Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_key_check_B_new-only_20260922T155535Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_key_check_B_overlap_20260922T155156Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_key_check_B_src-env-single_20260922T154240Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_launch_B_import_20260922T154756Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_launch_B_new-only_20260922T155534Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_launch_B_overlap_20260922T155155Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/ev08_leak_scan_B_src_20260922T154242Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/superseded/ev08_datastore_scan_B_src_20260922T154258Z.json"
+          ],
           "gate_verdicts": {
             "PRP-NFR-024": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only: ADAPT. The public contract needs no vendor identifier and the declarative config exports and re-imports exactly, but PRP must carry: an adapter strip/rewrite list for every vLLM response (including system_fingerprint and the server header), a normalised error mapping (the 401 body differs in shape), keys delivered through a read-only config file rather than VLLM_API_KEY, rotation by relaunch with a second replica to avoid downtime, and VLLM_NO_USAGE_STATS=1 (or DO_NOT_TRACK=1) in every launch so no telemetry leaves the platform.",
+          "blocker": "Fake-adapter replacement through client conformance needs PRP's adapter layer (M4); replay through a replacement candidate needs candidate A (DEV-02); a clean second host was not available (DEV-06). Telemetry egress and the warm-restart rotation path were not measured."
         },
         "C": {
           "status": "BLOCKED",
