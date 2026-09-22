@@ -72,6 +72,8 @@ def classify_ending(record: dict[str, Any]) -> str:
         return "completed"
     if record.get("client_cancel_at"):
         return "client_cancelled"
+    if record.get("error_chunk"):
+        return "error_chunk_in_stream"
     return "cut_without_finish_reason"
 
 
@@ -138,6 +140,7 @@ class Call:
             "client_cancel_at": None,
             "ended": None,
             "end_error": None,
+            "error_chunk": None,
         }
         self.thread = threading.Thread(target=self._run, daemon=True)
 
@@ -185,6 +188,8 @@ class Call:
     def _take(self, chunk: dict[str, Any]) -> None:
         rec = self.record
         rec["completion_id"] = rec["completion_id"] or chunk.get("id")
+        if chunk.get("error") is not None:
+            rec["error_chunk"] = common.redact_text(json.dumps(chunk["error"]))[:400]
         for choice in chunk.get("choices") or []:
             content = (choice.get("delta") or choice.get("message") or {}).get("content")
             if content:

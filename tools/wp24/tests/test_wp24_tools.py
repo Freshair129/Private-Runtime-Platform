@@ -282,6 +282,7 @@ class TestEv06InterruptProbe(unittest.TestCase):
             ({"status": 200, "finish_reason": "length"}, "completed"),
             ({"status": 200, "client_cancel_at": 5.0}, "client_cancelled"),
             ({"status": 200}, "cut_without_finish_reason"),
+            ({"status": 200, "error_chunk": '{"code": 500}'}, "error_chunk_in_stream"),
         ]
         for record, expected in cases:
             self.assertEqual(ev06.classify_ending(record), expected, record)

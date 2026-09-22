@@ -208,6 +208,15 @@ repository_integration: NOT_PERFORMED
 - dry run ทั้ง 5 กรณีกับ fake server ใน container `python:3.12-alpine` **จับบั๊กได้สองตัวและแก้แล้ว** (cancel ไม่ตัดจริงเพราะ `http.client` ทิ้ง `conn.sock` เมื่อ response เป็น `Connection: close`; idle time คำนวณก่อน sample ถัดไป) หลังแก้ทุกกรณีทำงานตาม design และ token rise ใน replay window เป็น 0 — validate เครื่องมือเท่านั้น **ไม่ใช่หลักฐานของ vLLM**
 - **EV06 `status` และ `gate_verdicts` (`PRP-FR-020`..`022`) ยัง `NOT_RUN`**; ยังไม่ได้เปิด vLLM
 
+### WP24 EV06 candidate B · รันกับ vLLM จริง (2026-09-22, C-2 / H3)
+- เปิด `prp-wp24-vllm-b` ด้วย launch เดียวกับ EV05 (cold ~260 s) รันครบ 5 กรณี แล้วหยุดและลบ container ที่ 14:16:31Z; key สุ่มใหม่เฉพาะรอบนี้ ไม่อยู่ในไฟล์ใดใน repo
+- **client ยกเลิกแล้ว compute หยุดจริง**: ทั้ง streaming และ non-streaming `running` เป็น 0 และ `generation_tokens_total` นิ่งภายใน 0.19 s; ยกเลิก request ที่ค้างใน queue แล้ว `waiting` เป็น 0 ใน 0.084 s และ request นั้นไม่ได้ token เลย (FR-021 queued cancel)
+- **ไม่มี blind replay ทุกกรณี** — 30 s หลัง client จบ ไม่มีอะไร running / waiting และ token counter ไม่ขึ้นภายใน process เดียวกัน
+- `kill -9` EngineCore → API server log `EngineDeadError` แล้วปิดตัวเอง **container exit** vLLM ไม่ restart engine เอง ต้องมี supervisor; พร้อมอีกครั้ง 73.2 s หลัง `docker start` · `docker restart` → vLLM หยุดแบบ `mode=abort timeout=0s` และ force-kill engine **งานค้างถูก abort ไม่ได้ drain** พร้อมใน 93.2 s (warm)
+- **ขั้นตอน 3**: เมื่อส่ง HTTP 200 แล้ว status ไม่บอกความล้มเหลวอีก — มี `finish_reason` = จบ, มี error object ใน stream = ล้มแน่ (เห็นตอน kill), stream หยุดโดยไม่มีทั้งสอง (เห็นตอน restart) หรือ connection หลุด = **ไม่รู้** → PRP ต้องบันทึก UNKNOWN และ QUARANTINED lease จน supervisor ยืนยันว่า process เก่าหายแล้ว (ARCH §11); chat completions ไม่มี status / cancel API และไม่มี `x-request-id`; Responses API มี `GET /v1/responses/{id}` และ `POST …/cancel` แต่ **ปิดเป็น default** ต้องเปิดด้วย `VLLM_ENABLE_RESPONSES_API_STORE=1` ซึ่งเปลี่ยน launch config นอก design จึงเสนอเป็น follow-up ไม่ได้ทดสอบ
+- ระหว่างรัน: kill / restart รอบแรกยังไม่เก็บ error object ใน stream → ขยาย probe ให้เก็บ `error_chunk` (unit test เพิ่ม 1 เคส รวม 37 ผ่าน) แล้วรันสองกรณีนั้นใหม่ รอบแรกเก็บไว้ใต้ `B/EV06/superseded/` พร้อมหมายเหตุ
+- เติม `experiments.EV06.per_candidate.B` ใน run record (`disposition_hint` = ADAPT พร้อมสิ่งที่ PRP ต้อง reconcile เอง, artifacts 13 ไฟล์) — **`status` และ `gate_verdicts` (`PRP-FR-020`..`022`) ยัง `NOT_RUN`**; ไม่แตะ field อื่นของ record
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
