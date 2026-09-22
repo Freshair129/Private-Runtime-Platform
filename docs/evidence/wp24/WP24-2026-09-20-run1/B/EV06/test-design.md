@@ -102,6 +102,15 @@ this commit:
 
 Every case had a replay-window token rise of 0.
 
+### Change during the run (2026-09-22)
+
+In the first kill and restart runs the client saw HTTP 200 and `data: [DONE]` with no
+`finish_reason`, while the server logged `EngineDeadError`. The probe did not yet record an `error`
+object sent inside the stream, and that is exactly what step 3 needs. It now stores such an object
+as `error_chunk` and classifies the ending as `error_chunk_in_stream`, covered by one more unit test.
+The two cases were then run again. The first runs are kept under `superseded/`, with a note on what
+they add.
+
 ## What this cannot reach
 
 - **PRP's own UNKNOWN / QUARANTINED state machine** and the absolute-deadline rule of FR-021 are

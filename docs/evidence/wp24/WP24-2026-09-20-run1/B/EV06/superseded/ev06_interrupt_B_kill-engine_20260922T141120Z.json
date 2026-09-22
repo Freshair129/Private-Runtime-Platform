@@ -1,0 +1,3778 @@
+{
+  "generated_at_utc": "2026-09-22T14:11:20Z",
+  "command_line": "tools/wp24/ev06_interrupt_probe.py --case kill-engine --container prp-wp24-vllm-b --token-env VLLM_API_KEY --model typhoon2.5-qwen3-4b --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06",
+  "candidate": "B",
+  "ev": "EV06",
+  "case": "kill-engine",
+  "started_at": "2026-09-22T14:09:21Z",
+  "finished_at": "2026-09-22T14:11:20Z",
+  "base_url": "http://127.0.0.1:8000",
+  "request_body": {
+    "model": "typhoon2.5-qwen3-4b",
+    "messages": [
+      {
+        "role": "user",
+        "content": "เล่าประวัติศาสตร์ของกรุงเทพมหานครอย่างละเอียดที่สุดเท่าที่ทำได้"
+      }
+    ],
+    "max_tokens": 2000,
+    "ignore_eos": true,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "measurements": [
+    {
+      "name": "case",
+      "value": "kill-engine"
+    },
+    {
+      "name": "interrupt_after_s",
+      "value": 3.0
+    },
+    {
+      "name": "target_ending",
+      "value": "cut_without_finish_reason"
+    },
+    {
+      "name": "target_chunks_before_interrupt",
+      "value": 145
+    },
+    {
+      "name": "target_request_id_header",
+      "value": null
+    },
+    {
+      "name": "target_completion_id_seen",
+      "value": true
+    },
+    {
+      "name": "filler_endings",
+      "value": []
+    },
+    {
+      "name": "waiting_zero_s_after_interrupt",
+      "value": 0.187
+    },
+    {
+      "name": "idle_s_after_interrupt",
+      "value": 83.665
+    },
+    {
+      "name": "gen_tokens_rise_after_idle",
+      "value": 0.0
+    },
+    {
+      "name": "container_stopped_after_interrupt",
+      "value": true
+    },
+    {
+      "name": "ready_s_from_reference",
+      "value": 78.642
+    },
+    {
+      "name": "ready_reference",
+      "value": "docker start"
+    },
+    {
+      "name": "replay_window_s",
+      "value": 30.0
+    },
+    {
+      "name": "replay_window_max_running",
+      "value": 0.0
+    },
+    {
+      "name": "replay_window_max_waiting",
+      "value": 0.0
+    },
+    {
+      "name": "replay_window_gen_tokens_rise",
+      "value": 0.0
+    },
+    {
+      "name": "openapi_cancel_abort_status_routes",
+      "value": [
+        "/v1/responses/{response_id}/cancel"
+      ]
+    },
+    {
+      "name": "access_log_posts_in_case",
+      "value": 1
+    }
+  ],
+  "observations": [
+    "LiteLLM is not in this path; requests go straight to the vLLM server.",
+    "The replay window starts once every client request has ended; any running or waiting request, or any token-counter rise inside one process lifetime, in that window has no client behind it."
+  ],
+  "source_observations": [],
+  "action": {
+    "case": "kill-engine",
+    "at": 1790086165.756823,
+    "engine_pids": [
+      72
+    ],
+    "kill_72": 0
+  },
+  "readiness": {
+    "health_down_at": 1790086166.7881315,
+    "docker_start_issued_at": 1790086170.9431922,
+    "ready_at": 1790086249.5853221,
+    "container_stopped": true,
+    "health_never_failed": null,
+    "docker_start": 0
+  },
+  "requests": [
+    {
+      "name": "target",
+      "stream": true,
+      "sent": 1790086162.7565918,
+      "status": 200,
+      "request_id_header": null,
+      "completion_id": "chatcmpl-94754611107e6df9",
+      "first_token": 1790086162.9756875,
+      "chunks": 145,
+      "finish_reason": null,
+      "saw_done": true,
+      "client_cancel_at": null,
+      "ended": 1790086166.1688287,
+      "end_error": null,
+      "ending": "cut_without_finish_reason"
+    }
+  ],
+  "docker_log_excerpt": [
+    "(APIServer pid=1) INFO:     172.17.0.1:34510 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK",
+    "(APIServer pid=1) INFO 09-22 14:09:26 [utils.py:620] [shutdown] Process manager: send sigterm to process EngineCore",
+    "(APIServer pid=1) WARNING 09-22 14:09:26 [core_client.py:728] [shutdown] MPClient: engine core exited unexpectedly; starting cleanup",
+    "(APIServer pid=1) INFO 09-22 14:09:26 [core_client.py:689] [shutdown] MPClient: start timeout=default",
+    "(APIServer pid=1) INFO 09-22 14:09:26 [core_client.py:691] [shutdown] MPClient: stopping engine manager",
+    "(APIServer pid=1) INFO 09-22 14:09:26 [core_client.py:693] [shutdown] MPClient: engine manager stopped",
+    "(APIServer pid=1) INFO 09-22 14:09:26 [core_client.py:694] [shutdown] MPClient: cleaning up background resources",
+    "(APIServer pid=1) INFO 09-22 14:09:26 [core_client.py:696] [shutdown] MPClient: complete",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819] AsyncLLM output_handler failed.",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819] Traceback (most recent call last):",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819]   File \"/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/async_llm.py\", line 765, in output_handler",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819]     outputs = await engine_core.get_output_async()",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819]   File \"/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core_client.py\", line 1105, in get_output_async",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819]     raise self._format_exception(outputs) from None",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [async_llm.py:819] vllm.v1.engine.exceptions.EngineDeadError: EngineCore encountered an issue. See stack trace (above) for the root cause.",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906] Error in chat completion stream generator.",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906] Traceback (most recent call last):",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]   File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/openai/chat_completion/serving.py\", line 516, in chat_completion_stream_generator",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]     async for res in result_generator:",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]   File \"/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/async_llm.py\", line 682, in generate",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]     out = q.get_nowait() or await q.get()",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]                             ^^^^^^^^^^^^^",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]   File \"/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/output_processor.py\", line 88, in get",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]     raise output",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]   File \"/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/async_llm.py\", line 765, in output_handler",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]     outputs = await engine_core.get_output_async()",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]   File \"/usr/local/lib/python3.12/dist-packages/vllm/v1/engine/core_client.py\", line 1105, in get_output_async",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906]     raise self._format_exception(outputs) from None",
+    "(APIServer pid=1) ERROR 09-22 14:09:26 [serving.py:906] vllm.v1.engine.exceptions.EngineDeadError: EngineCore encountered an issue. See stack trace (above) for the root cause.",
+    "(APIServer pid=1) INFO:     Shutting down",
+    "(APIServer pid=1) INFO:     Waiting for application shutdown.",
+    "(APIServer pid=1) INFO:     Application shutdown complete.",
+    "(APIServer pid=1) INFO:     Started server process [1]"
+  ],
+  "samples": [
+    {
+      "t": 1790086161.755339,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086162.0116985,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086162.2738757,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086162.5376763,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086162.7881424,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086163.0520716,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 4.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086163.313705,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 17.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086163.5783665,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 29.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086163.841014,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 42.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086164.1024296,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 54.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086164.364993,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 66.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086164.6277943,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 79.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086164.8916266,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 92.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086165.152246,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 104.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086165.4160032,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 117.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086165.678487,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 128.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086165.943369,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 141.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086166.2041953,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086166.4688423,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086166.7322166,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086166.9958365,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086167.2614367,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086167.5258183,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086167.7878103,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086168.0514727,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086168.3141892,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086168.5776699,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086168.8423772,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086169.104864,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086169.3703232,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086169.630864,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086169.895993,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086170.1594734,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 0.0,
+      "gen_tokens": 145.0,
+      "proc_start": 1790086033.27
+    },
+    {
+      "t": 1790086170.4233372,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086170.6884294,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086170.952506,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086171.4647248,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086171.7272396,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086171.9857612,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086172.246979,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086172.5105455,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086172.7755587,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086173.0265803,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086173.27792,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086173.5281277,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086173.7913682,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086174.055532,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086174.318464,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086174.5819259,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086174.8471522,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086175.1087856,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086175.3740058,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086175.6370935,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086175.900933,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086176.1633718,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086176.4138725,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086176.6794443,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086176.9428186,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086177.20551,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086177.4707637,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086177.7364945,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086178.0006933,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086178.2660372,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086178.5177445,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086178.7807896,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086179.04627,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086179.3104534,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086179.5748866,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086179.8387907,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086180.1010602,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086180.3634038,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086180.6257014,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086180.8891492,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086181.1535254,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086181.417557,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086181.679626,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086181.9308293,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086182.1941333,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086182.457002,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086182.7214491,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086182.9829447,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086183.2475703,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086183.499426,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086183.7644958,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086184.0264778,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086184.2881913,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086184.5521536,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086184.816916,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086185.0810223,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086185.3436346,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086185.6080635,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086185.8716521,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086186.121764,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086186.3861487,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086186.650342,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086186.9014049,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086187.1635687,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086187.4291875,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086187.6938112,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086187.9597049,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086188.2239811,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086188.489179,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086188.7520437,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086189.017228,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086189.2816622,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086189.5327334,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086189.79494,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086190.0593128,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086190.3231692,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086190.5886774,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086190.8532727,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086191.117957,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086191.3834023,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086191.6455724,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086191.9106085,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086192.1763027,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086192.438052,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086192.703992,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086192.9671195,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086193.21789,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086193.4695435,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086193.7218974,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086193.9840767,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086194.2444031,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086194.5067291,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086194.7715418,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086195.0355139,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086195.2974744,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086195.5496004,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086195.8144124,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086196.076138,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086196.3410497,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086196.6061807,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086196.8714962,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086197.1367834,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086197.4009478,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086197.651495,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086197.913415,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086198.1652598,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086198.4281418,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086198.6928074,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086198.9555755,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086199.2163112,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086199.474773,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086199.7394974,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086200.0028734,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086200.2531195,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086200.515948,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086200.7667778,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086201.0295157,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086201.2924864,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086201.5584798,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086201.8226922,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086202.0850818,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086202.3489797,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086202.6115794,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086202.8772697,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086203.140533,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086203.4018464,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086203.6672475,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086203.9304984,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086204.1938431,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086204.4574637,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086204.7192044,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086204.984954,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086205.235432,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086205.4983344,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086205.761762,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086206.0251224,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086206.275689,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086206.5404487,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086206.8062172,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086207.0706596,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086207.3213565,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086207.5860097,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086207.851079,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086208.1161404,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086208.3676612,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086208.6299026,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086208.8946772,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086209.1602461,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086209.4252036,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086209.6855192,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086209.9464002,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086210.2069848,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086210.470687,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086210.733548,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086210.9957008,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086211.25925,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086211.5216868,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086211.7832427,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086212.047188,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086212.3100815,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086212.572682,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086212.8348014,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086213.0983968,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086213.3622794,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086213.6267858,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086213.888771,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086214.149158,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086214.414804,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086214.6766288,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086214.939942,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086215.2049298,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086215.4681,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086215.7284553,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086215.990753,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086216.2533736,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086216.515204,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086216.7776158,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086217.028662,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086217.2922068,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086217.5549235,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086217.8165863,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086218.0792649,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086218.342126,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086218.605512,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086218.8666573,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086219.1272717,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086219.392152,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086219.6542099,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086219.916912,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086220.1812947,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086220.444533,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086220.7093663,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086220.9723406,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086221.235576,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086221.4984407,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086221.749623,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086222.0131147,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086222.2772322,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086222.5415707,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086222.7923589,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086223.0561824,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086223.3196566,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086223.5814655,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086223.8445823,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086224.1059213,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086224.3715265,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086224.6368136,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086224.8997777,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086225.162606,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086225.4134395,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086225.6762564,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086225.9395425,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086226.1902127,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086226.4519837,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086226.7043757,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086226.9692833,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086227.2193277,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086227.469745,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086227.7338977,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086227.9967756,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086228.2595246,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086228.5209305,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086228.77095,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086229.0338235,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086229.2983842,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086229.5617998,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086229.813243,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086230.0785756,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086230.3420725,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086230.6054282,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086230.8692634,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086231.134102,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086231.3973086,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086231.6616135,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086231.9242108,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086232.1748521,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086232.4394877,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086232.7026682,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086232.967542,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086233.2323182,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086233.483281,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086233.7474444,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086234.0106473,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086234.2729187,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086234.538615,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086234.8041966,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086235.0670733,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086235.3184576,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086235.5685186,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086235.831462,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086236.0965416,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086236.358392,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086236.6197977,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086236.8842618,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086237.147259,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086237.4126196,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086237.6636524,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086237.927847,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086238.1793563,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086238.443864,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086238.7063456,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086238.95667,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086239.2193918,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086239.4850242,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086239.7502065,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086240.0005867,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086240.2645276,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086240.5279188,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086240.7924452,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086241.05681,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086241.3218462,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086241.58654,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086241.836938,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086242.1002257,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086242.350479,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086242.6161957,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086242.8808136,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086243.1431475,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086243.4073863,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086243.6714764,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086243.9349604,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086244.196485,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086244.4602118,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086244.7231264,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086244.9867651,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086245.2507517,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086245.501503,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086245.7643893,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086246.0290089,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086246.2939057,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086246.5443063,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086246.8085024,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086247.058777,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086247.3218532,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086247.586401,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086247.8509445,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086248.113824,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086248.378234,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086248.6283815,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086248.8926933,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086249.1577752,
+      "status": null,
+      "running": null,
+      "waiting": null,
+      "gen_tokens": null,
+      "proc_start": null
+    },
+    {
+      "t": 1790086249.4215436,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086249.6858647,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086249.949301,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086250.214248,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086250.4805906,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086250.746245,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086251.0093794,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086251.274674,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086251.5373425,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086251.798641,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086252.064807,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086252.3165357,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086252.579322,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086252.8430448,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086253.0950909,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086253.3572729,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086253.6215155,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086253.8865027,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086254.1478293,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086254.3983278,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086254.662536,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086254.926403,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086255.190269,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086255.4476616,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086255.6981065,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086255.9615157,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086256.223016,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086256.4845076,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086256.7464135,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086257.0109591,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086257.2658088,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086257.517621,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086257.7678456,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086258.0327885,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086258.2835848,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086258.5483255,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086258.8141935,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086259.0766275,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086259.3402805,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086259.605046,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086259.8558097,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086260.121447,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086260.3844445,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086260.649127,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086260.9108665,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086261.1747556,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086261.437592,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086261.700422,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086261.9647872,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086262.2292395,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086262.4918478,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086262.7554083,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086263.0206895,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086263.2856293,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086263.5457797,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086263.8113494,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086264.0754507,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086264.3395965,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086264.604785,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086264.8674803,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086265.132171,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086265.3974419,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086265.6606736,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086265.924853,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086266.1872396,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086266.4519174,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086266.716049,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086266.9797893,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086267.2434494,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086267.4942377,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086267.7585464,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086268.0222757,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086268.2843869,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086268.5493922,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086268.8153603,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086269.0795,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086269.3434532,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086269.6057796,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086269.8692403,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086270.1354303,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086270.3983238,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086270.6627612,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086270.9267454,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086271.1894157,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086271.4407668,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086271.7057092,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086271.9692392,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086272.2334561,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086272.4982884,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086272.7633924,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086273.014397,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086273.277808,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086273.5428975,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086273.8043368,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086274.0691164,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086274.330065,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086274.5935075,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086274.857008,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086275.1225128,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086275.38755,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086275.6523676,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086275.9142635,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086276.1784694,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086276.4427986,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086276.7076178,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086276.959198,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086277.2216182,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086277.485995,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086277.7493668,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086278.0133312,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086278.2792034,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086278.5443707,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086278.80841,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086279.059548,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    },
+    {
+      "t": 1790086279.3240397,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 0.0,
+      "proc_start": 1790086170.81
+    }
+  ],
+  "artifacts": [
+    "ev06_interrupt_B_kill-engine_20260922T141120Z.json"
+  ]
+}

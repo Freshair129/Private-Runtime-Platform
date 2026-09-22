@@ -1296,22 +1296,120 @@
         },
         "B": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-22T14:00:31+00:00",
+          "finished_at": "2026-09-22T14:16:31+00:00",
+          "cold_or_warm": "Cold first start (new container, about 260 s to /health 200). The restart case is warm: the container keeps its filesystem, ready 93.2 s after docker restart was issued. The kill case is ready 73.2 s after docker start, as the container exited.",
+          "sample_count": "one request per case for cancel-stream, cancel-nonstream, kill-engine and restart, plus four fillers and one queued request for cancel-queued; restart and kill-engine were each run twice (first runs kept under superseded/); a 30 s replay window per case",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/test-design.md and the command_line field of each ev06_interrupt_B_*.json",
+          "source_observations": [
+            "SRC-02: the vLLM security page is not about lifecycle; nothing in the source register covers vLLM's abort-on-shutdown behaviour, the in-stream error object or the Responses API store switch. These observations come from this run only."
+          ],
+          "measurements": [
+            {
+              "name": "cancel_stream.idle_s_after_close",
+              "value": 0.193
+            },
+            {
+              "name": "cancel_nonstream.idle_s_after_close",
+              "value": 0.194
+            },
+            {
+              "name": "cancel_queued.waiting_zero_s_after_close",
+              "value": 0.084
+            },
+            {
+              "name": "cancel_queued.target_tokens",
+              "value": 0
+            },
+            {
+              "name": "kill_engine.client_ending",
+              "value": "HTTP 200, error object in stream (InternalServerError code 500), [DONE], no finish_reason"
+            },
+            {
+              "name": "kill_engine.container_exited",
+              "value": true
+            },
+            {
+              "name": "kill_engine.health_down_s",
+              "value": 1.01
+            },
+            {
+              "name": "kill_engine.ready_s_from_docker_start",
+              "value": [
+                73.221,
+                78.642
+              ]
+            },
+            {
+              "name": "restart.client_ending",
+              "value": "HTTP 200, no finish_reason, no error object; [DONE] present in one of two runs"
+            },
+            {
+              "name": "restart.ready_s_from_docker_restart",
+              "value": [
+                93.239,
+                98.146
+              ]
+            },
+            {
+              "name": "replay_window_gen_tokens_rise_all_cases",
+              "value": 0
+            },
+            {
+              "name": "replay_window_max_running_all_cases",
+              "value": 0
+            },
+            {
+              "name": "x_request_id_header",
+              "value": null
+            },
+            {
+              "name": "chat_status_or_cancel_routes",
+              "value": []
+            },
+            {
+              "name": "responses_api_status_cancel_routes",
+              "value": [
+                "GET /v1/responses/{response_id}",
+                "POST /v1/responses/{response_id}/cancel"
+              ]
+            },
+            {
+              "name": "responses_api_background_without_store_flag",
+              "value": 400
+            }
+          ],
+          "observations": [
+            "Client cancel stops compute. For streaming and for non-streaming requests alike, num_requests_running fell to 0 and generation_tokens_total stayed flat within 0.19 s of the client closing the socket. Cancelling a queued request emptied the queue in 0.084 s; the request never produced a token and the running fillers were unaffected.",
+            "No blind replay in any case. In each 30 s window after the client requests ended, nothing was running or waiting and generation_tokens_total did not rise within one process lifetime.",
+            "kill -9 of EngineCore: the API server logged EngineDeadError, shut itself down and the container exited. vLLM does not restart its own engine; recovery needs a supervisor. /health failed about 1 s after the kill.",
+            "docker restart: on SIGTERM vLLM stops the engine client in mode=abort with timeout 0 s and force-kills EngineCore, so in-flight work is aborted, not drained.",
+            "Client-visible endings once HTTP 200 is sent: a finish_reason means finished; an in-stream error object means failed (seen on the engine kill); a stream that stops with neither (seen on a restart) or a lost connection tells the client nothing about how far compute got. The HTTP status never carries the failure on a started stream.",
+            "Chat completions exposes no request-status or cancel API and no x-request-id header. The Responses API lists GET /v1/responses/{response_id} and POST /v1/responses/{response_id}/cancel, but background mode is refused with 400 unless the server is launched with VLLM_ENABLE_RESPONSES_API_STORE=1. That switch was not enabled because it changes the launch config outside the approved design.",
+            "The first kill and restart runs were taken before the probe recorded in-stream error objects; the probe was extended and both cases rerun. The first runs are kept under superseded/."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/vllm-image-digest.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/step3-responses-api-probe.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/ev06_interrupt_B_cancel-stream_20260922T140547Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/ev06_interrupt_B_cancel-nonstream_20260922T140622Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/ev06_interrupt_B_cancel-queued_20260922T140658Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/ev06_interrupt_B_restart_20260922T141402Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/ev06_interrupt_B_kill-engine_20260922T141556Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/superseded/README.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/superseded/ev06_interrupt_B_restart_20260922T140921Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06/superseded/ev06_interrupt_B_kill-engine_20260922T141120Z.json"
+          ],
           "gate_verdicts": {
             "PRP-FR-020": "NOT_RUN",
             "PRP-FR-021": "NOT_RUN",
             "PRP-FR-022": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only: ADAPT. No blind replay was observed and state after restart is readable (new process_start_time_seconds, nothing running), but PRP must reconcile by itself: record UNKNOWN for a stream cut with no finish_reason and for a lost connection, hold the lease QUARANTINED until the supervisor shows the old process gone, treat the in-stream error object as the only runtime-reported failure, and supply the supervisor (restart policy) that vLLM does not have.",
+          "blocker": "PRP's UNKNOWN / QUARANTINED state machine and FR-021's absolute deadline are PRP code (M4). The Responses API status/cancel handle behind VLLM_ENABLE_RESPONSES_API_STORE=1 is untested (proposed follow-up)."
         },
         "C": {
           "status": "BLOCKED",

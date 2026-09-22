@@ -1,0 +1,1327 @@
+{
+  "generated_at_utc": "2026-09-22T14:06:58Z",
+  "command_line": "tools/wp24/ev06_interrupt_probe.py --case cancel-queued --container prp-wp24-vllm-b --token-env VLLM_API_KEY --model typhoon2.5-qwen3-4b --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV06",
+  "candidate": "B",
+  "ev": "EV06",
+  "case": "cancel-queued",
+  "started_at": "2026-09-22T14:06:22Z",
+  "finished_at": "2026-09-22T14:06:58Z",
+  "base_url": "http://127.0.0.1:8000",
+  "request_body": {
+    "model": "typhoon2.5-qwen3-4b",
+    "messages": [
+      {
+        "role": "user",
+        "content": "เล่าประวัติศาสตร์ของกรุงเทพมหานครอย่างละเอียดที่สุดเท่าที่ทำได้"
+      }
+    ],
+    "max_tokens": 2000,
+    "ignore_eos": true,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "measurements": [
+    {
+      "name": "case",
+      "value": "cancel-queued"
+    },
+    {
+      "name": "interrupt_after_s",
+      "value": 2.0
+    },
+    {
+      "name": "target_ending",
+      "value": "client_cancelled"
+    },
+    {
+      "name": "target_chunks_before_interrupt",
+      "value": 0
+    },
+    {
+      "name": "target_request_id_header",
+      "value": null
+    },
+    {
+      "name": "target_completion_id_seen",
+      "value": false
+    },
+    {
+      "name": "filler_endings",
+      "value": [
+        "client_cancelled",
+        "client_cancelled",
+        "client_cancelled",
+        "client_cancelled"
+      ]
+    },
+    {
+      "name": "waiting_zero_s_after_interrupt",
+      "value": 0.084
+    },
+    {
+      "name": "idle_s_after_interrupt",
+      "value": 3.236
+    },
+    {
+      "name": "gen_tokens_rise_after_idle",
+      "value": 0.0
+    },
+    {
+      "name": "container_stopped_after_interrupt",
+      "value": null
+    },
+    {
+      "name": "ready_s_from_reference",
+      "value": null
+    },
+    {
+      "name": "ready_reference",
+      "value": null
+    },
+    {
+      "name": "replay_window_s",
+      "value": 30.0
+    },
+    {
+      "name": "replay_window_max_running",
+      "value": 0.0
+    },
+    {
+      "name": "replay_window_max_waiting",
+      "value": 0.0
+    },
+    {
+      "name": "replay_window_gen_tokens_rise",
+      "value": 0.0
+    },
+    {
+      "name": "openapi_cancel_abort_status_routes",
+      "value": [
+        "/v1/responses/{response_id}/cancel"
+      ]
+    },
+    {
+      "name": "access_log_posts_in_case",
+      "value": 5
+    }
+  ],
+  "observations": [
+    "LiteLLM is not in this path; requests go straight to the vLLM server.",
+    "The replay window starts once every client request has ended; any running or waiting request, or any token-counter rise inside one process lifetime, in that window has no client behind it."
+  ],
+  "source_observations": [],
+  "action": {
+    "case": "cancel-queued",
+    "at": 1790085985.4948974,
+    "fillers_cancelled_at": 1790085988.495518
+  },
+  "readiness": {},
+  "requests": [
+    {
+      "name": "target",
+      "stream": true,
+      "sent": 1790085983.5183017,
+      "status": 200,
+      "request_id_header": null,
+      "completion_id": null,
+      "first_token": null,
+      "chunks": 0,
+      "finish_reason": null,
+      "saw_done": false,
+      "client_cancel_at": 1790085985.4948974,
+      "ended": 1790085985.4956503,
+      "end_error": "BrokenPipeError: [WinError 10058] A request to send or receive data was disallowed because the socket had already been shut down in that direction with a previous shutdown call",
+      "ending": "client_cancelled"
+    },
+    {
+      "name": "filler-0",
+      "stream": true,
+      "sent": 1790085983.210583,
+      "status": 200,
+      "request_id_header": null,
+      "completion_id": "chatcmpl-bb070a1262e04262",
+      "first_token": 1790085983.4093363,
+      "chunks": 237,
+      "finish_reason": null,
+      "saw_done": false,
+      "client_cancel_at": 1790085988.495518,
+      "ended": 1790085988.496253,
+      "end_error": "BrokenPipeError: [WinError 10058] A request to send or receive data was disallowed because the socket had already been shut down in that direction with a previous shutdown call",
+      "ending": "client_cancelled"
+    },
+    {
+      "name": "filler-1",
+      "stream": true,
+      "sent": 1790085983.1933732,
+      "status": 200,
+      "request_id_header": null,
+      "completion_id": "chatcmpl-9ae3615b998bf106",
+      "first_token": 1790085983.409841,
+      "chunks": 237,
+      "finish_reason": null,
+      "saw_done": false,
+      "client_cancel_at": 1790085988.495518,
+      "ended": 1790085988.496253,
+      "end_error": "BrokenPipeError: [WinError 10058] A request to send or receive data was disallowed because the socket had already been shut down in that direction with a previous shutdown call",
+      "ending": "client_cancelled"
+    },
+    {
+      "name": "filler-2",
+      "stream": true,
+      "sent": 1790085983.1937304,
+      "status": 200,
+      "request_id_header": null,
+      "completion_id": "chatcmpl-ba816b7f27c60450",
+      "first_token": 1790085983.3864346,
+      "chunks": 238,
+      "finish_reason": null,
+      "saw_done": false,
+      "client_cancel_at": 1790085988.495518,
+      "ended": 1790085988.496253,
+      "end_error": "BrokenPipeError: [WinError 10058] A request to send or receive data was disallowed because the socket had already been shut down in that direction with a previous shutdown call",
+      "ending": "client_cancelled"
+    },
+    {
+      "name": "filler-3",
+      "stream": true,
+      "sent": 1790085983.1937304,
+      "status": 200,
+      "request_id_header": null,
+      "completion_id": "chatcmpl-b94fa9d1f2162de5",
+      "first_token": 1790085983.409841,
+      "chunks": 237,
+      "finish_reason": null,
+      "saw_done": false,
+      "client_cancel_at": 1790085988.495518,
+      "ended": 1790085988.496253,
+      "end_error": "BrokenPipeError: [WinError 10058] A request to send or receive data was disallowed because the socket had already been shut down in that direction with a previous shutdown call",
+      "ending": "client_cancelled"
+    }
+  ],
+  "docker_log_excerpt": [
+    "(APIServer pid=1) INFO:     172.17.0.1:59698 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK",
+    "(APIServer pid=1) INFO:     172.17.0.1:59700 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK",
+    "(APIServer pid=1) INFO:     172.17.0.1:59708 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK",
+    "(APIServer pid=1) INFO:     172.17.0.1:59684 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK",
+    "(APIServer pid=1) INFO:     172.17.0.1:59728 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK"
+  ],
+  "samples": [
+    {
+      "t": 1790085982.1920116,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 271.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085982.4496288,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 271.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085982.7113984,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 271.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085982.9760993,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 271.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085983.2265656,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 271.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085983.4876647,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 288.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085983.7497678,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 1.0,
+      "gen_tokens": 340.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085984.0112872,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 1.0,
+      "gen_tokens": 388.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085984.2723835,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 1.0,
+      "gen_tokens": 436.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085984.532737,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 1.0,
+      "gen_tokens": 488.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085984.792814,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 1.0,
+      "gen_tokens": 536.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085985.0540419,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 1.0,
+      "gen_tokens": 584.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085985.3171835,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 1.0,
+      "gen_tokens": 636.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085985.5793517,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 680.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085985.841817,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 732.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085986.1023626,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 780.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085986.3659992,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 828.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085986.6293993,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 880.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085986.8918314,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 924.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085987.153779,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 972.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085987.4172378,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 1024.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085987.6803753,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 1072.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085987.9426882,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 1120.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085988.207033,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 1168.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085988.4672668,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0,
+      "gen_tokens": 1216.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085988.7309346,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085988.9934523,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085989.2574863,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085989.5204213,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085989.783807,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085990.0489624,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085990.3103404,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085990.5733654,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085990.836389,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085991.1007895,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085991.365366,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085991.6307392,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085991.8969164,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085992.158185,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085992.4226327,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085992.686657,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085992.9480093,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085993.2113633,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085993.4761133,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085993.7407107,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085994.0006936,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085994.2637422,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085994.5264337,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085994.787998,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085995.0508754,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085995.3145657,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085995.578025,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085995.8428392,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085996.1066537,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085996.369493,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085996.6328113,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085996.897693,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085997.1610475,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085997.4234097,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085997.6875663,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085997.9520016,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085998.215933,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085998.4768357,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085998.7408118,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085999.0061457,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085999.271653,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085999.5337613,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790085999.7987897,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086000.061261,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086000.3230124,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086000.5736837,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086000.8380442,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086001.1020782,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086001.3667977,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086001.617528,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086001.8813236,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086002.1449144,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086002.4068377,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086002.6705198,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086002.9216738,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086003.1853747,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086003.4468377,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086003.710723,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086003.9715972,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086004.2334592,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086004.4972634,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086004.7589736,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086005.0200021,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086005.284166,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086005.548424,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086005.8137267,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086006.0787828,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086006.341127,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086006.6043048,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086006.8677635,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086007.1196768,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086007.384819,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086007.6494782,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086007.913299,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086008.1755388,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086008.4387002,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086008.7033696,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086008.9683323,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086009.2300189,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086009.4931276,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086009.7565668,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086010.0206232,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086010.2850258,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086010.5496235,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086010.8153734,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086011.0775023,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086011.3410378,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086011.6050458,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086011.867283,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086012.1295543,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086012.3930383,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086012.658171,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086012.9195976,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086013.1846657,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086013.449397,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086013.7145007,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086013.9748666,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086014.2388093,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086014.5021043,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086014.7674057,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086015.031419,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086015.2948754,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086015.557936,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086015.820045,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086016.0814424,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086016.3434122,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086016.6084857,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086016.8693452,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086017.133775,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086017.3987885,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086017.6505902,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086017.9126887,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086018.176299,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    },
+    {
+      "t": 1790086018.4379373,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0,
+      "gen_tokens": 1220.0,
+      "proc_start": 1790085631.9
+    }
+  ],
+  "artifacts": [
+    "ev06_interrupt_B_cancel-queued_20260922T140658Z.json"
+  ]
+}

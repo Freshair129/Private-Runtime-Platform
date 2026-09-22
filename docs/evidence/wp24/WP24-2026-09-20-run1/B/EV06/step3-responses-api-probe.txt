@@ -1,0 +1,10 @@
+# EV06 step 3 supplement - vLLM Responses API as a status / cancel handle
+responses routes in /openapi.json:
+   /v1/responses ['post']
+   /v1/responses/{response_id} ['get']
+   /v1/responses/{response_id}/cancel ['post']
+
+POST /v1/responses background=true store=true -> 400 {'error': {'message': 'This vLLM engine does not support `store=True` and therefore does not support the background mode. To enable these features, set the environment variable `VLLM_ENABLE_RESPONSES_API_STORE=1` when launching the vLLM server.', 'type': 'invalid_request_error', 'param': 'background', 'code': 400}}
+GET /v1/responses/<unknown id> -> 404 {'error': {'message': "Response with id 'resp_does_not_exist' not found.", 'type': 'invalid_request_error', 'param': 'response_id', 'code': 404}}
+
+Not tested further: enabling VLLM_ENABLE_RESPONSES_API_STORE=1 changes the launch config and is outside the approved EV06 design (proposed follow-up).
