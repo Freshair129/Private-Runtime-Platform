@@ -1,0 +1,4 @@
+# WP24 EV05 candidate B (vLLM) - launch command as executed (API key redacted)
+# host: DESKTOP-VETATMQ | launched 2026-09-22T08:07:11Z | ready 2026-09-22T08:11:05Z (~220 s, cold: new container, no compile cache)
+# differs from ../EV02/launch-command.txt by: VLLM_WSL2_ENABLE_PIN_MEMORY=1 (RCA-2026-09-21-vllm-wsl2-uva) and --max-num-seqs 4 (DEV-05)
+docker run -d --name prp-wp24-vllm-b --gpus all --ipc=host   -p 127.0.0.1:8000:8000   -v "F:/prp-models/typhoon2.5-qwen3-4b@ce0a741:/models:ro"   -e VLLM_API_KEY=<REDACTED> -e VLLM_WSL2_ENABLE_PIN_MEMORY=1   vllm/vllm-openai:latest   --model /models --served-model-name typhoon2.5-qwen3-4b   --max-model-len 8192 --gpu-memory-utilization 0.70 --max-num-seqs 4

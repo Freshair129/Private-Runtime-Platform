@@ -1,0 +1,864 @@
+{
+  "generated_at_utc": "2026-09-22T08:11:47Z",
+  "command_line": "tools/wp24/ev05_admission_load.py --base-url http://127.0.0.1:8000 --token-env VLLM_API_KEY --model typhoon2.5-qwen3-4b --limit 4 --processes 3 --per-process 4 --label run-B-over-limit --container prp-wp24-vllm-b --out docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05",
+  "candidate": "B",
+  "ev": "EV05",
+  "label": "run-B-over-limit",
+  "started_at": "2026-09-22T08:11:26Z",
+  "finished_at": "2026-09-22T08:11:47Z",
+  "base_url": "http://127.0.0.1:8000",
+  "model": "typhoon2.5-qwen3-4b",
+  "request_body": {
+    "model": "typhoon2.5-qwen3-4b",
+    "messages": [
+      {
+        "role": "user",
+        "content": "เล่าประวัติศาสตร์ของกรุงเทพมหานครอย่างละเอียด"
+      }
+    ],
+    "max_tokens": 256,
+    "ignore_eos": true,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "measurements": [
+    {
+      "name": "sample_count",
+      "value": 12
+    },
+    {
+      "name": "processes",
+      "value": 3
+    },
+    {
+      "name": "distinct_client_pids",
+      "value": 3
+    },
+    {
+      "name": "per_process_concurrency",
+      "value": 4
+    },
+    {
+      "name": "limit_max_num_seqs_given",
+      "value": 4
+    },
+    {
+      "name": "http_status_counts",
+      "value": {
+        "200": 12
+      }
+    },
+    {
+      "name": "completion_tokens_distinct",
+      "value": [
+        "256"
+      ]
+    },
+    {
+      "name": "first_token_s_after_release",
+      "value": [
+        0.159,
+        0.184,
+        0.184,
+        0.184,
+        5.919,
+        5.943,
+        5.943,
+        5.943,
+        11.69,
+        11.715,
+        11.715,
+        11.715
+      ]
+    },
+    {
+      "name": "metric_scrapes",
+      "value": 82
+    },
+    {
+      "name": "samples_scored",
+      "value": 82
+    },
+    {
+      "name": "max_running",
+      "value": 4.0
+    },
+    {
+      "name": "max_waiting",
+      "value": 8.0
+    },
+    {
+      "name": "samples_total_above_client_upper",
+      "value": 0
+    },
+    {
+      "name": "samples_running_above_client_upper",
+      "value": 0
+    },
+    {
+      "name": "samples_total_below_client_lower",
+      "value": 1
+    },
+    {
+      "name": "samples_running_above_limit",
+      "value": 0
+    }
+  ],
+  "observations": [
+    "LiteLLM is not in this path; requests go straight to the vLLM server (sub-spike decision).",
+    "Bounds are client-side: upper counts a request from its send to its last byte, so a metric above upper reports work the server cannot have had."
+  ],
+  "source_observations": [],
+  "readback_max_num_seqs": {
+    "/metrics": {
+      "status": 200,
+      "max_num_seqs": []
+    },
+    "/v1/models": {
+      "status": 200,
+      "max_num_seqs": []
+    },
+    "/version": {
+      "status": 200,
+      "max_num_seqs": []
+    },
+    "docker logs prp-wp24-vllm-b": {
+      "return_code": 0,
+      "max_num_seqs": [
+        4
+      ],
+      "lines": [
+        "(APIServer pid=1) INFO 09-22 08:07:30 [api_utils.py:286] non-default args: {'model_tag': '/models', 'model': '/models', 'max_model_len': 8192, 'served_model_name': ['typhoon2.5-qwen3-4b'], 'gpu_memory_utilization': 0.7, 'max_num_seqs': 4}"
+      ]
+    }
+  },
+  "offending_samples": [],
+  "burst_released_at": 1790064689.4574075,
+  "requests": [
+    {
+      "process": 0,
+      "slot": 0,
+      "pid": 6788,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064701.1728823,
+      "done": 1790064706.9191983,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 0,
+      "slot": 1,
+      "pid": 6788,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064701.1728823,
+      "done": 1790064706.9191983,
+      "status": 200,
+      "chunks": 255,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 0,
+      "slot": 2,
+      "pid": 6788,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064701.1728823,
+      "done": 1790064706.9191983,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 0,
+      "slot": 3,
+      "pid": 6788,
+      "sent": 1790064689.4594474,
+      "first_token": 1790064701.1469593,
+      "done": 1790064706.8965912,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 1,
+      "slot": 0,
+      "pid": 24824,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064689.6164126,
+      "done": 1790064695.330518,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 1,
+      "slot": 1,
+      "pid": 24824,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064695.4008825,
+      "done": 1790064701.1237047,
+      "status": 200,
+      "chunks": 253,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 1,
+      "slot": 2,
+      "pid": 24824,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064695.4008825,
+      "done": 1790064701.1237047,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 1,
+      "slot": 3,
+      "pid": 24824,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064695.4008825,
+      "done": 1790064701.1237047,
+      "status": 200,
+      "chunks": 252,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 2,
+      "slot": 0,
+      "pid": 29296,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064689.64146,
+      "done": 1790064695.353205,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 2,
+      "slot": 1,
+      "pid": 29296,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064689.64146,
+      "done": 1790064695.353205,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 2,
+      "slot": 2,
+      "pid": 29296,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064695.3765247,
+      "done": 1790064701.0988128,
+      "status": 200,
+      "chunks": 256,
+      "completion_tokens": 256,
+      "error": null
+    },
+    {
+      "process": 2,
+      "slot": 3,
+      "pid": 29296,
+      "sent": 1790064689.4579155,
+      "first_token": 1790064689.64146,
+      "done": 1790064695.3527005,
+      "status": 200,
+      "chunks": 254,
+      "completion_tokens": 256,
+      "error": null
+    }
+  ],
+  "samples": [
+    {
+      "t0": 1790064686.4356723,
+      "t1": 1790064686.4555676,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064686.6980906,
+      "t1": 1790064686.7033691,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064686.9633725,
+      "t1": 1790064686.9691317,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064687.2271233,
+      "t1": 1790064687.2328923,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064687.4915204,
+      "t1": 1790064687.5105507,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064687.754587,
+      "t1": 1790064687.7587688,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064688.0173302,
+      "t1": 1790064688.0354288,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064688.2814949,
+      "t1": 1790064688.2868927,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064688.544543,
+      "t1": 1790064688.549388,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064688.8110378,
+      "t1": 1790064688.8154852,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064689.0740216,
+      "t1": 1790064689.0788314,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064689.3395257,
+      "t1": 1790064689.3437853,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064689.601541,
+      "t1": 1790064689.6070032,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064689.8629968,
+      "t1": 1790064689.8677242,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064690.1254303,
+      "t1": 1790064690.1300902,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064690.3864255,
+      "t1": 1790064690.3912625,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064690.6472557,
+      "t1": 1790064690.6523535,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064690.9094586,
+      "t1": 1790064690.9297285,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064691.171911,
+      "t1": 1790064691.1760857,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064691.4346132,
+      "t1": 1790064691.452978,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064691.6977959,
+      "t1": 1790064691.7023923,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064691.9588711,
+      "t1": 1790064691.963499,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064692.2194753,
+      "t1": 1790064692.2241926,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064692.481649,
+      "t1": 1790064692.4867003,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064692.7441418,
+      "t1": 1790064692.7488203,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064693.0067797,
+      "t1": 1790064693.0120635,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064693.26798,
+      "t1": 1790064693.272388,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064693.5306618,
+      "t1": 1790064693.5354583,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064693.7933905,
+      "t1": 1790064693.7982848,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064694.0566807,
+      "t1": 1790064694.060952,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064694.3194265,
+      "t1": 1790064694.3237398,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064694.5800436,
+      "t1": 1790064694.5849519,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064694.8425481,
+      "t1": 1790064694.8470972,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064695.1041307,
+      "t1": 1790064695.1085145,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 8.0
+    },
+    {
+      "t0": 1790064695.3686304,
+      "t1": 1790064695.3728664,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 7.0
+    },
+    {
+      "t0": 1790064695.6310277,
+      "t1": 1790064695.6352756,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064695.8936052,
+      "t1": 1790064695.8977826,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064696.1555002,
+      "t1": 1790064696.159778,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064696.417562,
+      "t1": 1790064696.4216733,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064696.678886,
+      "t1": 1790064696.6835892,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064696.9411337,
+      "t1": 1790064696.9455996,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064697.2041535,
+      "t1": 1790064697.208758,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064697.4657667,
+      "t1": 1790064697.470158,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064697.728323,
+      "t1": 1790064697.7330503,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064697.9889102,
+      "t1": 1790064697.992662,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064698.251876,
+      "t1": 1790064698.2560723,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064698.5148425,
+      "t1": 1790064698.5191655,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064698.7782068,
+      "t1": 1790064698.782539,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064699.0406299,
+      "t1": 1790064699.0449467,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064699.302703,
+      "t1": 1790064699.3068492,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064699.5641289,
+      "t1": 1790064699.5689807,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064699.8266492,
+      "t1": 1790064699.830903,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064700.089924,
+      "t1": 1790064700.094656,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064700.3517687,
+      "t1": 1790064700.3566656,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064700.6135685,
+      "t1": 1790064700.618354,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064700.8762007,
+      "t1": 1790064700.8952718,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 4.0
+    },
+    {
+      "t0": 1790064701.1360285,
+      "t1": 1790064701.141702,
+      "status": 200,
+      "running": 1.0,
+      "waiting": 3.0
+    },
+    {
+      "t0": 1790064701.3954961,
+      "t1": 1790064701.4003818,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064701.6580427,
+      "t1": 1790064701.6630354,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064701.9195752,
+      "t1": 1790064701.9237587,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064702.1811829,
+      "t1": 1790064702.1872103,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064702.4433982,
+      "t1": 1790064702.4481487,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064702.7055202,
+      "t1": 1790064702.7105916,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064702.9694173,
+      "t1": 1790064702.9882646,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064703.2298276,
+      "t1": 1790064703.233744,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064703.4925323,
+      "t1": 1790064703.4973686,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064703.7538948,
+      "t1": 1790064703.7590768,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064704.0173028,
+      "t1": 1790064704.0215132,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064704.2815506,
+      "t1": 1790064704.2863052,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064704.544558,
+      "t1": 1790064704.5644052,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064704.8064196,
+      "t1": 1790064704.8259988,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064705.0683389,
+      "t1": 1790064705.0725408,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064705.3296125,
+      "t1": 1790064705.3355427,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064705.593551,
+      "t1": 1790064705.597662,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064705.857728,
+      "t1": 1790064705.8619404,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064706.1174314,
+      "t1": 1790064706.1216614,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064706.378592,
+      "t1": 1790064706.3844438,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064706.6402388,
+      "t1": 1790064706.6445127,
+      "status": 200,
+      "running": 4.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064706.9034023,
+      "t1": 1790064706.9076018,
+      "status": 200,
+      "running": 3.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064707.1694982,
+      "t1": 1790064707.1738672,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064707.4319327,
+      "t1": 1790064707.436556,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    },
+    {
+      "t0": 1790064707.6928844,
+      "t1": 1790064707.69947,
+      "status": 200,
+      "running": 0.0,
+      "waiting": 0.0
+    }
+  ],
+  "artifacts": [
+    "ev05_admission_load_B_run-B-over-limit_20260922T081147Z.json"
+  ]
+}
