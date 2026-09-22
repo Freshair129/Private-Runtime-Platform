@@ -194,6 +194,14 @@ repository_integration: NOT_PERFORMED
 - ข้อจำกัดที่บันทึกไว้: FR-017 ต้องใช้ PostgreSQL admission ของ PRP + fault injection (M4) AT-017 จึงยัง `NOT_RUN`; มี GPU host ของ candidate เดียว
 - **EV05 `status` และ `gate_verdicts` (`PRP-FR-017` / `018`) ยัง `NOT_RUN`**; ยังไม่ได้เปิด vLLM เพื่อรันขั้นตอน 2–3
 
+### WP24 EV05 candidate B · รันขั้นตอน 2–3 กับ vLLM จริง (2026-09-22, C-2 / H3)
+- เปิด `prp-wp24-vllm-b` ด้วย launch ของ EV02 + `VLLM_WSL2_ENABLE_PIN_MEMORY=1` + `--max-num-seqs 4` (DEV-05 เพิ่มใน record สถานะ OPEN) cold start ~220 s รันเสร็จแล้วหยุดและลบ container ที่ 08:14:50Z; key สุ่มใหม่เฉพาะรอบนี้ ไม่อยู่ในไฟล์ใดใน repo
+- **เกิน limit แล้ว queue ไม่ reject ไม่รันเกิน**: 3 process × 4 = 12 requests ได้ 200 ครบ เริ่มเป็น 3 ระลอก ๆ ละ 4 `running` ไม่เกิน 4 ใน 121 scrape
+- **metric ไม่ over-count** (0 scrape เกินขอบบนฝั่ง client) แต่ **under-count ชั่วขณะตอนต้น burst**: 0.144 s หลังปล่อย ส่งครบ 12 แล้วแต่ gauge อ่านได้ 0/0 เพราะ request ยังอยู่ระหว่าง parse / tokenize — ไม่ทำให้จอง capacity ซ้ำ แต่ admission พึ่ง metric อย่างเดียวไม่ได้ (ARCH §5)
+- **`max_num_seqs` อ่านกลับจาก API ไม่ได้เลย** (`/metrics`, `/v1/models`, `/version`) มีแค่ใน startup log; `/metrics` `vllm:cache_config_info` ให้ `kv_cache_max_concurrency` 1.71 ที่ 8192 tokens เป็นเพดานที่สองที่ต่ำกว่า `max_num_seqs` ได้สำหรับ request ยาว
+- ขั้นตอน 1 ตรวจซ้ำกับ container นี้ได้ผลเดิม (ทุก process บน host เข้าถึงได้ `/invocations` และ `/metrics` ไม่ต้องใช้ key) ขั้นตอน 1b owner เลื่อนไว้ก่อน
+- เติม `experiments.EV05.per_candidate.B` ใน run record (measurements, observations, artifacts 10 ไฟล์, `disposition_hint` = FR-018 CONFIGURE พร้อมเงื่อนไข) — **`status` และ `gate_verdicts` ยัง `NOT_RUN`**; ไม่แตะ field อื่นของ record
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

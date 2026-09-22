@@ -99,6 +99,16 @@
       "reviewer_action": "Accept the qualitative findings; require a repeat on a quiet host before any timing or capacity number is carried into the fit-gap.",
       "resolution": null,
       "status": "OPEN"
+    },
+    {
+      "id": "DEV-05",
+      "experiment": "EV05",
+      "requirement": "procedure EV05 step 2: exceed the concurrency the runtime was configured with",
+      "observed": "The runtime was launched with --max-num-seqs 4 instead of vLLM's default, which is too high to exceed on one small GPU with standard-library clients.",
+      "mitigation": "The limit is a launch argument and the queueing and metric behaviour under test do not depend on its size. The value is recorded in the launch command and confirmed in the engine's startup log.",
+      "reviewer_action": "Accept the reduced limit, or require a repeat at the default limit with a load generator able to exceed it.",
+      "resolution": null,
+      "status": "OPEN"
     }
   ],
   "environment": {
@@ -1132,21 +1142,109 @@
         },
         "B": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-22T08:07:11+00:00",
+          "finished_at": "2026-09-22T08:11:47+00:00",
+          "cold_or_warm": "Cold: a new container with no compile cache, ready about 220 s after docker run. Both load runs were taken after one warm-up-free start; the at-limit run came first.",
+          "sample_count": "run A (at the limit): 4 requests from 1 process, 39 metric scrapes; run B (3x the limit): 12 requests from 3 processes with distinct PIDs, 82 metric scrapes; every request 256 completion tokens",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/test-design.md and the command_line field of each ev05_admission_load_B_*.json",
+          "source_observations": [
+            "SRC-02: the vLLM security page's point that endpoint authentication alone is insufficient holds at the network layer too. Publishing on 127.0.0.1 keeps LAN and tailnet callers out, but every process on the GPU host reaches the runtime, and /invocations and /metrics answer without the key."
+          ],
+          "measurements": [
+            {
+              "name": "runA.http_200",
+              "value": 4
+            },
+            {
+              "name": "runA.max_running",
+              "value": 4
+            },
+            {
+              "name": "runA.max_waiting",
+              "value": 0
+            },
+            {
+              "name": "runB.http_200",
+              "value": 12
+            },
+            {
+              "name": "runB.distinct_client_pids",
+              "value": 3
+            },
+            {
+              "name": "runB.max_running",
+              "value": 4
+            },
+            {
+              "name": "runB.max_waiting",
+              "value": 8
+            },
+            {
+              "name": "runB.first_token_waves_s_after_release",
+              "value": [
+                [
+                  0.159,
+                  0.184
+                ],
+                [
+                  5.919,
+                  5.943
+                ],
+                [
+                  11.69,
+                  11.715
+                ]
+              ]
+            },
+            {
+              "name": "scrapes_running_above_limit",
+              "value": 0
+            },
+            {
+              "name": "scrapes_total_above_client_upper_bound",
+              "value": 0
+            },
+            {
+              "name": "scrapes_total_below_client_lower_bound",
+              "value": 1
+            },
+            {
+              "name": "max_num_seqs_readable_from",
+              "value": [
+                "startup log only"
+              ]
+            },
+            {
+              "name": "kv_cache_max_concurrency_at_8192_tokens",
+              "value": 1.71484375
+            }
+          ],
+          "observations": [
+            "Step 1: vLLM published on 127.0.0.1:8000 refuses the host's LAN and tailnet addresses from the host and from an unrelated container, but the unrelated container reaches it through host.docker.internal. With /invocations and /metrics answering without the key, the only barrier on this host is not being on this machine; a PRP deployment needs a host-level policy to stop other local processes calling the worker directly.",
+            "Step 2: with max_num_seqs 4, twelve concurrent requests from three processes all returned 200 and started in three waves of four. Excess work is queued, not rejected, and never runs beyond the limit: running never exceeded 4 in 121 scrapes.",
+            "Step 2: the metrics never over-counted. In no scrape did running plus waiting exceed the client-side upper bound on requests that could have been in the server.",
+            "Step 2: one scrape, 0.144 s after release, read 0 running and 0 waiting while all 12 requests had already been sent. The gauges lag intake while requests are parsed and tokenized. That is an under-count, which cannot cause a duplicated capacity hold, but it shows admission cannot rely on the metric alone.",
+            "Step 3: max_num_seqs is not exposed by /metrics, /v1/models or /version; only the startup log carries it. /metrics vllm:cache_config_info exposes kv_cache_max_concurrency (1.71 at 8192 tokens), a second ceiling that can be lower than max_num_seqs for long requests.",
+            "No bound on the waiting queue was visible and none was probed."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/vllm-image-digest.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/vllm-startup-excerpt.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/metrics-info-and-queue-gauges.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/step1-reachability-matrix.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/step1-recheck-ev05-container.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/ev05_admission_load_B_run-A-at-limit_20260922T081121Z.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/B/EV05/ev05_admission_load_B_run-B-over-limit_20260922T081147Z.json"
+          ],
           "gate_verdicts": {
             "PRP-FR-017": "NOT_RUN",
             "PRP-FR-018": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only. PRP-FR-018: CONFIGURE, with conditions PRP carries itself: set max_num_seqs from PRP's own deployment config (it cannot be read back), treat the running/waiting gauges as a pressure signal that may under-count at burst edges, and account for the KV-cache ceiling on long requests. The bypass part needs a host-level network policy in front of the runtime. PRP-FR-017: no candidate-side blocker observed; the durable admission transaction is PRP's own M4 work.",
+          "blocker": "Step 1b (a probe from a second LAN machine) was deferred by owner decision on 2026-09-22 and the runtime was stopped at 08:14:50Z; it needs the runtime relaunched to run. PRP-FR-017 cannot leave NOT_RUN in WP24: it needs PRP's PostgreSQL admission with fault injection (M4)."
         },
         "C": {
           "status": "BLOCKED",

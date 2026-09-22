@@ -1,0 +1,9 @@
+# EV05 step 1 re-check against the EV05 container prp-wp24-vllm-b (published 127.0.0.1:8000), 2026-09-22
+## from the Windows host
+  127.0.0.1:8000  OPEN  (loopback)
+  192.168.1.100:8000  refused [ConnectionRefusedError]  (host LAN)
+  100.76.19.65:8000  refused [ConnectionRefusedError]  (host tailnet)
+## from an UNRELATED container on the same Docker host (prp-mvp-litellm)
+  192.168.1.100:8000  refused [ConnectionRefusedError]  (host LAN)
+  100.76.19.65:8000  refused [ConnectionRefusedError]  (host tailnet)
+  host.docker.internal:8000  OPEN  (Docker Desktop host alias)
