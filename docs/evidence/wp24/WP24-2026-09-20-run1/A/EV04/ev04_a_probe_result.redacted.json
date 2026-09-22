@@ -1,0 +1,169 @@
+{
+ "steps": {
+  "4_bootstrap": {
+   "setup_status_before": {
+    "needs_setup": false,
+    "initialized": true,
+    "password_min_length": 8
+   },
+   "setup_status_code": 403,
+   "setup_response_keys": [
+    "detail"
+   ],
+   "setup_status_after": {
+    "needs_setup": false,
+    "initialized": true,
+    "password_min_length": 8
+   },
+   "token_status": 200,
+   "token_response_keys": [
+    "access_token",
+    "refresh_token",
+    "token_type"
+   ]
+  },
+  "1_key_readback": {
+   "create_status": 201,
+   "create_response_keys": [
+    "id",
+    "key",
+    "name",
+    "prefix"
+   ],
+   "plaintext_returned_at_creation": true,
+   "key_prefix_product_treats_as_public": "xf-HOXA",
+   "reveal_route": {
+    "path": "GET /v1/admin/keys/{key_id}/reveal",
+    "status": 200,
+    "response_keys": [
+     "key"
+    ],
+    "plaintext_matches_issued_key": true
+   },
+   "list_route": {
+    "status": 200,
+    "plaintext_present": false,
+    "fields": [
+     "created_at",
+     "description",
+     "enabled",
+     "expires_at",
+     "id",
+     "key_prefix",
+     "model_permissions",
+     "name",
+     "owner_username",
+     "user_id"
+    ]
+   },
+   "get_route": {
+    "status": 200,
+    "plaintext_present": false
+   },
+   "auth_store_files": [
+    {
+     "file": "auth.db",
+     "size_bytes": 57344,
+     "plaintext_key_present": false,
+     "prefix_present": true
+    },
+    {
+     "file": "encryption_key",
+     "size_bytes": 64,
+     "plaintext_key_present": false,
+     "prefix_present": false
+    },
+    {
+     "file": "jwt_secret_key",
+     "size_bytes": 64,
+     "plaintext_key_present": false,
+     "prefix_present": false
+    },
+    {
+     "file": "download_tasks.db",
+     "size_bytes": 16384,
+     "plaintext_key_present": false,
+     "prefix_present": false
+    },
+    {
+     "file": "launch_history.db",
+     "size_bytes": 20480,
+     "plaintext_key_present": false,
+     "prefix_present": false
+    },
+    {
+     "file": "monitor_config.db",
+     "size_bytes": 12288,
+     "plaintext_key_present": false,
+     "prefix_present": false
+    },
+    {
+     "file": "token_routers.db",
+     "size_bytes": 86016,
+     "plaintext_key_present": false,
+     "prefix_present": false
+    }
+   ],
+   "logs": [
+    {
+     "file": "xinference-ev04.log",
+     "plaintext_key_present": false,
+     "admin_password_present": false
+    }
+   ]
+  },
+  "2_scopes": {
+   "update_scoping_status": 200,
+   "set_model_permission_status": 200,
+   "set_model_permission_response": {
+    "ok": true
+   },
+   "key_fields_after_scoping": {
+    "id": 1,
+    "user_id": 1,
+    "key_prefix": "xf-HOXA",
+    "name": "prp-ev04-key",
+    "description": "WP24 EV04 read-back test",
+    "enabled": true,
+    "expires_at": "2027-01-01T00:00:00",
+    "model_permissions": [
+     {
+      "id": 1,
+      "api_key_id": 1,
+      "permission_type": "model",
+      "permission_value": "prp-a-llm"
+     }
+    ],
+    "created_at": "2026-09-22 21:21:45"
+   },
+   "create_second_user_status": 201,
+   "second_user_response_keys": [
+    "id",
+    "username"
+   ],
+   "second_user_login_status": 200,
+   "second_user_key_list": {
+    "status": 403,
+    "count": null,
+    "body_keys": [
+     "detail"
+    ]
+   },
+   "second_user_reveal_admin_key": {
+    "status": 403
+   }
+  },
+  "3_revoke": {
+   "key_works_before_revoke": 200,
+   "delete_status": 200,
+   "seconds_until_key_rejected": 0.037,
+   "attempts_until_rejected": 1,
+   "access_token_after_key_revoke": 200
+  },
+  "3b_user_revoke": {
+   "delete_user_status": 200,
+   "seconds_until_user_token_rejected": 0.012,
+   "refresh_after_user_deleted_status": 401
+  }
+ }
+}

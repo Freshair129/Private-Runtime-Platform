@@ -251,6 +251,16 @@ repository_integration: NOT_PERFORMED
 - ข้อสังเกต deploy ที่วัดได้: ติดตั้ง `xinference` **ทับ torch CUDA ด้วย `torch 2.14.0+cpu`** ทำให้ `gpu_count 0` ต้องลง `torch==2.14.0+cu130` ใหม่; launch พยายามทำ **symlink** เข้าที่ cache แล้วติด Windows privilege (WinError 1314) แก้ด้วย directory junction ที่ไม่ต้องใช้สิทธิ์; server log มี **pre-launch VRAM check** (`free_ratio=0.79`) ซึ่งเป็น admission signal ของ candidate เอง (ยกไป EV05)
 - เติม `experiments.EV02.per_candidate.A` (artifacts 14 ไฟล์, `disposition_hint` = ADAPT และดีกว่า B ใน gate นี้), `candidates[A].version_manifest` / `reset_between_candidates` และ DEV-07 — **`status` และ `gate_verdicts` (`PRP-FR-010`..`015`) ยัง `NOT_RUN`**
 
+### WP24 EV04 candidate A · key semantics ของ Xinference (2026-09-22, C-2 / H3)
+- รันด้วย auth path ปกติของ 3.4.0 (owner อนุมัติให้สร้างบัญชี admin บน instance ทดสอบ) credential สุ่มต่อรอบ อยู่ใน env เท่านั้น ไม่ลง artifact และลบทิ้งหลังรัน; ไม่ต้องโหลดโมเดล
+- **FR-005 ยืนยันด้วยการรันแล้วว่าอ่าน key กลับได้**: `GET /v1/admin/keys/{id}/reveal` คืน plaintext ตรงกับ key ที่ออกตอนสร้าง — `create_api_key_for_user` เก็บทั้ง `sha256(key)` และสำเนา **AES-encrypted**; route นี้ถอดรหัสให้ ป้องกันด้วย scope `keys:manage` เท่านั้น
+- **ไฟล์กุญแจถอดรหัสอยู่ในโฟลเดอร์เดียวกับฐานข้อมูล** (`XINFERENCE_HOME/auth/` มี `auth.db`, `encryption_key`, `jwt_secret_key`) ใครอ่านโฟลเดอร์นี้ได้ (backup, process อื่นบนเครื่อง) ถอด key ทั้งหมดได้ — ไม่ใช่แค่ปิด route ก็จบ
+- scope ที่มีจริง: model permission (`permission_type`/`value`), `expires_at`, `enabled`, rate limit แบบนับ failure; **ไม่มี organization / application และไม่มี quota**; user scope มีจริง 12 ค่า (`admin`, `keys:create`, `keys:manage`, `users:manage`, `models:*`, `cache:*`, `virtualenv:*`)
+- **listing แยก scope ถูกต้อง**: user ที่ไม่ใช่ admin ได้ 403 ทั้ง `GET /v1/admin/keys` และการ reveal key ของคนอื่น
+- **revoke ทันที วัดได้**: ลบ key แล้ว request ถัดไปถูกปฏิเสธใน **0.037 s** (ครั้งแรก), ลบ user แล้ว access token ถูกปฏิเสธใน **0.012 s** และ refresh ได้ 401; access token ที่ออกก่อนลบ key ยังใช้ได้ (คนละ credential) — ดีกว่า bare vLLM ที่ไม่มี revoke API ต้อง restart
+- FR-001: bootstrap admin คนแรกทำได้ด้วย sqlite ในเครื่อง ไม่พึ่ง Zuri / FUNG / Lalin Studio หรือ DB ธุรกิจอื่น ทำซ้ำไม่ได้ (403); operator ต้องเตรียม `XINFERENCE_AUTH_JWT_SECRET_KEY` และ `XINFERENCE_AUTH_ENCRYPTION_KEY`; กับดัก integration: `POST /token` รับ **JSON** ไม่ใช่ form ของ OAuth2 (ส่ง form ได้ 500 ไม่ใช่ 4xx)
+- เติม `experiments.EV04.per_candidate.A` (`disposition_hint` = **BUILD-GAP** สำหรับ key authority ตาม ADR-PRP, artifacts 4 ไฟล์) — **`status` และ `gate_verdicts` (`PRP-FR-003`..`009`) ยัง `NOT_RUN`**
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

@@ -1151,15 +1151,121 @@
       "per_candidate": {
         "A": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-22T21:15:00+00:00",
+          "finished_at": "2026-09-22T21:23:11+00:00",
+          "cold_or_warm": "Not applicable to the measurements: EV04 touches the control plane only and no model was loaded. The server was restarted with the default auth path (XINFERENCE_AUTH_ADVANCED unset) on the EV02 deployment.",
+          "sample_count": "one administrator bootstrap; one API key created, read back through four API channels, the auth database and the server log; one key scoped and one second non-admin user created; two revocations measured (key and user) plus one refresh-token attempt",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV04/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/A/EV04/test-design.md and docs/evidence/wp24/WP24-2026-09-20-run1/A/EV04/ev04_a_probe_result.redacted.json",
+          "source_observations": [
+            "SRC-10: the known key read-back gap is confirmed by execution, and is stronger than a documentation gap. create_api_key_for_user stores both sha256(key) and an AES-encrypted copy, reveal_api_key decrypts it, and GET /v1/admin/keys/{id}/reveal exposes it behind the keys:manage scope only.",
+            "SRC-10: the auth system the source describes as opt-in is on by default in 3.4.0, and its bootstrap is a single-shot POST /v1/admin/setup with no external database."
+          ],
+          "measurements": [
+            {
+              "name": "reveal_route_status",
+              "value": 200
+            },
+            {
+              "name": "reveal_returns_issued_plaintext_key",
+              "value": true
+            },
+            {
+              "name": "plaintext_in_list_or_get_routes",
+              "value": false
+            },
+            {
+              "name": "plaintext_in_auth_db",
+              "value": false
+            },
+            {
+              "name": "auth_dir_files",
+              "value": [
+                "auth.db",
+                "encryption_key (64 bytes)",
+                "jwt_secret_key (64 bytes)"
+              ]
+            },
+            {
+              "name": "key_scope_fields_supported",
+              "value": [
+                "model permission (permission_type/permission_value)",
+                "expires_at",
+                "enabled",
+                "rate_limit_max_failures",
+                "rate_limit_window_seconds",
+                "rate_limit_ban_seconds"
+              ]
+            },
+            {
+              "name": "key_scope_fields_absent",
+              "value": [
+                "organization",
+                "application",
+                "token or cost quota"
+              ]
+            },
+            {
+              "name": "user_scope_vocabulary",
+              "value": [
+                "admin",
+                "keys:create",
+                "keys:manage",
+                "users:manage",
+                "models:list",
+                "models:read",
+                "models:write",
+                "models:register",
+                "cache:list",
+                "cache:delete",
+                "virtualenv:list",
+                "virtualenv:delete"
+              ]
+            },
+            {
+              "name": "non_admin_list_keys_status",
+              "value": 403
+            },
+            {
+              "name": "non_admin_reveal_other_key_status",
+              "value": 403
+            },
+            {
+              "name": "seconds_until_revoked_key_rejected",
+              "value": 0.037
+            },
+            {
+              "name": "seconds_until_deleted_user_token_rejected",
+              "value": 0.012
+            },
+            {
+              "name": "refresh_token_after_user_deleted_status",
+              "value": 401
+            },
+            {
+              "name": "access_token_still_valid_after_key_revoke",
+              "value": true
+            },
+            {
+              "name": "second_bootstrap_attempt_status",
+              "value": 403
+            }
+          ],
+          "observations": [
+            "FR-005, confirmed by execution: GET /v1/admin/keys/{key_id}/reveal returned the plaintext key and it matched the key issued at creation. The store is reversible by design, since create_api_key_for_user writes both sha256(key) and an AES-encrypted copy.",
+            "The AES key sits in the same directory as the database it protects (XINFERENCE_HOME/auth holds auth.db, encryption_key and jwt_secret_key). A backup or any process that can read that directory can decrypt every stored key, so the read-back is not an API affordance that could simply be firewalled off.",
+            "Scoping is real but narrower than the requirements: a key carries model permissions, an expiry, an enabled flag and failure-based rate limits. There is no organisation or application concept and no token or cost quota.",
+            "Listing is isolated: a second non-admin user received 403 both for GET /v1/admin/keys and for revealing the admin's key. Only a keys:manage holder can enumerate or reveal.",
+            "Revocation is immediate and measured: a deleted key was rejected 0.037 s later on the first attempt, and a deleted user's access token 0.012 s later, with its refresh token returning 401. The cache is invalidated on the write path rather than expiring on a timer. Bare vLLM has no revoke API at all.",
+            "An access token issued before the key was revoked kept working, which is correct: it is a separate credential with its own lifetime.",
+            "FR-001 bootstrap independence holds: the first administrator is created by a single-shot POST /v1/admin/setup against a local sqlite file, with no Zuri, FUNG, Lalin Studio or other business database. A second attempt returns 403. The operator must supply XINFERENCE_AUTH_JWT_SECRET_KEY and XINFERENCE_AUTH_ENCRYPTION_KEY.",
+            "Integration trap: POST /token takes a JSON body, not the OAuth2 form encoding its name suggests; a form-encoded login returns 500 with a JSON decode error rather than a 4xx."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV04/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV04/ev04_a_probe_result.redacted.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV04/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV04/xinference-ev04-server-excerpt.log"
+          ],
           "gate_verdicts": {
             "PRP-FR-003": "NOT_RUN",
             "PRP-FR-004": "NOT_RUN",
@@ -1169,8 +1275,8 @@
             "PRP-FR-008": "NOT_RUN",
             "PRP-FR-009": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only. BUILD-GAP for the key authority, as ADR-PRP already requires: PRP must hold verifier-only client keys, because candidate A's store is reversible (reveal route plus an AES key beside the database) and has no organisation, application or quota scoping. What candidate A does well and PRP can lean on for its own worker credentials is immediate revocation (0.037 s), real user scopes, isolated listing and a self-contained bootstrap.",
+          "blocker": "None for this gate. OIDC and the audit trail were not exercised, and the rate limits were set but not driven to their trigger. One host (DEV-03) and a Windows-native deployment (DEV-07)."
         },
         "B": {
           "status": "NOT_RUN",
