@@ -180,11 +180,31 @@ python tools/wp24/ev06_interrupt_probe.py --case kill-engine --container prp-wp2
     --token-env VLLM_API_KEY --model typhoon2.5-qwen3-4b --out wp24-out
 ```
 
+### `ev08_exit_probe.py`
+
+EV08 (gate `PRP-NFR-024`), per the design in
+`docs/evidence/wp24/WP24-2026-09-20-run1/B/EV08/test-design.md`. It has seven subcommands:
+
+| subcommand | does |
+|---|---|
+| `export` | `docker inspect` → declarative spec with every non-allow-listed env value redacted, plus hashes of the model-defining files; exits 2 if a key value survives |
+| `launch` | starts a container from that spec alone. One key goes in through `VLLM_API_KEY`; several go through a read-only `--config` YAML written to `--secrets-dir`, which must be outside the repository |
+| `fingerprint` | records startup args, `/v1/models`, `cache_config_info` and one greedy completion |
+| `compare` | diffs two fingerprints |
+| `key-check` | HTTP status per key, and booleans for whether a key value appears in `docker logs` or `docker inspect` |
+| `leak-scan` | vendor markers in six response kinds |
+| `datastore-scan` | a marker request, then `docker diff` and a marker search in changed files and logs |
+
+```
+python tools/wp24/ev08_exit_probe.py --token-env VLLM_API_KEY --label src export \
+    --weights-dir F:/prp-models/typhoon2.5-qwen3-4b@ce0a741 --out wp24-out
+```
+
 ## Environment variables
 
 | Name | Used by | Meaning |
 |---|---|---|
-| any name passed to `--token-env` (e.g. `WP24_RUNTIME_TOKEN`) | `ev02_probe.py`, `ev05_admission_load.py`, `ev06_interrupt_probe.py` | Bearer token for the credentialed request. Never pass the token value itself on the command line; only the variable *name*. |
+| any name passed to `--token-env` (e.g. `WP24_RUNTIME_TOKEN`) | `ev02_probe.py`, `ev05_admission_load.py`, `ev06_interrupt_probe.py`, `ev08_exit_probe.py` (`--key-env` too) | Bearer token for the credentialed request. Never pass the token value itself on the command line; only the variable *name*. |
 
 No other script reads an environment variable for a secret.
 

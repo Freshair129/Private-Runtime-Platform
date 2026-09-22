@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import ev02_gpu_binding  # noqa: E402
 import ev05_admission_load as ev05  # noqa: E402
 import ev06_interrupt_probe as ev06  # noqa: E402
+import ev08_exit_probe as ev08  # noqa: E402
 import host_inventory  # noqa: E402
 import wp24_common as common  # noqa: E402
 
@@ -310,6 +311,93 @@ class TestEv06InterruptProbe(unittest.TestCase):
         spec = {"paths": {"/v1/chat/completions": {}, "/abort_request": {}, "/health": {}}}
         self.assertEqual(ev06.find_routes(spec), ["/abort_request"])
         self.assertEqual(ev06.find_routes({}), [])
+
+
+class TestEv08ExitProbe(unittest.TestCase):
+    INSPECT = {
+        "Image": "sha256:abc",
+        "Args": ["--model", "/models", "--max-num-seqs", "4"],
+        "Config": {
+            "Image": "vllm/vllm-openai:latest",
+            "Entrypoint": ["vllm", "serve"],
+            "Cmd": ["--model", "/models", "--max-num-seqs", "4"],
+            "Env": ["PATH=/usr/bin", "VLLM_API_KEY=sk-secret", "VLLM_WSL2_ENABLE_PIN_MEMORY=1"],
+        },
+        "HostConfig": {
+            "PortBindings": {"8000/tcp": [{"HostIp": "127.0.0.1", "HostPort": "8000"}]},
+            "DeviceRequests": [{"Count": -1, "Capabilities": [["gpu"]]}],
+            "IpcMode": "host",
+        },
+        "Mounts": [
+            {
+                "Source": "/run/desktop/mnt/host/f/prp-models/m",
+                "Destination": "/models",
+                "RW": False,
+            }
+        ],
+    }
+
+    def test_user_env_drops_image_defaults(self) -> None:
+        pairs = ev08.user_env(["PATH=/usr/bin", "A=1", "PATH2=x"], ["PATH=/usr/bin"])
+        self.assertEqual(pairs, [("A", "1"), ("PATH2", "x")])
+
+    def test_redact_env_keeps_only_allow_listed_values(self) -> None:
+        out = ev08.redact_env([("VLLM_API_KEY", "sk-1"), ("SAFE", "1")], {"SAFE"})
+        self.assertEqual(out[0], {"name": "VLLM_API_KEY", "value": ev08.REDACTED})
+        self.assertEqual(out[1], {"name": "SAFE", "value": "1"})
+
+    def test_host_path(self) -> None:
+        self.assertEqual(ev08.host_path("/run/desktop/mnt/host/f/prp-models/m"), "F:/prp-models/m")
+        self.assertEqual(ev08.host_path("/srv/models"), "/srv/models")
+
+    def test_build_spec_redacts_and_keeps_launch_shape(self) -> None:
+        spec = ev08.build_spec(self.INSPECT, ["PATH=/usr/bin"], {"VLLM_WSL2_ENABLE_PIN_MEMORY"})
+        self.assertNotIn("sk-secret", str(spec))
+        self.assertEqual(spec["gpus"], "all")
+        self.assertEqual(spec["ipc_mode"], "host")
+        self.assertEqual(
+            spec["mounts"], [{"source": "F:/prp-models/m", "target": "/models", "ro": True}]
+        )
+        self.assertEqual(spec["ports"][0]["host_ip"], "127.0.0.1")
+        self.assertEqual(spec["args"][-1], "4")
+        self.assertIn({"name": "VLLM_WSL2_ENABLE_PIN_MEMORY", "value": "1"}, spec["env"])
+        self.assertEqual(spec["entrypoint"], ["vllm", "serve"])  # differs from no image entrypoint
+        same = ev08.build_spec(self.INSPECT, [], set(), ["vllm", "serve"])
+        self.assertIsNone(same["entrypoint"])
+
+    def test_build_spec_keeps_program_when_cmd_replaced(self) -> None:
+        inspect = {
+            "Path": "python",
+            "Args": ["-u", "/app/x.py"],
+            "Config": {"Cmd": ["python", "-u", "/app/x.py"]},
+        }
+        self.assertEqual(ev08.build_spec(inspect, [], set())["args"], ["python", "-u", "/app/x.py"])
+
+    def test_diff_fingerprints(self) -> None:
+        a = {
+            "non_default_args": "x",
+            "models": [1],
+            "cache_config_info": "c",
+            "completion_text": "t",
+        }
+        self.assertTrue(ev08.diff_fingerprints(a, dict(a))["equal"])
+        diff = ev08.diff_fingerprints(a, {**a, "completion_text": "u"})
+        self.assertFalse(diff["equal"])
+        self.assertFalse(diff["completion_text"]["equal"])
+        self.assertTrue(diff["models"]["equal"])
+
+    def test_find_markers_case_insensitive(self) -> None:
+        self.assertEqual(ev08.find_markers("Server: Uvicorn", ["uvicorn", "vllm"]), ["uvicorn"])
+
+    def test_parse_docker_diff(self) -> None:
+        rows = ev08.parse_docker_diff("C /root\nA /root/.cache/x\nD /tmp/y\nnoise\n")
+        self.assertEqual([r["kind"] for r in rows], ["C", "A", "D"])
+        self.assertEqual(rows[1]["path"], "/root/.cache/x")
+
+    def test_non_default_args_takes_last_line(self) -> None:
+        log = "x non-default args: {'a': 1}\ny non-default args: {'a': 2, 'b': 3}\n"
+        self.assertEqual(ev08.non_default_args(log), "{'a': 2, 'b': 3}")
+        self.assertIsNone(ev08.non_default_args("nothing here"))
 
 
 if __name__ == "__main__":
