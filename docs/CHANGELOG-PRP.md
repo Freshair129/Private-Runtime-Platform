@@ -363,6 +363,12 @@ repository_integration: NOT_PERFORMED
 - บันทึกทางเลือกที่พิจารณาแล้ว 4 ทาง รวมถึง **fallback แบบเพิ่มฟิลด์พี่น้อง** ถ้า owner ต้องการการเปลี่ยนแปลงแบบ additive และเหตุผลที่ปฏิเสธการ map ใน adapter (state หายตอน restart ซึ่งเป็นจังหวะที่ epoch มีไว้ป้องกันพอดี)
 - ไม่แก้สัญญาใดในตอนนี้ ไม่เปลี่ยน status ใด — ADR เป็นข้อเสนอสำหรับ WP03
 
+### ADR-PRP-014 · owner อนุมัติแล้ว (2026-09-24, C-1 / H2)
+- สถานะเปลี่ยนจาก `PROPOSED` → **`ACCEPTED`** โดยเจ้าของ repo เมื่อ 2026-09-24 รับทั้งสามข้อตามที่เสนอ: **opaque string** (ไม่ใช่การเพิ่มฟิลด์พี่น้อง), **จำกัด 128 ตัวอักษร** ให้ตรงกับ `fence_token` ในสัญญาเดียวกัน และ **กฎการสังเคราะห์ token อยู่ใน ADR** ส่วนวิธีได้มาของแต่ละ adapter เป็นเรื่องของ M4
+- เพิ่มหัวข้อ **"What WP03 must carry out"** 4 ข้อ: เปลี่ยน `ExecutionEvidence.runtime_epoch` เป็น `string` (`minLength` 1, `maxLength` 128) พร้อมระบุในคำอธิบายว่าเทียบเท่ากันเท่านั้น · คง `profile_epoch` เป็น `integer` · regenerate contract model แทนการแก้มือตาม ADR-PRP-013 · คง `EPOCH_MISMATCH` เป็น error code เดิม
+- บันทึกใน [PROP-2026-09-24](../.brain/proposals/PROP-2026-09-24-lalin-worker-adapter-boundary.md) ว่า DEC-01 ปิดด้วย ADR นี้แล้ว — **DEC-02 / DEC-04 / DEC-05 ยังรอ owner รับทราบ และ DEC-03 รอบันทึกตอน WP03 freeze**
+- ยังไม่แก้ `contracts/openapi/prp-worker.yaml` เพราะยัง `DRAFT` และการเปลี่ยนแปลงจริงเกิดที่ WP03 freeze
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
