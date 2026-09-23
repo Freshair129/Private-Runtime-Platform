@@ -1,0 +1,8 @@
+963:2026-09-23T14:08:03.776Z ERROR xinference.api.restful_api pid:69916 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. Re
+995:RuntimeError: [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. Request limit 4 for the model: prp-a-llm
+996:2026-09-23T14:08:03.778Z ERROR xinference.api.restful_api pid:69916 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. Re
+1028:RuntimeError: [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. Request limit 4 for the model: prp-a-llm
+1030:2026-09-23T14:08:03.779Z ERROR xinference.api.restful_api pid:69916 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. R
+1062:RuntimeError: [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. Request limit 4 for the model: prp-a-llm
+1072:2026-09-23T14:08:37.836Z ERROR xinference.api.restful_api pid:69916 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. R
+1104:RuntimeError: [address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. Request limit 4 for the model: prp-a-llm

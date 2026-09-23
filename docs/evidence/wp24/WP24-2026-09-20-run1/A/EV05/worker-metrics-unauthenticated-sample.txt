@@ -1,0 +1,8 @@
+# HELP xinference:config_info Xinference configuration information (value=1).
+# TYPE xinference:config_info gauge
+xinference:config_info{worker_address="127.0.0.1:37149",xinference_home="F:/prp-xinference-a/home-ev05",xinference_role="worker"} 1
+# HELP xinference:model_last_load_duration_seconds Duration of the last model load in seconds.
+# TYPE xinference:model_last_load_duration_seconds gauge
+xinference:model_last_load_duration_seconds{model_name="prp-typhoon25-qwen3-4b",model_type="LLM",worker_address="127.0.0.1:37149"} 15.890612363815308
+# HELP xinference:model_request_limit Maximum concurrent request limit for the model.
+# TYPE xinference:model_request_limit gauge

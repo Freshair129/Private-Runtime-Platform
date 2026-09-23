@@ -1,0 +1,67 @@
+{
+ "listeners": {
+  "rest_api": 9997,
+  "metrics_exporter": 60308,
+  "worker_actor": 37149,
+  "model_replica_actor": 60421
+ },
+ "tcp_reachability": {
+  "rest_api": {
+   "loopback": "connected",
+   "lan": "ConnectionRefusedError: 10061",
+   "tailnet": "ConnectionRefusedError: 10061",
+   "wsl_vswitch": "ConnectionRefusedError: 10061"
+  },
+  "metrics_exporter": {
+   "loopback": "connected",
+   "lan": "ConnectionRefusedError: 10061",
+   "tailnet": "ConnectionRefusedError: 10061",
+   "wsl_vswitch": "ConnectionRefusedError: 10061"
+  },
+  "worker_actor": {
+   "loopback": "connected",
+   "lan": "ConnectionRefusedError: 10061",
+   "tailnet": "ConnectionRefusedError: 10061",
+   "wsl_vswitch": "ConnectionRefusedError: 10061"
+  },
+  "model_replica_actor": {
+   "loopback": "connected",
+   "lan": "ConnectionRefusedError: 10061",
+   "tailnet": "ConnectionRefusedError: 10061",
+   "wsl_vswitch": "ConnectionRefusedError: 10061"
+  }
+ },
+ "http_probes": {
+  "rest_api_loopback_no_credential": {
+   "status": 401,
+   "body_head": "{\"detail\":\"Could not validate credentials\"}"
+  },
+  "rest_api_lan_no_credential": {
+   "status": null,
+   "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  "metrics_loopback_no_credential": {
+   "status": 200,
+   "body_head": "# HELP xinference:build_info Xinference build information (value=1).\n# TYPE xinference:build_info gauge\nxinference:build_info{python_version=\"3.12.10\",version=\"3.4.0\",worker_address=\"127.0.0.1:37149\","
+  },
+  "metrics_lan_no_credential": {
+   "status": null,
+   "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  "supervisor_own_metrics_no_credential": {
+   "status": 200,
+   "body_head": "# HELP exceptions_total_counter Total number of requested which generated an exception\n# TYPE exceptions_total_counter counter\n# HELP requests_total_counter Total number of requests received\n# TYPE re"
+  },
+  "model_replica_actor_http": {
+   "status": null,
+   "error": "RemoteDisconnected: Remote end closed connection without response"
+  },
+  "worker_actor_http": {
+   "status": null,
+   "error": "RemoteDisconnected: Remote end closed connection without response"
+  }
+ },
+ "metrics_without_credential_exposes": [
+  "xinference:build_info"
+ ]
+}

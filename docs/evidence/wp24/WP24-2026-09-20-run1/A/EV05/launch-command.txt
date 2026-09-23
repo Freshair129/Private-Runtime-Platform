@@ -1,0 +1,20 @@
+# EV05 candidate A - as executed. Auth left at the 3.4.0 DEFAULT (on); a per-run administrator was
+# bootstrapped into a fresh home directory and its credentials were deleted after the run.
+#
+# server
+set XINFERENCE_HOME=F:/prp-xinference-a/home-ev05
+set XINFERENCE_AUTH_JWT_SECRET_KEY=<per-run>
+set XINFERENCE_AUTH_ENCRYPTION_KEY=<per-run>
+F:\prp-xinference-a\Scripts\xinference-local.exe --host 127.0.0.1 --port 9997
+#
+# weights reachable without the Windows symlink privilege (as in EV02)
+New-Item -ItemType Junction -Path "F:\prp-xinference-a\home-ev05\cache\v2\prp-typhoon25-qwen3-4b-pytorch-4b-none" -Target "F:\prp-models\typhoon2.5-qwen3-4b@ce0a741"
+#
+# launch, run (a): default, no concurrency limit
+{"model_uid":"prp-a-llm","model_name":"prp-typhoon25-qwen3-4b","model_type":"LLM","model_engine":"transformers","model_format":"pytorch","model_size_in_billions":4,"quantization":"none","n_gpu":1}
+#
+# launch, run (b): the same with an explicit concurrency limit
+{"model_uid":"prp-a-llm", ... , "request_limits":4}
+#
+# listeners observed (all bound to 127.0.0.1): REST 9997, worker actor 37149,
+# model replica actor 60421, worker metrics exporter 60308 (announced only in the server log)
