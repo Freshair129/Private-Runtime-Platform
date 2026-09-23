@@ -333,7 +333,7 @@ Differences that matter: the generated version rejects a naive `observed_at` and
 
 ## ADR-PRP-014 — Runtime epoch is an opaque token, not a monotonic integer
 
-**Status:** PROPOSED — awaiting the repository owner. Becomes ACCEPTED only on the owner's word, and must be settled **before WP03 freezes** `contracts/openapi/prp-worker.yaml`, after which the change is breaking.
+**Status:** ACCEPTED — approved by the repository owner on 2026-09-24, taking all three open questions as recommended: the opaque string rather than an additive sibling field, the 128-character bound matching `fence_token` in the same contract, and the synthesis rule kept in this ADR. **Applied at the WP03 freeze** of `contracts/openapi/prp-worker.yaml`; after that freeze any further change to the field is breaking.
 **Date:** 2026-09-24
 **Deciders:** Repository owner (C-3 grantor per STD-Execution-Governance §3)
 **Related:** ADR-PRP-011 (thin API, isolated model lifecycles) · ADR-PRP-013 (contract models are generated) · PRP-FR-011 / FR-012 / FR-015 · PRP-NFR-023 · `contracts/openapi/prp-worker.yaml` (`x-prp-status: DRAFT`) · WP24 evidence `docs/evidence/wp24/WP24-2026-09-20-run1.json`
@@ -413,9 +413,23 @@ matter for M4, recorded per adapter rather than in the contract.
 | Require runtimes to expose a monotonic epoch | Rejected as unmeetable: WP24 measured that neither candidate does, and PRP cannot impose it on a vendor runtime it merely drives |
 | Drop `runtime_epoch` and rely on `runtime_uid` plus timestamps | Rejected: the point of the field is to detect that the same uid is now a *different* process, which is exactly what candidate A's unrequested relocation produces |
 
-### Open questions for the owner
+### Owner decisions, 2026-09-24
 
-1. Take the opaque string (recommended), or the additive sibling field.
-2. Bound at 128 characters as proposed, matching `fence_token`'s existing bound in the same contract.
-3. Whether the synthesised-token rule for runtimes without an epoch belongs in this ADR or in the M4
-   adapter design (recommended: the rule stays here, the derivation per adapter goes to M4).
+All three open questions were decided as recommended:
+
+1. **Opaque string**, not an additive sibling field. `ExecutionEvidence.runtime_epoch` changes type;
+   there will not be two epoch-shaped fields on the same object.
+2. **Bounded at 128 characters**, matching `fence_token`'s existing bound in the same contract, with
+   `minLength` 1 so the field can never be an empty string.
+3. **The synthesis rule stays in this ADR** (decision 4 above). What belongs to M4 is only how each
+   individual adapter derives its token, recorded per adapter, not whether it may.
+
+### What WP03 must carry out
+
+1. In `contracts/openapi/prp-worker.yaml`, change `ExecutionEvidence.runtime_epoch` from
+   `integer, minimum 0` to `string, minLength 1, maxLength 128`, and state in its description that it
+   is compared for equality only.
+2. Leave `InvocationRequest.profile_epoch` as `integer, minimum 0`.
+3. Regenerate the contract models rather than hand-editing them (ADR-PRP-013), and export the JSON
+   twins.
+4. Keep `EPOCH_MISMATCH` as the error code for a rejected epoch; no new code is needed.

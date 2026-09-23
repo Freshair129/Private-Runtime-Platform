@@ -61,6 +61,8 @@ Steps 2 and 4 stay **inside** the adapter. Neither contract changes.
 
 ## DEC-01 — `profile_epoch` is an integer, their `ep-xxxx` is a different epoch
 
+> **RESOLVED 2026-09-24:** accepted as [ADR-PRP-014](../../docs/ADR-PRP.md#ADR-PRP-014) — opaque string, bounded at 128 characters, synthesis rule kept in the ADR. Applied at the WP03 freeze.
+
 **They proposed:** pass their opaque string through as `profile_epoch`, or change the type at WP03
 freeze; and not to keep a mapping inside the adapter, because that state is lost on restart.
 
