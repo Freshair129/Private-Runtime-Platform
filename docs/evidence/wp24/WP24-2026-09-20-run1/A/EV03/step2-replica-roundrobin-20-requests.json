@@ -1,0 +1,149 @@
+{
+ "uid_requested": "prp-a-dual",
+ "requests": 20,
+ "token_delta_by_uid_and_replica": {
+  "prp-a-dual|replica0": 48.0,
+  "prp-a-dual|replica1": 51.0
+ },
+ "requests_attributed_to_one_replica": 20,
+ "requests_attributed_to_requested_uid": 20,
+ "replica_sequence": [
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1",
+  "0",
+  "1"
+ ],
+ "any_response_field_names_a_replica": false,
+ "per_request": [
+  {
+   "i": 0,
+   "id": "chat4286aa92-0881-4712-a352-fea4e9d97da1",
+   "model_field": "prp-a-dual",
+   "seconds": 2.134,
+   "usage": {
+    "prompt_tokens": 19,
+    "completion_tokens": 1,
+    "total_tokens": 20
+   },
+   "response_field_naming_a_replica": false,
+   "replica_that_moved": [
+    {
+     "model_uid": "prp-a-dual",
+     "replica_index": "0",
+     "tokens": 1.0
+    }
+   ]
+  },
+  {
+   "i": 1,
+   "id": "chatd4509550-7794-42a3-a47e-b42a510a2f66",
+   "model_field": "prp-a-dual",
+   "seconds": 1.589,
+   "usage": {
+    "prompt_tokens": 19,
+    "completion_tokens": 4,
+    "total_tokens": 23
+   },
+   "response_field_naming_a_replica": false,
+   "replica_that_moved": [
+    {
+     "model_uid": "prp-a-dual",
+     "replica_index": "1",
+     "tokens": 4.0
+    }
+   ]
+  },
+  {
+   "i": 2,
+   "id": "chat370e1087-3a27-4e29-be74-55ed195afb66",
+   "model_field": "prp-a-dual",
+   "seconds": 0.454,
+   "usage": {
+    "prompt_tokens": 19,
+    "completion_tokens": 4,
+    "total_tokens": 23
+   },
+   "response_field_naming_a_replica": false,
+   "replica_that_moved": [
+    {
+     "model_uid": "prp-a-dual",
+     "replica_index": "0",
+     "tokens": 4.0
+    }
+   ]
+  },
+  {
+   "i": 3,
+   "id": "chat8e8da9ca-e2d2-4521-8750-e6af00a758f5",
+   "model_field": "prp-a-dual",
+   "seconds": 0.44,
+   "usage": {
+    "prompt_tokens": 19,
+    "completion_tokens": 1,
+    "total_tokens": 20
+   },
+   "response_field_naming_a_replica": false,
+   "replica_that_moved": [
+    {
+     "model_uid": "prp-a-dual",
+     "replica_index": "1",
+     "tokens": 1.0
+    }
+   ]
+  },
+  {
+   "i": 4,
+   "id": "chatcca5c166-3e7d-4242-9e45-7158e1e07c42",
+   "model_field": "prp-a-dual",
+   "seconds": 0.43,
+   "usage": {
+    "prompt_tokens": 19,
+    "completion_tokens": 1,
+    "total_tokens": 20
+   },
+   "response_field_naming_a_replica": false,
+   "replica_that_moved": [
+    {
+     "model_uid": "prp-a-dual",
+     "replica_index": "0",
+     "tokens": 1.0
+    }
+   ]
+  },
+  {
+   "i": 5,
+   "id": "chat1d9b1d19-5737-4eaa-ab8c-a78c2f974af7",
+   "model_field": "prp-a-dual",
+   "seconds": 0.435,
+   "usage": {
+    "prompt_tokens": 19,
+    "completion_tokens": 4,
+    "total_tokens": 23
+   },
+   "response_field_naming_a_replica": false,
+   "replica_that_moved": [
+    {
+     "model_uid": "prp-a-dual",
+     "replica_index": "1",
+     "tokens": 4.0
+    }
+   ]
+  }
+ ]
+}

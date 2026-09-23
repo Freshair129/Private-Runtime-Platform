@@ -1,0 +1,70 @@
+{
+ "replica_ports": {
+  "1": "54528",
+  "0": "54535"
+ },
+ "tokens_before": {
+  "0": 48.0,
+  "1": 51.0
+ },
+ "serving_replica_detected": "0",
+ "kill": {
+  "replica_index": "0",
+  "port": "54535",
+  "pid": 50992,
+  "killed_at_s": 5.06,
+  "tokens_at_kill": {
+   "0": 180.0,
+   "1": 51.0
+  },
+  "stop_process_rc": 0
+ },
+ "client_result": {
+  "status": 200,
+  "seconds": 3.687,
+  "finish_reason": "stop",
+  "completion_tokens": 132,
+  "content_head": "Here is the count of numbers from **1 to 300**, one number p"
+ },
+ "tokens_right_after_client_returned": {
+  "0": 180.0,
+  "1": 51.0
+ },
+ "tokens_after_20s_idle": {
+  "0": 180.0,
+  "1": 51.0
+ },
+ "other_replica_token_growth_after_kill": 0.0,
+ "samples_head": [
+  {
+   "t": 0.41,
+   "0": 48.0,
+   "1": 51.0
+  },
+  {
+   "t": 0.83,
+   "0": 48.0,
+   "1": 51.0
+  },
+  {
+   "t": 1.24,
+   "0": 48.0,
+   "1": 51.0
+  },
+  {
+   "t": 1.64,
+   "0": 48.0,
+   "1": 51.0
+  },
+  {
+   "t": 2.06,
+   "0": 48.0,
+   "1": 51.0
+  },
+  {
+   "t": 2.46,
+   "0": 48.0,
+   "1": 51.0
+  }
+ ]
+}

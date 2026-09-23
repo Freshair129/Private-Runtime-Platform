@@ -1,0 +1,14 @@
+3217:2026-09-22T21:55:44.456Z ERROR xinference.core.supervisor pid:65692 role:local address:127.0.0.1:25216 node:DESKTOP-VETATMQ [request 5c61d3a8-b6d0-11f1-b0df-d6d6dfac5530] Leave get_model, error: Model prp-
+3235:RuntimeError: Model prp-a-dual-rep0 is in stopping state
+3236:2026-09-22T21:55:44.458Z ERROR xinference.api.utils pid:44968 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ [address=127.0.0.1:25216, pid=65692] Model prp-a-dual-rep0 is in stopping state
+3284:RuntimeError: [address=127.0.0.1:25216, pid=65692] Model prp-a-dual-rep0 is in stopping state
+3286:2026-09-22T21:55:49.519Z ERROR xinference.core.worker pid:65692 role:local address:127.0.0.1:25216 node:DESKTOP-VETATMQ Leave describe_model, error: Model not found in the model list, uid: prp-a-dual-rep0,
+3292:    raise ValueError(f"Model not found in the model list, uid: {model_uid}")
+3293:ValueError: Model not found in the model list, uid: prp-a-dual-rep0
+3294:2026-09-22T21:55:49.519Z ERROR xinference.core.supervisor pid:65692 role:local address:127.0.0.1:25216 node:DESKTOP-VETATMQ [request 5f6661be-b6d0-11f1-bc3a-d6d6dfac5530] Leave describe_model, error: Model
+3308:    raise ValueError(f"Model not found in the model list, uid: {model_uid}")
+3309:ValueError: Model not found in the model list, uid: prp-a-dual-rep0
+3310:2026-09-22T21:55:49.521Z ERROR xinference.api.restful_api pid:44968 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ [address=127.0.0.1:25216, pid=65692] Model not found in the model list, uid: prp-a
+3354:    raise ValueError(f"Model not found in the model list, uid: {model_uid}")
+3356:ValueError: [address=127.0.0.1:25216, pid=65692] Model not found in the model list, uid: prp-a-dual-rep0
+3674:2026-09-22T21:55:53.569Z INFO xinference.core.worker pid:65692 role:local address:127.0.0.1:25216 node:DESKTOP-VETATMQ Launch finished: model_name=qwen3, model_uid=prp-a-dual-rep0 (active: 0/5, queued: 0)

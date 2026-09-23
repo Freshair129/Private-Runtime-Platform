@@ -261,6 +261,17 @@ repository_integration: NOT_PERFORMED
 - FR-001: bootstrap admin คนแรกทำได้ด้วย sqlite ในเครื่อง ไม่พึ่ง Zuri / FUNG / Lalin Studio หรือ DB ธุรกิจอื่น ทำซ้ำไม่ได้ (403); operator ต้องเตรียม `XINFERENCE_AUTH_JWT_SECRET_KEY` และ `XINFERENCE_AUTH_ENCRYPTION_KEY`; กับดัก integration: `POST /token` รับ **JSON** ไม่ใช่ form ของ OAuth2 (ส่ง form ได้ 500 ไม่ใช่ 4xx)
 - เติม `experiments.EV04.per_candidate.A` (`disposition_hint` = **BUILD-GAP** สำหรับ key authority ตาม ADR-PRP, artifacts 4 ไฟล์) — **`status` และ `gate_verdicts` (`PRP-FR-003`..`009`) ยัง `NOT_RUN`**
 
+### WP24 EV03 candidate A · target binding ของ supervisor Xinference (2026-09-22, C-2 / H3)
+- routing layer ของ A คือ supervisor ของมันเอง ไม่มี proxy; **DEV-08** (OPEN): ใช้ qwen3 0.6B แทน `shared_revision` เพื่อให้มีสองเป้าหมายพร้อมกันบน GPU 16 GiB (4B ตัวเดียวกิน 10 956 MiB ตาม EV02)
+- **binding ระดับ UID ยึดครบ**: 40/40 request ถูกเสิร์ฟโดย UID ที่ระบุ counter ของ UID อื่นไม่ขยับเลย
+- **client เลือก replica ไม่ได้และไม่รู้ด้วยว่าใครเสิร์ฟ**: `replica=2` แล้วยิง 20 request ได้ลำดับ **0,1,0,1 สลับเป๊ะ** (`itertools.cycle` ใน `supervisor.get_model()`), ไม่มี field ใดในคำตอบบอก replica และ `/v1/models` แสดง address เดียวทั้งที่มีสอง replica → ถ้า PRP ต้องการ lease ผูกกับ runtime เดียว ต้องรัน **1 replica ต่อ 1 UID**
+- per-request attribution มีที่เดียวคือ **worker metrics exporter** (คนละพอร์ต ประกาศไว้ใน log เท่านั้น) label `model_uid` / `replica_index` / `gpu_index`; response, header และ access log ไม่บอก และ counter ขยับเมื่อ request จบเท่านั้น จึงระบุ request ที่กำลังวิ่งไม่ได้
+- **kill replica ที่กำลังเสิร์ฟกลางคัน**: client ได้ **HTTP 200 แต่ stream ปิดหลัง 1 chunk เหมือนจบปกติ** และ counter ของทั้งสอง replica **ไม่ขยับ** → **ไม่มี blind replay และไม่มี silent failover**
+- ระหว่าง replica ตาย/กำลังหยุด request ที่ round-robin ส่งไปหามัน **ล้ม** (400 `Model not found in the model list` / 500 `is in stopping state`) ไม่ถูกส่งต่อไป replica ที่ดี — UID จึงใช้งานได้บางส่วนระหว่าง recovery
+- **supervisor relaunch replica เองโดยไม่ได้สั่ง** (วัดได้ ~35 s และ ~40 s) และ **ได้ address ใหม่ทุกครั้ง** (54535 → 59967 → 60162) — NFR-023 ห้าม replica relocation ที่หลุด lease: A ไม่ retry request แต่ relocate replica เอง; knob เดียวที่มีคือ `XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT` (default = ไม่จำกัด)
+- step 4: **ไม่มี retry / failover / hedging ระดับ request เลยในเส้นทางคำขอ** ที่เจอเป็นของการ launch โมเดล จึงไม่มีอะไรต้องปิด และคำถามเรื่อง attempt ที่สองคง deadline เดิมไม่เกิดขึ้นเพราะไม่มี attempt ที่สอง
+- เติม `experiments.EV03.per_candidate.A` (`disposition_hint` = CONFIGURE พร้อมเงื่อนไขที่ PRP ต้องถือเอง, artifacts 9 ไฟล์) และ DEV-08 — **`status` และ `gate_verdicts` (`PRP-NFR-023`) ยัง `NOT_RUN`**
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
