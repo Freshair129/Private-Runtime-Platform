@@ -2658,22 +2658,72 @@
   },
   "requirement_rows_file": "docs/registry/reuse-fit-gap.WP24-2026-09-20-run1.json",
   "decision_receipt": {
-    "selected_candidate": null,
-    "rejected_alternatives": [],
-    "key_authority": null,
-    "lifecycle_owner": null,
-    "route_binding": null,
-    "retry_policy": null,
-    "datastore_ownership": null,
-    "immutable_version_matrix": null,
-    "gap_code_owner": null,
-    "tests_and_blocked_items": [
-      "no independent reviewer: operator and reviewer are the same person (owner decision 2026-09-20)"
+    "selected_candidate": {
+      "id": "A",
+      "name": "Xinference-managed runtimes (xinference 3.4.0, transformers backend)",
+      "selected_on": "2026-09-24",
+      "selected_by": "Freshair129 (repository owner, acting as reviewer per procedure section 9 item 4)",
+      "basis": "Capability evidence only. Procedure DEV-07 records that candidate A ran Windows-native with the transformers backend while candidate B ran vLLM in a Linux container, so NO timing or throughput comparison between them exists and none was used in this selection. On the gates WP24 measured, candidate A supplies more of what PRP must enforce: it reports its own placement and per-replica identity (EV02), it can be configured to reject over-limit work rather than queue it and its in-flight gauge never over-counted in 384 scrapes (EV05), it offers an explicit abort endpoint (EV06), it needs no external database, and its deployment exports to five declarative files that re-imported to an identical instance (EV08). Candidate B reports neither the physical GPU nor a stable runtime identity through its authenticated API, has no key system of its own, and serves POST /invocations with no credential.",
+      "conditions": [
+        "PRP is the client-key authority, verifier-only. Neither candidate may hold a client key: candidate A's store is reversible (EV04) and bare vLLM has none.",
+        "Run one replica per model UID, and pin placement with gpu_idx at launch, so the supervisor's IDLE_FIRST strategy never chooses for PRP (EV03, EV07 partial).",
+        "Bound the unrequested replica recreation with XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT and reconcile after every relocation: the replica address changes each time (EV03, EV06).",
+        "Reap orphaned worker processes. The candidate's own startup cleanup only matches PPID 1 plus a vLLM-like command line and never fires on this deployment, while an orphaned worker held 10 610 MiB and recreated its model (EV06, EV07 partial).",
+        "Cancel through the abort endpoint with a PRP-generated request_id, never by closing the socket, which does nothing for non-streaming work (EV06).",
+        "Map any stream that ends without an explicit [DONE] to UNKNOWN: a killed engine returns HTTP 200 with a truncated stream and no error object (EV06).",
+        "Put a host firewall in front of the metrics endpoints: they answer with no credential while the API returns 401, and they disclose model_uid, worker_address, gpu_index and xinference_home (EV05).",
+        "Upgrade by rebuilding the environment and re-importing the configuration bundle, never in place: in-place pip upgrade failed four times on this host and left the environment unable to report its own version (operator cost).",
+        "Replace candidate error bodies wholesale in the adapter: they carry the internal actor address, the pid and every model uid on the cluster (EV08)."
+      ]
+    },
+    "rejected_alternatives": [
+      {
+        "id": "B",
+        "name": "Independent vLLM (plus LiteLLM as a key/proxy layer)",
+        "reason": "Rejected on capability, not on speed, which was never compared (DEV-07). vLLM exposes neither the physical GPU nor a stable runtime identity through its authenticated API, so PRP would have to build identity and placement from nothing (EV02); it has no key vocabulary and no revoke API, which forces LiteLLM plus PostgreSQL into the deployment purely for keys (EV04); POST /invocations returns a real completion with no credential and needs a host network policy to contain (EV03, EV05); it queues excess work instead of rejecting it and its concurrency limit cannot be read back (EV05); and its upgrade and rollback were never attempted at all (operator cost).",
+        "kept_strengths": "Recorded because they are real and candidate A lacks them: client cancel stops compute within 0.19 s for streaming and non-streaming alike, an engine kill emits an in-stream error object rather than a silent truncation, and the runtime never relocates or resurrects itself (EV06)."
+      },
+      {
+        "id": "C",
+        "name": "Ray Serve",
+        "reason": "Out of scope by owner decision of 2026-09-20, recorded in scope_decisions.candidate_C_in_scope: two hosts with no replica requirement, and STACK-EVALUATION section 7 does not require C while A and B are under evaluation. No experiment was run for it."
+      },
+      {
+        "id": "LiteLLM-as-key-authority",
+        "name": "LiteLLM holding client keys",
+        "reason": "Rejected although EV04 hinted CONFIGURE for its issuance, scoping, storage and revocation. ADR-PRP allows exactly one client-key authority and requires verifier-only keys; EV04 also found that /key/info addressed by hash discloses another key's metadata. Client keys therefore stay with PRP."
+      }
     ],
-    "reviewer": null,
-    "rollback_exit_plan": null,
+    "key_authority": "PRP, verifier-only. This is a BUILD-GAP against both candidates and matches ADR-PRP's rule of exactly one client-key authority. Candidate A's own administrative keys stay in the candidate and rotate by overlap-then-drop, measured online with no restart and the old key refused 0.027 s after deletion (EV08 step 3); the directory holding them is treated as sensitive because the store is reversible (EV04).",
+    "lifecycle_owner": "PRP owns launch, terminate and re-launch through the candidate's REST API. The candidate's supervisor retains an unrequested recovery path that cannot be disabled, only bounded, so PRP bounds it with XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT, reconciles after each relocation, and reaps orphaned workers itself. Measured: recovery took 131.8 s on the 4B model and 35-40 s on a 0.6B model, with a new replica address every time (EV03, EV06).",
+    "route_binding": "PRP Router selects; the candidate binds to a model UID and never crossed it in 40 of 40 requests (EV03). The client cannot choose or see a replica, since the supervisor round-robins strictly, so PRP runs one replica per UID and treats the UID as the target. Placement is pinned with gpu_idx. The replica address is treated as unstable, and per-replica attribution is scraped from the worker metrics exporter, the only channel that provides it.",
+    "retry_policy": "No request-level retry, failover or hedging exists anywhere in candidate A's request path, so there is nothing to disable and no hidden attempt to account for; no second attempt was ever observed (EV03 step 4, EV06). PRP classifies retries itself, cancels through the abort endpoint with its own request_id, and treats a stream ending without [DONE] as UNKNOWN rather than as success.",
+    "datastore_ownership": "PRP owns the XINFERENCE_HOME directory outright: auth/auth.db with its encryption_key and jwt_secret_key beside it, launch_history.db, monitor_config.db, token_routers.db, download_tasks.db, the weights cache and the per-model virtualenv. No external database is required. A marker request traced across 57 562 scanned files showed no prompt or response content in any vendor datastore, and nothing leaves the host (EV08 step 4, EV05 step 1).",
+    "immutable_version_matrix": {
+      "candidate_runtime": "xinference 3.4.0",
+      "engine": "transformers 5.17.0",
+      "accelerator_stack": "torch 2.14.0+cu130 (reinstalled after the xinference install replaced it with torch 2.14.0+cpu), accelerate 1.15.0",
+      "actor_layer": "xoscar 0.10.0",
+      "model": "typhoon-ai/typhoon2.5-qwen3-4b revision ce0a741, safetensors bf16, Qwen3ForCausalLM",
+      "host": "DESKTOP-VETATMQ, NVIDIA GeForce RTX 5060 Ti, 16 311 MiB",
+      "pinning_rule": "Versions are pinned and changed only by rebuilding the environment and re-importing the five-file configuration bundle, which reproduced the deployment exactly (EV08 step 2). In-place upgrade is not a supported path on this platform: it failed four times with WinError 32 and left the environment unable to report its own version (operator cost)."
+    },
+    "gap_code_owner": "PRP, for all eight gaps recorded in candidates[A].operator_cost_measurements.custom_gap_code: the client-key authority (FR-003..009), PRP's own epoch and a device-index to GPU-UUID join (FR-010..015), reconciliation after unrequested relocation (FR-010..015, NFR-023), admission through request_limits plus the metrics exporter (FR-017/018), cancel through the abort endpoint and UNKNOWN mapping (FR-020..022), placement pinning with gpu_idx (NFR-023), wholesale replacement of candidate error bodies (NFR-024), and the orphan reaper.",
+    "tests_and_blocked_items": [
+      "no independent reviewer: operator and reviewer are the same person (owner decision 2026-09-20)",
+      "EV07 (mixed chat/speech, FR-018 and FR-044) is BLOCKED for both candidates until WP10 delivers a licensed speech candidate; WP10 is itself NOT_STARTED. A candidate-side residency partial exists for A only (docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/).",
+      "PRP-FR-017's durable admission transaction needs real PostgreSQL and fault injection on the PRP side, which does not exist before migration step M4; AT-017 stays NOT_RUN whatever the candidate does (EV05).",
+      "68 of the 92 fit-gap rows carry a BLOCKER because no WP24 experiment maps to them: their proof is PRP's own implementation from M4 (docs/registry/reuse-fit-gap.WP24-2026-09-20-run1.json).",
+      "cross-host evidence is unrun: only one GPU host was available (DEV-03) and no clean second host existed for the re-import (DEV-06), so candidate B's second-machine probe and the two-host replica question stay open.",
+      "DEV-07 bars every timing and throughput comparison between A and B; the selection above rests on capability evidence only.",
+      "capacity counting with two replicas of the shared revision was not observed: the second launch failed on the Windows paging file (EV02 step 3).",
+      "every experiment status and every gate_verdicts entry in this record remains NOT_RUN, and all 92 acceptance rows remain NOT_RUN; the fit-gap dispositions are a separate axis and do not assert a passed test."
+    ],
+    "reviewer": "Freshair129 (repository owner; same person as operator, no independent reviewer available)",
+    "rollback_exit_plan": "Version rollback: rebuild the virtual environment and re-import the five-file configuration bundle. Measured: venv create 5.6 s, pip install 200.1 s, the rebuilt instance answered in 31.2 s and launched the model in 49.3 s, matching the source on the model record, a fixed greedy answer and token usage (EV08 step 2, operator cost). In-place pip upgrade and rollback both failed on this host and must not be used.\nExit to another runtime: the public contract needs no change. contracts/openapi/prp-client.yaml contains no vendor identifier and its inventory is unchanged at 12 paths and 14 operations, and the completion body carries no vendor content because the model field echoes the UID PRP chooses (EV08 step 1). What must be rewritten on exit is the adapter layer only: candidate error bodies are replaced wholesale, the server header is stripped, and the model listing is re-mapped.\nData exit: every datastore is a local file under XINFERENCE_HOME and no job data reaches any of them, so deletion is fenced by owning that directory (EV08 step 4).\nTrigger to revisit this selection: an unrequested relocation that PRP cannot reconcile, a security patch that cannot be applied because upgrades require a rebuild, or the arrival of cross-host evidence (DEV-03, DEV-06) or of a Linux-parity run that removes DEV-07 and finally allows a measured performance comparison.",
     "approved_by": null,
-    "approved_on": null
+    "approved_on": null,
+    "approval_note": "Selection and reviewer sign-off are recorded above. Owner approval is deliberately left unset: procedure section 8 item 7 makes the owner's approval the act that opens WP03, so it is recorded only when the owner states it explicitly."
   },
   "requirement_rows_note": "The fit-gap copy registry/reuse-fit-gap.<record_id>.json is produced when the first candidate has completed EV01-EV08 or at the reviewer's checkpoint; after EV01 alone every row stays UNASSESSED."
 }
