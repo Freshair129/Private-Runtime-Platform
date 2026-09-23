@@ -295,6 +295,16 @@ repository_integration: NOT_PERFORMED
 - **ending ที่เชื่อไม่ได้ (step 3)**: kill engine กลางคัน client ได้ **HTTP 200 + stream ขาด ไม่มี `[DONE]` และไม่มี error object** แยกจากสำเร็จด้วย status ไม่ได้ → ต้อง map เป็น `UNKNOWN` ตาม ARCH §11 (B ยังส่ง error object ใน stream ตอน kill engine)
 - เติม `experiments.EV06.per_candidate.A` (`disposition_hint` = **ADAPT**, artifacts 8 ไฟล์) — **`status` และ `gate_verdicts` (`PRP-FR-020`..`022`) ยัง `NOT_RUN`**
 
+### WP24 EV08 candidate A · adapter / exit (2026-09-23, C-2 / H3)
+- รันบน `shared_revision` เปิด auth (step 3 เป็นเรื่อง key ของ candidate เอง) · import ทดสอบบน `XINFERENCE_HOME` ใหม่ + พอร์ต 9998 บนเครื่องเดิมตาม DEV-06 · **ไม่ต้องมี deviation ใหม่**
+- **public contract ไม่ต้องเปลี่ยน**: `prp-client.yaml` ไม่มีคำว่า `xinference` / `vllm` / `xoscar` / `typhoon` / `qwen` / `litellm` เลย, inventory คงเดิม **12 paths / 14 operations**, validator 0 errors; body ของ chat completion ก็ไม่รั่วเพราะ field `model` สะท้อน `model_uid` ที่ PRP ตั้งเอง
+- **จุดที่คมที่สุดคือ error body**: candidate ส่ง **internal actor address + pid** และ **รายชื่อ model uid ทั้งคลัสเตอร์** กลับไปให้ผู้เรียก → adapter ของ PRP ต้อง **แทนที่ error body ทั้งก้อน** ไม่ใช่ส่งต่อ (เข้มกว่ากรณี B ที่รั่วแค่ header กับ id); `/v1/models` มีคำของ vendor ครบ และ header มี `server: uvicorn` เหมือน B
+- **export / import ตรงกันเป๊ะ**: bundle 5 ไฟล์ (redacted ไม่มี key material) สร้าง instance ใหม่ได้ตอบใน **31.2 s** launch **49.3 s** และตรงกับต้นทางทั้ง field set, model record (ยกเว้น `address` / `created`), คำตอบ greedy (`2, 3, 5, 7, 11`) และ token usage (18/14/32) — ไม่ต้องคัดลอก state ใด ๆ ออกจาก instance ที่รันอยู่
+- **rotate key ได้ออนไลน์**: ออก key ใหม่ทับช่วง overlap (ใช้ได้ทั้งคู่) ลบตัวเก่า → ถูกปฏิเสธใน **0.027 s** ตัวใหม่ยังทำงาน **ไม่ต้อง restart เลย** (B ต้องสร้าง container ใหม่ทุกครั้งที่เปลี่ยน key); แผน rotation แยกเป็น client key ที่อยู่กับ PRP (candidate ไม่เกี่ยว) กับ admin key ของ candidate ที่ rotate ด้วยลำดับนี้
+- **ไม่มี job data ตกใน datastore ของ vendor**: marker request แล้วสแกน **57 562 ไฟล์** — เปลี่ยน 5 ไฟล์ (log ล้วน) และ **ไม่มีไฟล์ใดมี marker**; datastore ของ vendor เป็น sqlite ในเครื่องทั้งหมด (`auth.db`, `launch_history.db`, `monitor_config.db`, `token_routers.db`, `download_tasks.db`) และไม่มีอะไรออกนอกเครื่อง PRP จึง fence deletion ได้ด้วยการถือ directory
+- เติม `experiments.EV08.per_candidate.A` (`disposition_hint` = **ADAPT**, artifacts 10 ไฟล์ รวม `config-export/`) — **`status` และ `gate_verdicts` (`PRP-NFR-024`) ยัง `NOT_RUN`**
+- ครบทุก mandatory gate ของ candidate A แล้ว (EV02, EV03, EV04, EV05, EV06, EV08) — ทุก `status` ยัง `NOT_RUN` รอ reviewer
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
