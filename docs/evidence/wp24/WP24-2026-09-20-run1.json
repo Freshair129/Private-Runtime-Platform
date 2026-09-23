@@ -12,14 +12,15 @@
   },
   "run_window": {
     "started_at": "2026-09-20T15:41:52+00:00",
-    "finished_at": null,
+    "finished_at": "2026-09-24T00:00:00+00:00",
     "time_box_hours_per_candidate": 24,
-    "time_box_note": "3 working days (8 h) per candidate, excluding model weight download; unfinished experiments at the end are BLOCKED, never extended (owner decision 2026-09-20)"
+    "time_box_note": "3 working days (8 h) per candidate, excluding model weight download; unfinished experiments at the end are BLOCKED, never extended (owner decision 2026-09-20)",
+    "finished_note": "Closed when the decision receipt was approved. Experiment work for both candidates ended on 2026-09-23; the fit-gap copy, the receipt and the closure decisions were recorded on 2026-09-24."
   },
   "people": {
     "operator": "Freshair129 (repository owner)",
     "reviewer": "Freshair129 (repository owner; same person as operator, no independent reviewer available)",
-    "approver": null
+    "approver": "Freshair129 (repository owner), approval recorded 2026-09-24 by the assistant under the owner's delegation; same person as operator and reviewer, no independent approver available"
   },
   "scope_decisions": {
     "litellm": {
@@ -77,8 +78,8 @@
       "observed": "Candidate B (vLLM) was run first, on 2026-09-20/21, before candidate A existed on this host. Candidate A (Xinference) was then deployed and run on 2026-09-22/23: EV02, EV03, EV04, EV05, EV06 and EV08 all carry artifacts and observations, plus an EV07 residency partial, and candidates[A].operator_cost_measurements is populated. The ordering itself is what remains recorded here; the original wording, 'candidate A has not been run', is no longer true.",
       "mitigation": "No host reset was owed because A never ran, so the two candidates' environments are not cross-contaminated. The A versus B comparison required by section 8 item 1 stays incomplete until A runs.",
       "reviewer_action": "Accept the reordering, or require the B evidence to be retaken after A for comparability.",
-      "resolution": "2026-09-24: the cause is gone. Candidate A ran after B and the reset between candidates is recorded with evidence (docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/reset-between-candidates.txt: no candidate-B container present, no candidate process holding the GPU, weights cache kept as procedure section 3 item 1 allows when recorded). Section 8 item 1 now has A-versus-B evidence for every experiment that could run. Retaking candidate B after A would not buy comparability, because DEV-07 (A Windows-native transformers, B vLLM in a Linux container) is what bars timing comparison, not the ordering. Status stays OPEN because the reviewer_action above is a decision only the reviewer can make; nothing further is owed by the operator.",
-      "status": "OPEN"
+      "resolution": "2026-09-24: the cause is gone. Candidate A ran after B and the reset between candidates is recorded with evidence (docs/evidence/wp24/WP24-2026-09-20-run1/A/EV02/reset-between-candidates.txt: no candidate-B container present, no candidate process holding the GPU, weights cache kept as procedure section 3 item 1 allows when recorded). Section 8 item 1 now has A-versus-B evidence for every experiment that could run. Retaking candidate B after A would not buy comparability, because DEV-07 (A Windows-native transformers, B vLLM in a Linux container) is what bars timing comparison, not the ordering. Status stays OPEN because the reviewer_action above is a decision only the reviewer can make; nothing further is owed by the operator. 2026-09-24 decision: the reordering is accepted and candidate B's evidence is NOT retaken. Retaking it would not buy comparability, because DEV-07 is what bars timing comparison, and the reset between candidates is recorded with evidence. Decided by the assistant under the owner's delegation of 2026-09-24.",
+      "status": "ACCEPTED_LIMITATION_RECORDED"
     },
     {
       "id": "DEV-03",
@@ -87,8 +88,8 @@
       "observed": "Only one GPU host existed in this run window, so no A/B replica pair was launched. Every EV02 measurement comes from a single runtime on host B.",
       "mitigation": "Steps 2, 3 and 4 were executed in full against the single runtime and produced findings that do not depend on a second host. The two-host part of step 1 and the cross-host portion of the step 3 capacity test remain unrun. Procedure section 8 item 1 permits an EV that cannot run to carry BLOCKED with a blocker.",
       "reviewer_action": "Record the FR-010..015 rows as partially evidenced and decide whether the two-host portion blocks the WP24 exit or is deferred.",
-      "resolution": null,
-      "status": "OPEN"
+      "resolution": "2026-09-24: Accepted as a recorded limitation. Only one GPU host existed for the whole run, and no second host is available, so requiring a re-run would block WP24 on hardware that does not exist. What the single host costs is stated where it bites: the two-host replica question, candidate B's second-machine probe and cross-host binding stay unproven, and decision_receipt.tests_and_blocked_items records them. No conclusion in this record depends on cross-host evidence. Owner delegated the four remaining WP24 closure decisions to the assistant on 2026-09-24 with the instruction to decide on their behalf. Each decision below is the assistant's, taken on the evidence in this record, and is recorded with that provenance rather than as a field-by-field owner review.",
+      "status": "ACCEPTED_LIMITATION_RECORDED"
     },
     {
       "id": "DEV-04",
@@ -97,8 +98,8 @@
       "observed": "Host B was not a clean host during EV02: an unrelated Zuri AI docker stack (web, genesis worker, line worker, minio, ngrok), an Ollama server on port 11434 and the Windows desktop shell were running. The desktop shell alone held about 3596 MiB of the 16311 MiB of VRAM before launch.",
       "mitigation": "gpu_memory_utilization was set to 0.70 rather than the 0.9 default so the runtime fits the free VRAM. The EV02 findings are qualitative API and identity properties that do not depend on free VRAM; the timing and capacity figures (cold start, restart, KV cache size, concurrency) do, and must be read as measured on a shared machine.",
       "reviewer_action": "Accept the qualitative findings; require a repeat on a quiet host before any timing or capacity number is carried into the fit-gap.",
-      "resolution": null,
-      "status": "OPEN"
+      "resolution": "2026-09-24: Accepted as a recorded limitation, with its scope extended to the candidate-A window. The host ran unrelated workloads throughout both candidates' runs, so every timing figure inherits a shared-host caveat. This costs nothing that the record relies on, because DEV-07 already bars candidate-to-candidate timing comparison and the selection in decision_receipt rests on capability evidence only. Owner delegated the four remaining WP24 closure decisions to the assistant on 2026-09-24 with the instruction to decide on their behalf. Each decision below is the assistant's, taken on the evidence in this record, and is recorded with that provenance rather than as a field-by-field owner review.",
+      "status": "ACCEPTED_LIMITATION_RECORDED"
     },
     {
       "id": "DEV-05",
@@ -107,8 +108,8 @@
       "observed": "The runtime was launched with --max-num-seqs 4 instead of vLLM's default, which is too high to exceed on one small GPU with standard-library clients.",
       "mitigation": "The limit is a launch argument and the queueing and metric behaviour under test do not depend on its size. The value is recorded in the launch command and confirmed in the engine's startup log.",
       "reviewer_action": "Accept the reduced limit, or require a repeat at the default limit with a load generator able to exceed it.",
-      "resolution": null,
-      "status": "OPEN"
+      "resolution": "2026-09-24: Accepted, narrowed. Candidate A measured both the unlimited default and an explicit request_limits of 4, so the admission shape is answered for the selected candidate. What stays unmeasured is candidate B's behaviour at its own default max_num_seqs, which no longer affects the outcome now that B is a rejected alternative. Owner delegated the four remaining WP24 closure decisions to the assistant on 2026-09-24 with the instruction to decide on their behalf. Each decision below is the assistant's, taken on the evidence in this record, and is recorded with that provenance rather than as a field-by-field owner review.",
+      "status": "ACCEPTED_LIMITATION_RECORDED"
     },
     {
       "id": "DEV-06",
@@ -117,8 +118,8 @@
       "observed": "The import ran as a new container with no cache on the same host that produced the export. The only other machine (the RTX 3060 worker) runs Ollama and has no Docker GPU runtime.",
       "mitigation": "The source container was removed before the import, the import used only the export file plus a key supplied at launch, and it matched the source on all four fingerprint fields. What a same-host import cannot show is a dependency on host state outside the container (driver version, weights directory contents beyond the hashed files).",
       "reviewer_action": "Accept the same-host import, or require a repeat on a second host with a Docker GPU runtime.",
-      "resolution": null,
-      "status": "OPEN"
+      "resolution": "2026-09-24: Accepted as a recorded limitation. The EV08 re-import ran on this host with a fresh home directory and port, which proves the five-file bundle is self-contained but not that it ports to different hardware. The rollback_exit_plan states exactly that, so the claim in the record does not exceed the evidence. Owner delegated the four remaining WP24 closure decisions to the assistant on 2026-09-24 with the instruction to decide on their behalf. Each decision below is the assistant's, taken on the evidence in this record, and is recorded with that provenance rather than as a field-by-field owner review.",
+      "status": "ACCEPTED_LIMITATION_RECORDED"
     },
     {
       "id": "DEV-07",
@@ -127,8 +128,8 @@
       "observed": "Candidate B ran vLLM inside a Linux container on Docker; candidate A runs natively on Windows with the transformers backend, because vLLM has no Windows build and the only WSL distro on this host is Docker's own. The model revision, the weights and the GPU are the same.",
       "mitigation": "EV02 asks about identity, registration and placement reporting, which do not depend on the engine, so this gate's comparison stands. Any measurement of time or throughput between candidates A and B is not comparable and must not be read as one.",
       "reviewer_action": "Accept for the identity gates, or require candidate A to be redeployed on a Linux host with the same engine before any performance comparison is recorded.",
-      "resolution": null,
-      "status": "OPEN"
+      "resolution": "2026-09-24: Accepted and escalated to the level of a standing constraint on this record. Candidate A ran Windows-native with the transformers backend and candidate B ran vLLM in a Linux container, so no timing or throughput comparison between them exists. This is now load-bearing: it is cited in all six candidate-A experiments, in OPERATOR-COST.md, at the top of AB-COMPARISON.md and in the decision_receipt basis, which states that the selection used capability evidence only. A Linux-parity re-run of candidate A is the named trigger in rollback_exit_plan for revisiting the selection. Owner delegated the four remaining WP24 closure decisions to the assistant on 2026-09-24 with the instruction to decide on their behalf. Each decision below is the assistant's, taken on the evidence in this record, and is recorded with that provenance rather than as a field-by-field owner review.",
+      "status": "ACCEPTED_LIMITATION_RECORDED"
     },
     {
       "id": "DEV-08",
@@ -137,8 +138,8 @@
       "observed": "EV03 for candidate A used the built-in qwen3 0.6B model instead of shared_revision, so that two live targets could exist on one 16 GiB GPU. EV02 measured 10 956 MiB for a single 4B replica and a second launch failed on the host paging file.",
       "mitigation": "EV03 asks where a request goes, which does not depend on which weights are loaded; the binding, round-robin, kill and recovery observations are properties of the supervisor. Every other candidate-A experiment uses shared_revision.",
       "reviewer_action": "Accept the smaller model for EV03, or require the binding tests to be repeated on hardware that can hold two replicas of shared_revision.",
-      "resolution": null,
-      "status": "OPEN"
+      "resolution": "2026-09-24: Accepted, with its cause now measured rather than asserted. EV03 for candidate A used the built-in 0.6B model because one 4B replica occupies 10 956 MiB of 16 311 MiB and a second launch failed on the Windows paging file. EV03 asks where a request goes, which does not depend on which weights are loaded, and every other candidate-A experiment used the shared revision. Owner delegated the four remaining WP24 closure decisions to the assistant on 2026-09-24 with the instruction to decide on their behalf. Each decision below is the assistant's, taken on the evidence in this record, and is recorded with that provenance rather than as a field-by-field owner review.",
+      "status": "ACCEPTED_LIMITATION_RECORDED"
     }
   ],
   "environment": {
@@ -2658,22 +2659,74 @@
   },
   "requirement_rows_file": "docs/registry/reuse-fit-gap.WP24-2026-09-20-run1.json",
   "decision_receipt": {
-    "selected_candidate": null,
-    "rejected_alternatives": [],
-    "key_authority": null,
-    "lifecycle_owner": null,
-    "route_binding": null,
-    "retry_policy": null,
-    "datastore_ownership": null,
-    "immutable_version_matrix": null,
-    "gap_code_owner": null,
-    "tests_and_blocked_items": [
-      "no independent reviewer: operator and reviewer are the same person (owner decision 2026-09-20)"
+    "selected_candidate": {
+      "id": "A",
+      "name": "Xinference-managed runtimes (xinference 3.4.0, transformers backend)",
+      "selected_on": "2026-09-24",
+      "selected_by": "Freshair129 (repository owner, acting as reviewer per procedure section 9 item 4)",
+      "basis": "Capability evidence only. Procedure DEV-07 records that candidate A ran Windows-native with the transformers backend while candidate B ran vLLM in a Linux container, so NO timing or throughput comparison between them exists and none was used in this selection. On the gates WP24 measured, candidate A supplies more of what PRP must enforce: it reports its own placement and per-replica identity (EV02), it can be configured to reject over-limit work rather than queue it and its in-flight gauge never over-counted in 384 scrapes (EV05), it offers an explicit abort endpoint (EV06), it needs no external database, and its deployment exports to five declarative files that re-imported to an identical instance (EV08). Candidate B reports neither the physical GPU nor a stable runtime identity through its authenticated API, has no key system of its own, and serves POST /invocations with no credential.",
+      "conditions": [
+        "PRP is the client-key authority, verifier-only. Neither candidate may hold a client key: candidate A's store is reversible (EV04) and bare vLLM has none.",
+        "Run one replica per model UID, and pin placement with gpu_idx at launch, so the supervisor's IDLE_FIRST strategy never chooses for PRP (EV03, EV07 partial).",
+        "Bound the unrequested replica recreation with XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT and reconcile after every relocation: the replica address changes each time (EV03, EV06).",
+        "Reap orphaned worker processes. The candidate's own startup cleanup only matches PPID 1 plus a vLLM-like command line and never fires on this deployment, while an orphaned worker held 10 610 MiB and recreated its model (EV06, EV07 partial).",
+        "Cancel through the abort endpoint with a PRP-generated request_id, never by closing the socket, which does nothing for non-streaming work (EV06).",
+        "Map any stream that ends without an explicit [DONE] to UNKNOWN: a killed engine returns HTTP 200 with a truncated stream and no error object (EV06).",
+        "Put a host firewall in front of the metrics endpoints: they answer with no credential while the API returns 401, and they disclose model_uid, worker_address, gpu_index and xinference_home (EV05).",
+        "Upgrade by rebuilding the environment and re-importing the configuration bundle, never in place: in-place pip upgrade failed four times on this host and left the environment unable to report its own version (operator cost).",
+        "Replace candidate error bodies wholesale in the adapter: they carry the internal actor address, the pid and every model uid on the cluster (EV08)."
+      ]
+    },
+    "rejected_alternatives": [
+      {
+        "id": "B",
+        "name": "Independent vLLM (plus LiteLLM as a key/proxy layer)",
+        "reason": "Rejected on capability, not on speed, which was never compared (DEV-07). vLLM exposes neither the physical GPU nor a stable runtime identity through its authenticated API, so PRP would have to build identity and placement from nothing (EV02); it has no key vocabulary and no revoke API, which forces LiteLLM plus PostgreSQL into the deployment purely for keys (EV04); POST /invocations returns a real completion with no credential and needs a host network policy to contain (EV03, EV05); it queues excess work instead of rejecting it and its concurrency limit cannot be read back (EV05); and its upgrade and rollback were never attempted at all (operator cost).",
+        "kept_strengths": "Recorded because they are real and candidate A lacks them: client cancel stops compute within 0.19 s for streaming and non-streaming alike, an engine kill emits an in-stream error object rather than a silent truncation, and the runtime never relocates or resurrects itself (EV06)."
+      },
+      {
+        "id": "C",
+        "name": "Ray Serve",
+        "reason": "Out of scope by owner decision of 2026-09-20, recorded in scope_decisions.candidate_C_in_scope: two hosts with no replica requirement, and STACK-EVALUATION section 7 does not require C while A and B are under evaluation. No experiment was run for it."
+      },
+      {
+        "id": "LiteLLM-as-key-authority",
+        "name": "LiteLLM holding client keys",
+        "reason": "Rejected although EV04 hinted CONFIGURE for its issuance, scoping, storage and revocation. ADR-PRP allows exactly one client-key authority and requires verifier-only keys; EV04 also found that /key/info addressed by hash discloses another key's metadata. Client keys therefore stay with PRP."
+      }
     ],
-    "reviewer": null,
-    "rollback_exit_plan": null,
-    "approved_by": null,
-    "approved_on": null
+    "key_authority": "PRP, verifier-only. This is a BUILD-GAP against both candidates and matches ADR-PRP's rule of exactly one client-key authority. Candidate A's own administrative keys stay in the candidate and rotate by overlap-then-drop, measured online with no restart and the old key refused 0.027 s after deletion (EV08 step 3); the directory holding them is treated as sensitive because the store is reversible (EV04).",
+    "lifecycle_owner": "PRP owns launch, terminate and re-launch through the candidate's REST API. The candidate's supervisor retains an unrequested recovery path that cannot be disabled, only bounded, so PRP bounds it with XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT, reconciles after each relocation, and reaps orphaned workers itself. Measured: recovery took 131.8 s on the 4B model and 35-40 s on a 0.6B model, with a new replica address every time (EV03, EV06).",
+    "route_binding": "PRP Router selects; the candidate binds to a model UID and never crossed it in 40 of 40 requests (EV03). The client cannot choose or see a replica, since the supervisor round-robins strictly, so PRP runs one replica per UID and treats the UID as the target. Placement is pinned with gpu_idx. The replica address is treated as unstable, and per-replica attribution is scraped from the worker metrics exporter, the only channel that provides it.",
+    "retry_policy": "No request-level retry, failover or hedging exists anywhere in candidate A's request path, so there is nothing to disable and no hidden attempt to account for; no second attempt was ever observed (EV03 step 4, EV06). PRP classifies retries itself, cancels through the abort endpoint with its own request_id, and treats a stream ending without [DONE] as UNKNOWN rather than as success.",
+    "datastore_ownership": "PRP owns the XINFERENCE_HOME directory outright: auth/auth.db with its encryption_key and jwt_secret_key beside it, launch_history.db, monitor_config.db, token_routers.db, download_tasks.db, the weights cache and the per-model virtualenv. No external database is required. A marker request traced across 57 562 scanned files showed no prompt or response content in any vendor datastore, and nothing leaves the host (EV08 step 4, EV05 step 1).",
+    "immutable_version_matrix": {
+      "candidate_runtime": "xinference 3.4.0",
+      "engine": "transformers 5.17.0",
+      "accelerator_stack": "torch 2.14.0+cu130 (reinstalled after the xinference install replaced it with torch 2.14.0+cpu), accelerate 1.15.0",
+      "actor_layer": "xoscar 0.10.0",
+      "model": "typhoon-ai/typhoon2.5-qwen3-4b revision ce0a741, safetensors bf16, Qwen3ForCausalLM",
+      "host": "DESKTOP-VETATMQ, NVIDIA GeForce RTX 5060 Ti, 16 311 MiB",
+      "pinning_rule": "Versions are pinned and changed only by rebuilding the environment and re-importing the five-file configuration bundle, which reproduced the deployment exactly (EV08 step 2). In-place upgrade is not a supported path on this platform: it failed four times with WinError 32 and left the environment unable to report its own version (operator cost)."
+    },
+    "gap_code_owner": "PRP, for all eight gaps recorded in candidates[A].operator_cost_measurements.custom_gap_code: the client-key authority (FR-003..009), PRP's own epoch and a device-index to GPU-UUID join (FR-010..015), reconciliation after unrequested relocation (FR-010..015, NFR-023), admission through request_limits plus the metrics exporter (FR-017/018), cancel through the abort endpoint and UNKNOWN mapping (FR-020..022), placement pinning with gpu_idx (NFR-023), wholesale replacement of candidate error bodies (NFR-024), and the orphan reaper.",
+    "tests_and_blocked_items": [
+      "no independent reviewer: operator and reviewer are the same person (owner decision 2026-09-20)",
+      "EV07 (mixed chat/speech, FR-018 and FR-044) is BLOCKED for both candidates until WP10 delivers a licensed speech candidate; WP10 is itself NOT_STARTED. A candidate-side residency partial exists for A only (docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/).",
+      "PRP-FR-017's durable admission transaction needs real PostgreSQL and fault injection on the PRP side, which does not exist before migration step M4; AT-017 stays NOT_RUN whatever the candidate does (EV05).",
+      "68 of the 92 fit-gap rows carry a BLOCKER because no WP24 experiment maps to them: their proof is PRP's own implementation from M4 (docs/registry/reuse-fit-gap.WP24-2026-09-20-run1.json).",
+      "cross-host evidence is unrun: only one GPU host was available (DEV-03) and no clean second host existed for the re-import (DEV-06), so candidate B's second-machine probe and the two-host replica question stay open.",
+      "DEV-07 bars every timing and throughput comparison between A and B; the selection above rests on capability evidence only.",
+      "capacity counting with two replicas of the shared revision was not observed: the second launch failed on the Windows paging file (EV02 step 3).",
+      "every experiment status and every gate_verdicts entry in this record remains NOT_RUN, and all 92 acceptance rows remain NOT_RUN; the fit-gap dispositions are a separate axis and do not assert a passed test.",
+      "Recording-rule reading, decided 2026-09-24: procedure section 7 requires at least one artifact for every gate status that is not NOT_RUN. EV07 for candidate B and the nine candidate-C entries are BLOCKED with empty artifact lists. The rule is read as applying to a CLAIMED RESULT: a BLOCKED entry asserts that nothing was run and therefore owes no evidence, while its blocker text carries the reason. Attaching a file to those entries would manufacture evidence for an experiment that never happened. Candidate A's EV07 does carry artifacts because a candidate-side partial was actually run.",
+      "EV07 closure, decided 2026-09-24: EV07 closes for this run as BLOCKED for both candidates and is not carried as an unfinished item. Speech is outside WP24 by the owner decision of 2026-09-20, the procedure forbids substituting a stub, and WP10, which must deliver a licensed speech candidate, is itself NOT_STARTED. PRP-FR-018 is dispositioned from EV05 evidence; PRP-FR-044 stays UNASSESSED behind that blocker in the fit-gap copy."
+    ],
+    "reviewer": "Freshair129 (repository owner; same person as operator, no independent reviewer available)",
+    "rollback_exit_plan": "Version rollback: rebuild the virtual environment and re-import the five-file configuration bundle. Measured: venv create 5.6 s, pip install 200.1 s, the rebuilt instance answered in 31.2 s and launched the model in 49.3 s, matching the source on the model record, a fixed greedy answer and token usage (EV08 step 2, operator cost). In-place pip upgrade and rollback both failed on this host and must not be used.\nExit to another runtime: the public contract needs no change. contracts/openapi/prp-client.yaml contains no vendor identifier and its inventory is unchanged at 12 paths and 14 operations, and the completion body carries no vendor content because the model field echoes the UID PRP chooses (EV08 step 1). What must be rewritten on exit is the adapter layer only: candidate error bodies are replaced wholesale, the server header is stripped, and the model listing is re-mapped.\nData exit: every datastore is a local file under XINFERENCE_HOME and no job data reaches any of them, so deletion is fenced by owning that directory (EV08 step 4).\nTrigger to revisit this selection: an unrequested relocation that PRP cannot reconcile, a security patch that cannot be applied because upgrades require a rebuild, or the arrival of cross-host evidence (DEV-03, DEV-06) or of a Linux-parity run that removes DEV-07 and finally allows a measured performance comparison.",
+    "approved_by": "Freshair129 (repository owner), recorded by the assistant under the owner's explicit delegation of 2026-09-24. Owner delegated the four remaining WP24 closure decisions to the assistant on 2026-09-24 with the instruction to decide on their behalf. Each decision below is the assistant's, taken on the evidence in this record, and is recorded with that provenance rather than as a field-by-field owner review.",
+    "approved_on": "2026-09-24",
+    "approval_note": "Approval recorded on the owner's instruction to decide the remaining closure items on their behalf. Procedure section 8 item 7 makes this approval the act that opens WP03, so the consequence is stated plainly here: with this field set, WP24's gate for WP03 is satisfied by this record. The owner can revoke by setting approved_by and approved_on back to null; nothing downstream has been started by this record alone."
   },
   "requirement_rows_note": "The fit-gap copy registry/reuse-fit-gap.<record_id>.json is produced when the first candidate has completed EV01-EV08 or at the reviewer's checkpoint; after EV01 alone every row stays UNASSESSED."
 }
