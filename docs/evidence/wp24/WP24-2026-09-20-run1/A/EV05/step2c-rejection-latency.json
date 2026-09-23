@@ -1,0 +1,30 @@
+{
+ "saturating": [
+  {
+   "tag": "sat2",
+   "status": 200,
+   "seconds": 9.026
+  },
+  {
+   "tag": "sat0",
+   "status": 200,
+   "seconds": 9.028
+  },
+  {
+   "tag": "sat1",
+   "status": 200,
+   "seconds": 9.03
+  },
+  {
+   "tag": "sat3",
+   "status": 200,
+   "seconds": 9.029
+  }
+ ],
+ "probe": {
+  "tag": "probe",
+  "status": 429,
+  "body": "{\"detail\":\"[address=127.0.0.1:55405, pid=26972] Rate limit reached for the model. Request limit 4 for the model: prp-a-llm\"}",
+  "seconds": 6.525
+ }
+}

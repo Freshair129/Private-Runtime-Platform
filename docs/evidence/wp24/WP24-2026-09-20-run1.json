@@ -1539,21 +1539,156 @@
       "per_candidate": {
         "A": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-23T14:01:00+00:00",
+          "finished_at": "2026-09-23T14:10:04+00:00",
+          "cold_or_warm": "Warm: the weights were already in the host cache, so the model loaded in 55 s for run (a) and 51 s for run (b). No measurement here depends on load time.",
+          "sample_count": "four listeners probed from four addresses each (16 TCP probes) plus seven HTTP probes; two concurrency runs of 12 requests from 3 OS processes (24 requests total) with 199 and 185 metric scrapes; one rejection-latency measurement with 4 saturating requests plus 1 probe",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/launch-command.txt and the four step JSON files",
+          "source_observations": [
+            "SRC-09: request_limits is a per-model launch parameter defaulting to None (infinity, reported as -1 in metrics); core/model.py raises 'Rate limit reached for the model' above it, which the API returns as HTTP 429. Confirmed by execution.",
+            "SRC-09: the worker metrics exporter is announced only in the server log and serves without any credential even while the REST API is authenticating, which the source does not call out."
+          ],
+          "measurements": [
+            {
+              "name": "step1.listeners_opened",
+              "value": {
+                "rest_api": 9997,
+                "worker_actor": 37149,
+                "model_replica_actor": 60421,
+                "worker_metrics_exporter": 60308
+              }
+            },
+            {
+              "name": "step1.all_listeners_bound_to",
+              "value": "127.0.0.1"
+            },
+            {
+              "name": "step1.non_loopback_probes",
+              "value": "LAN 192.168.1.100, tailnet 100.76.19.65 and WSL switch 172.20.192.1 all refused (ConnectionRefusedError 10061) on all four listeners"
+            },
+            {
+              "name": "step1.rest_api_without_credential",
+              "value": 401
+            },
+            {
+              "name": "step1.metrics_exporter_without_credential",
+              "value": 200
+            },
+            {
+              "name": "step1.rest_port_metrics_without_credential",
+              "value": 200
+            },
+            {
+              "name": "step1.unauthenticated_telemetry_reveals",
+              "value": [
+                "model_name",
+                "model_uid",
+                "worker_address",
+                "gpu_index",
+                "replica_index",
+                "xinference_home",
+                "model_last_load_duration_seconds"
+              ]
+            },
+            {
+              "name": "step1.raw_http_to_actor_ports",
+              "value": "RemoteDisconnected; the actor protocol is not HTTP"
+            },
+            {
+              "name": "step2a.default_limit_value",
+              "value": -1
+            },
+            {
+              "name": "step2a.statuses",
+              "value": {
+                "200": 12
+              }
+            },
+            {
+              "name": "step2a.max_serve_count",
+              "value": 12
+            },
+            {
+              "name": "step2a.scrapes_with_over_count",
+              "value": [
+                0,
+                199
+              ]
+            },
+            {
+              "name": "step2a.all_completed_together_seconds",
+              "value": 29.7
+            },
+            {
+              "name": "step2b.request_limits",
+              "value": 4
+            },
+            {
+              "name": "step2b.statuses",
+              "value": {
+                "200": 4,
+                "429": 8
+              }
+            },
+            {
+              "name": "step2b.max_serve_count",
+              "value": 4
+            },
+            {
+              "name": "step2b.scrapes_with_over_count",
+              "value": [
+                0,
+                185
+              ]
+            },
+            {
+              "name": "step2c.rejection_latency_seconds",
+              "value": 6.525
+            },
+            {
+              "name": "step3.request_limits_readable_from_v1_models",
+              "value": false
+            },
+            {
+              "name": "step3.request_limits_readable_from_metrics_exporter",
+              "value": true
+            },
+            {
+              "name": "step3.other_controls",
+              "value": {
+                "XINFERENCE_BATCH_SIZE": 32,
+                "XINFERENCE_BATCH_INTERVAL": 0.003,
+                "XINFERENCE_MAX_CONCURRENT_LAUNCHES": 5
+              }
+            }
+          ],
+          "observations": [
+            "Step 1: the deployment opens four listeners, not one (REST API, worker actor, model replica actor and a worker metrics exporter announced only in the log). --host 127.0.0.1 binds all four to loopback, and every one refused the host's LAN, tailnet and WSL addresses.",
+            "Step 1: the authentication boundary is narrower than the network boundary. With auth on, /v1/models and /v1/workers return 401 without a credential, but GET /metrics on the API port AND the entire worker metrics exporter return 200 with no credential, revealing model_name, model_uid, worker_address, gpu_index, replica_index and xinference_home. Same class of gap as candidate B's unauthenticated /metrics, though candidate A exposes telemetry only and no inference path.",
+            "Step 1: raw HTTP against the worker or replica actor port gets RemoteDisconnected because the actor protocol is not HTTP, so there is no trivial supervisor bypass there; the sockets are still open to any local process, so isolation rests on the host.",
+            "Step 2a: with the default configuration all 12 concurrent requests from 3 processes were accepted (12 x 200) and finished together at 29.7 s in a single batch. Nothing queued in waves and nothing was rejected. The default limit reads -1, unlimited.",
+            "Step 2b: relaunched with request_limits 4, the same 12 requests gave 4 x 200 and 8 x 429 'Rate limit reached for the model'. The candidate can be configured to reject rather than queue, which is the admission signal FR-018 wants; candidate B queued the excess instead.",
+            "Step 2: the in-flight gauge xinference:model_serve_count never over-counted in either run (0 of 199 and 0 of 185 scrapes exceeded the client-side upper bound of sent-but-not-returned requests), peaking at exactly 12 and exactly 4.",
+            "Step 2c: the rejection is DEFERRED, not immediate. With four long requests in flight, an extra small request returned 429 only after 6.525 s, exactly when the running batch completed. A rejected attempt still consumes the caller's deadline, so the 429 is a correctness signal rather than fast backpressure.",
+            "Step 3: request_limits is a launch parameter that /v1/models does not report back among its 21 fields; the only way to read the effective value is xinference:model_request_limit on the unauthenticated metrics exporter. The other controls (XINFERENCE_BATCH_SIZE 32, XINFERENCE_BATCH_INTERVAL 0.003, XINFERENCE_MAX_CONCURRENT_LAUNCHES 5) are environment-only and not exposed at all."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/step1-listener-exposure.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/step2a-12-concurrent-default.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/step2b-12-concurrent-request-limits-4.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/step2c-rejection-latency.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/worker-metrics-unauthenticated-sample.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV05/xinference-ev05-server-excerpt.log"
+          ],
           "gate_verdicts": {
             "PRP-FR-017": "NOT_RUN",
             "PRP-FR-018": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only. PRP-FR-018: CONFIGURE, and stronger than candidate B on this gate, with conditions PRP carries itself: set request_limits explicitly at launch because the default is unlimited; read the limit and the in-flight count from the metrics exporter and firewall that exporter, since it needs no credential and reveals model identity and placement; treat model_serve_count as trustworthy for over-count purposes; and do not rely on the 429 as fast rejection, because it can take as long as the work in flight. PRP-FR-017 is not dispositioned here: the durable admission transaction is PRP-side and out of scope before M4.",
+          "blocker": "PRP-FR-017 cannot leave NOT_RUN from WP24: its durable admission transaction needs PostgreSQL and fault injection on the PRP side (M4), as the procedure states. One GPU host (DEV-03), so the non-loopback probes came from this host's own addresses rather than a second machine, the same limit that deferred candidate B's step 1b. Windows-native transformers backend (DEV-07), so no timing comparison with candidate B is valid. No internal queue bound was probed."
         },
         "B": {
           "status": "NOT_RUN",

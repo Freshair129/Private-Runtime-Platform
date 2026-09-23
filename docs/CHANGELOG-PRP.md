@@ -272,6 +272,17 @@ repository_integration: NOT_PERFORMED
 - step 4: **ไม่มี retry / failover / hedging ระดับ request เลยในเส้นทางคำขอ** ที่เจอเป็นของการ launch โมเดล จึงไม่มีอะไรต้องปิด และคำถามเรื่อง attempt ที่สองคง deadline เดิมไม่เกิดขึ้นเพราะไม่มี attempt ที่สอง
 - เติม `experiments.EV03.per_candidate.A` (`disposition_hint` = CONFIGURE พร้อมเงื่อนไขที่ PRP ต้องถือเอง, artifacts 9 ไฟล์) และ DEV-08 — **`status` และ `gate_verdicts` (`PRP-NFR-023`) ยัง `NOT_RUN`**
 
+### WP24 EV05 candidate A · atomic multi-process load (2026-09-23, C-2 / H3)
+- รันด้วย `shared_revision` (ไม่ต้องมี deviation ใหม่) และเปิด **auth ตาม default ของ 3.4.0** บน `XINFERENCE_HOME` ใหม่ เพื่อ bootstrap admin ต่อรอบ (credential อยู่ใน env ลบทิ้งหลังรัน) ไม่ต้องใช้ GPU นาน
+- **deployment เปิด 4 listener ไม่ใช่ 1**: REST 9997, worker actor 37149, model replica actor 60421 และ **worker metrics exporter 60308** (ประกาศเฉพาะใน log) — `--host 127.0.0.1` bind ครบทั้งสี่ และ **ปฏิเสธทุก address ที่ไม่ใช่ loopback** (LAN / tailnet / WSL switch = `ConnectionRefusedError 10061`)
+- **ขอบเขต auth แคบกว่าขอบเขต network**: ขณะ `/v1/models` และ `/v1/workers` ตอบ 401 แต่ **`GET /metrics` บนพอร์ต API และ exporter ทั้งตัวตอบ 200 โดยไม่ต้องมี credential** และเปิดเผย `model_name` / `model_uid` / `worker_address` / `gpu_index` / `replica_index` / `xinference_home` — gap ชนิดเดียวกับ `/metrics` ของ B (แต่ A เปิดเฉพาะ telemetry ไม่มีเส้นทาง inference); ยิง HTTP ตรงไปที่ actor port ได้ `RemoteDisconnected` เพราะไม่ใช่โปรโตคอล HTTP
+- **12 request พร้อมกันจาก 3 process — default**: รับหมด 12 × 200 จบพร้อมกันที่ 29.7 s เป็น batch เดียว ไม่มี queue เป็นระลอกและไม่ปฏิเสธ (`model_request_limit` = -1 คือไม่จำกัด) ต่างจาก B ที่ `max_num_seqs 4` แล้ว queue เป็น 3 ระลอก
+- **ตั้ง `request_limits: 4` แล้วยิงซ้ำ**: ได้ **4 × 200 และ 8 × 429** (`Rate limit reached for the model`) → candidate ตั้งให้ **ปฏิเสธ** แทน queue ได้ ซึ่งเป็น admission signal ที่ FR-018 ต้องการ
+- **metric ไม่นับเกินจริงเลย**: `xinference:model_serve_count` ขึ้นสูงสุด 12 และ 4 พอดี และไม่เกิน client-side upper bound ในทุก scrape (0/199 และ 0/185)
+- **แต่การปฏิเสธเป็นแบบหน่วง ไม่ใช่ทันที**: ขณะมี 4 request ค้างอยู่ request เล็กที่ส่งเพิ่มได้ 429 หลัง **6.525 s** พอดีตอน batch จบ → attempt ที่ถูกปฏิเสธยังกิน deadline ของผู้เรียก 429 จึงเป็นสัญญาณความถูกต้อง ไม่ใช่ backpressure ที่เร็ว
+- step 3: `request_limits` **อ่านกลับจาก `/v1/models` ไม่ได้** (21 field ไม่มีค่านี้) อ่านได้ทางเดียวคือ `xinference:model_request_limit` บน exporter ที่ไม่ต้องใช้ credential; ตัวคุมอื่น (`XINFERENCE_BATCH_SIZE` 32, `XINFERENCE_BATCH_INTERVAL` 0.003, `XINFERENCE_MAX_CONCURRENT_LAUNCHES` 5) เป็น env ล้วน ไม่ expose
+- เติม `experiments.EV05.per_candidate.A` (`disposition_hint` = CONFIGURE สำหรับ **FR-018** และดีกว่า B ใน gate นี้, artifacts 9 ไฟล์) — **`FR-017` ยัง dispositioned ไม่ได้** เพราะ durable admission transaction เป็นฝั่ง PRP (M4) ตามที่ procedure ระบุ; **`status` และ `gate_verdicts` (`PRP-FR-017` / `018`) ยัง `NOT_RUN`**
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
