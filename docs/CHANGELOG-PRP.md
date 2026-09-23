@@ -355,6 +355,14 @@ repository_integration: NOT_PERFORMED
 - **EV07 ปิดเป็น `BLOCKED`** สำหรับรอบนี้ ไม่ยกยอดเป็นงานค้าง: speech นอก scope ตามมติ owner, procedure ห้าม stub, และ WP10 ยัง `NOT_STARTED` · `FR-018` ตัดสินจากหลักฐาน EV05 ส่วน `FR-044` คง `UNASSESSED` หลัง blocker
 - `experiments`, `candidates` และ `selected_candidate` ไม่ถูกแตะ · acceptance ทั้ง 92 แถวยัง `NOT_RUN`
 
+### ADR-PRP-014 (PROPOSED) · runtime epoch เป็น opaque token ไม่ใช่ integer ที่เดินหน้า (2026-09-24, C-2 / H2)
+- ตอบ DEC-01 จาก [PROP-2026-09-24](../.brain/proposals/PROP-2026-09-24-lalin-worker-adapter-boundary.md) ที่ทีม worker ของ Lalin ขอก่อนเขียน adapter ที่ M4 · **สถานะ `PROPOSED` รอ owner** และ **ต้องตัดสินก่อน WP03 freeze `prp-worker.yaml`** เพราะหลังจากนั้นเป็น breaking change
+- **แยกสอง epoch ให้ชัด**: `profile_epoch` (integer) เป็นค่าที่ Admission ของ PRP สร้างเอง คงเป็น integer ต่อไป; `ExecutionEvidence.runtime_epoch` เป็นค่าของ runtime ซึ่งเป็นจุดที่สมมติฐาน integer พัง
+- **หลักฐานจาก WP24**: candidate A ที่ถูกเลือก**ไม่มี epoch เลย** (`created` = 0 ตลอด) สัญญาณ restart เดียวคือ address ของ replica ที่เปลี่ยนทุกครั้ง รวมถึงทุกครั้งที่ supervisor relaunch เอง (35–40 s บน 0.6B, 131.8 s บน 4B); candidate B มีแค่ `process_start_time_seconds` บน endpoint ที่ไม่ต้องใช้ credential; worker ของ Lalin ใช้ string `ep-xxxx` → **ไม่มี runtime ใดในหลักฐานให้ integer ที่เดินหน้าเลย**
+- **ตัดสิน**: `runtime_epoch` เป็น opaque string (≤128 ตัวอักษร) · PRP **เทียบเท่ากันเท่านั้น** ไม่ parse ไม่เรียงลำดับ ไม่อนุมานว่า "ใหม่กว่า" · ถ้า runtime ไม่มี token ของตัวเอง adapter สังเคราะห์ขึ้นจากสัญญาณที่เปลี่ยนเมื่อ restart และบันทึกวิธีได้มา · epoch ไม่พิสูจน์ liveness หรือ placement ด้วยตัวเอง (สอดคล้อง NFR-023 และผล EV06 ที่ gauge ค้างหลัง fault)
+- บันทึกทางเลือกที่พิจารณาแล้ว 4 ทาง รวมถึง **fallback แบบเพิ่มฟิลด์พี่น้อง** ถ้า owner ต้องการการเปลี่ยนแปลงแบบ additive และเหตุผลที่ปฏิเสธการ map ใน adapter (state หายตอน restart ซึ่งเป็นจังหวะที่ epoch มีไว้ป้องกันพอดี)
+- ไม่แก้สัญญาใดในตอนนี้ ไม่เปลี่ยน status ใด — ADR เป็นข้อเสนอสำหรับ WP03
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

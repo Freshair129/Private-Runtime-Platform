@@ -328,3 +328,94 @@ Differences that matter: the generated version rejects a naive `observed_at` and
 1. Keep field descriptions in generated code (long lines, `E501` ignored) or strip them (`--use-field-description` off) to keep files short. Recommendation: keep; the contract text next to the type is what reviewers read.
 2. `frozen=True` on contract models (recommended: yes; contract payloads are values, and mutation of a validated request is never intended).
 3. Generate the management contract now while it is DRAFT (recommended: yes, to exercise the pipeline) or wait for the WP03 freeze.
+
+<a id="ADR-PRP-014"></a>
+
+## ADR-PRP-014 — Runtime epoch is an opaque token, not a monotonic integer
+
+**Status:** PROPOSED — awaiting the repository owner. Becomes ACCEPTED only on the owner's word, and must be settled **before WP03 freezes** `contracts/openapi/prp-worker.yaml`, after which the change is breaking.
+**Date:** 2026-09-24
+**Deciders:** Repository owner (C-3 grantor per STD-Execution-Governance §3)
+**Related:** ADR-PRP-011 (thin API, isolated model lifecycles) · ADR-PRP-013 (contract models are generated) · PRP-FR-011 / FR-012 / FR-015 · PRP-NFR-023 · `contracts/openapi/prp-worker.yaml` (`x-prp-status: DRAFT`) · WP24 evidence `docs/evidence/wp24/WP24-2026-09-20-run1.json`
+**Origin:** [PROP-2026-09-24 DEC-01](../.brain/proposals/PROP-2026-09-24-lalin-worker-adapter-boundary.md), raised by the Lalin worker team before writing the RuntimeInvoker adapter at M4
+
+### Context
+
+`prp-worker.yaml` carries two epochs, and they are not the same thing:
+
+| field | type today | meaning |
+|---|---|---|
+| `InvocationRequest.profile_epoch` | `integer`, minimum 0 | the epoch **the reservation was made against**; the worker rejects a mismatch with `409 EPOCH_MISMATCH` |
+| `ExecutionEvidence.runtime_epoch` | `integer`, minimum 0 | the **actual runtime** epoch at observation |
+
+`profile_epoch` is PRP's own value: Admission mints it, so PRP controls its shape and an integer is
+natural. `runtime_epoch` is the runtime's value, and this is where the integer assumption breaks.
+
+**What WP24 measured.** The evaluation deployed both candidates and looked for exactly this signal:
+
+- **Candidate A (Xinference), the selected candidate,** exposes **no epoch at all**. `created` is
+  always `0` in `/v1/models`, and the only identifier that changes across a restart is a per-replica
+  address (`127.0.0.1:62147` → `63318`), while 57 other identifiers stay the same
+  (`A/EV02/FINDINGS.md`). Worse for a counter: the supervisor relaunches a dead replica **without
+  being asked** and the address changes again on every recovery — measured at 35–40 s on a 0.6B model
+  and 131.8 s on the 4B (`A/EV03/FINDINGS.md`, `A/EV06/FINDINGS.md`).
+- **Candidate B (vLLM)** offers only `process_start_time_seconds` from `/metrics`, on an endpoint that
+  answers without a credential (`B/EV02/FINDINGS.md`).
+- The **Lalin speech worker** issues `ep-xxxx`, a string that changes whenever its engine starts, and
+  uses it to reject stale in-flight work with `409 TARGET_MISMATCH`.
+
+So no runtime in evidence supplies a monotonic integer. PRP would be synthesising the value for every
+runtime it drives, and the runtimes that do have a usable signal express it as an opaque string.
+
+The alternative of mapping vendor tokens to integers **inside the adapter** was raised and rejected by
+the requesting team on a sound argument: that table lives in adapter memory and is lost on restart,
+which is precisely the moment an epoch exists to protect.
+
+### Decision
+
+1. **`ExecutionEvidence.runtime_epoch` becomes an opaque string** at the WP03 freeze: a bounded token
+   (`minLength` 1, `maxLength` 128) that PRP treats as a value, not a number.
+2. **PRP compares it for equality only.** It is never parsed, ordered, incremented, or assumed to grow.
+   "Newer" is never inferred from an epoch; freshness comes from PRP's own observation record.
+3. **`profile_epoch` stays an integer.** It is PRP's reservation counter, minted by Admission, and
+   nothing in the evidence argues against an integer for a value PRP itself creates.
+4. **When a runtime supplies no token of its own**, the adapter synthesises one that changes whenever
+   the runtime could have restarted, and records how it was derived. For candidate A that means
+   deriving it from the per-replica address, which WP24 showed changes on every launch and on every
+   unrequested relocation. A synthesised token is still opaque to the rest of PRP.
+5. **A runtime epoch never proves liveness or placement by itself**, consistent with PRP-NFR-023 and
+   with WP24's finding that the candidate's own in-flight gauge goes stale across a fault: it still
+   read `1` thirty seconds after the process died (`A/EV06/FINDINGS.md`).
+
+### Consequences
+
+**Wanted.** Vendor tokens map straight through with no translation table and no state to lose across a
+restart. The contract stops asserting a property (monotonicity) that no measured runtime provides.
+Candidate A becomes expressible at all, since it has no epoch to convert. The Lalin worker's
+`ep-xxxx` maps directly to `runtime_epoch`, and its `409 TARGET_MISMATCH` maps to PRP's
+`EPOCH_MISMATCH`.
+
+**Accepted costs.** Ordering by epoch is no longer available anywhere in PRP; any code that wants
+"which observation is newer" must use PRP's own timestamps. Generated contract models change type
+(ADR-PRP-013: regenerate, never hand-edit). Anything already persisted as an integer needs a
+migration, which is cheap today because no adapter exists before M4 — and expensive after WP03 freezes
+the contract, which is why this is dated now.
+
+**Explicitly not decided here.** How each adapter derives a synthesised token is an implementation
+matter for M4, recorded per adapter rather than in the contract.
+
+### Alternatives considered
+
+| alternative | why not |
+|---|---|
+| Keep `integer`, map vendor tokens in the adapter | Rejected on the requesting team's argument: the mapping is adapter state, lost exactly when a restart makes the epoch matter. It also forces PRP to invent a counter for every runtime |
+| Keep `integer` and add a sibling string field for the runtime's own token | Held as the fallback if the owner prefers an additive change. Costs two epoch-shaped fields whose difference has to be explained every time, and the integer one would carry no runtime meaning |
+| Require runtimes to expose a monotonic epoch | Rejected as unmeetable: WP24 measured that neither candidate does, and PRP cannot impose it on a vendor runtime it merely drives |
+| Drop `runtime_epoch` and rely on `runtime_uid` plus timestamps | Rejected: the point of the field is to detect that the same uid is now a *different* process, which is exactly what candidate A's unrequested relocation produces |
+
+### Open questions for the owner
+
+1. Take the opaque string (recommended), or the additive sibling field.
+2. Bound at 128 characters as proposed, matching `fence_token`'s existing bound in the same contract.
+3. Whether the synthesised-token rule for runtimes without an epoch belongs in this ADR or in the M4
+   adapter design (recommended: the rule stays here, the derivation per adapter goes to M4).
