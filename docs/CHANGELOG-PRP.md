@@ -346,6 +346,15 @@ repository_integration: NOT_PERFORMED
 - **`approved_by` / `approved_on` ยังเป็น `null` โดยตั้งใจ** — §8 ข้อ 7 ระบุว่าการอนุมัติของ owner คือสิ่งที่เปิด WP03 จึงบันทึกเมื่อ owner สั่งชัดเจนเท่านั้น (มี `approval_note` อธิบายไว้ในตัว receipt)
 - `experiments`, `candidates`, `deviations`, `people` และ acceptance ทั้ง 92 แถว **ไม่ถูกแตะ** ทุกอย่างยัง `NOT_RUN`
 
+### WP24 ปิดงาน · 4 ข้อสุดท้ายที่ owner มอบให้ตัดสินแทน (2026-09-24, C-2 / H2)
+> owner สั่งเมื่อ 2026-09-24 ให้ assistant ตัดสิน 4 ข้อที่เหลือแทน · **ทุกข้อบันทึก provenance ไว้ในตัว record ว่าเป็นการตัดสินของ assistant ภายใต้การมอบหมาย ไม่ใช่การตรวจรายฟิลด์ของ owner**
+
+- **อนุมัติแล้ว**: `decision_receipt.approved_by` / `approved_on` = 2026-09-24 และ `people.approver` · `approval_note` ระบุผลที่ตามมาไว้ตรง ๆ ว่า **§8 ข้อ 7 ทำให้การอนุมัตินี้คือสิ่งที่เปิด WP03** และบอกวิธีถอน (ตั้งกลับเป็น `null`) · `run_window.finished_at` = 2026-09-24
+- **deviation ทั้ง 7 รายการที่ยังเปิดอยู่ปิดหมดแล้ว** เป็น `ACCEPTED_LIMITATION_RECORDED` พร้อมเหตุผลรายข้อ: DEV-02 (รับลำดับการรัน ไม่ต้องรัน B ใหม่เพราะ DEV-07 ต่างหากที่ห้ามเทียบเวลา), DEV-03 (เครื่องเดียว — ข้อสรุปในrecord ไม่มีข้อใดอาศัยหลักฐานข้ามเครื่อง), DEV-04 (host ใช้ร่วม — ไม่กระทบเพราะไม่ได้เทียบเวลาอยู่แล้ว), DEV-05 (แคบลง: A วัดทั้ง default และ `request_limits` แล้ว ส่วน B กลายเป็นทางเลือกที่ถูกปฏิเสธ), DEV-06 (พิสูจน์ว่า bundle self-contained แต่ไม่ได้พิสูจน์ข้ามฮาร์ดแวร์ ซึ่ง `rollback_exit_plan` เขียนตรงตามนั้น), **DEV-07 (ยกเป็นข้อจำกัดถาวรของ record นี้** — อ้างอยู่ใน 6 การทดลองของ A, OPERATOR-COST, หัว AB-COMPARISON และ basis ของ receipt; การรัน A บน Linux เป็น trigger ให้ทบทวนการเลือก), DEV-08 (สาเหตุวัดได้แล้ว: 4B ตัวเดียวกิน 10 956 MiB จาก 16 311 MiB)
+- **การตีความกติกา §7 เรื่อง artifact**: กติกาที่ว่า status ที่ไม่ใช่ `NOT_RUN` ต้องมี artifact อย่างน้อยหนึ่ง ถูกอ่านว่าใช้กับ **ผลที่อ้าง** — รายการ `BLOCKED` ยืนยันว่า *ไม่ได้รัน* จึงไม่ติดค้างหลักฐาน และ blocker คือเหตุผลในตัวมันเอง การแนบไฟล์ให้รายการเหล่านั้นคือการสร้างหลักฐานให้การทดลองที่ไม่เคยเกิด (EV07 ของ A มี artifact เพราะรัน partial จริง)
+- **EV07 ปิดเป็น `BLOCKED`** สำหรับรอบนี้ ไม่ยกยอดเป็นงานค้าง: speech นอก scope ตามมติ owner, procedure ห้าม stub, และ WP10 ยัง `NOT_STARTED` · `FR-018` ตัดสินจากหลักฐาน EV05 ส่วน `FR-044` คง `UNASSESSED` หลัง blocker
+- `experiments`, `candidates` และ `selected_candidate` ไม่ถูกแตะ · acceptance ทั้ง 92 แถวยัง `NOT_RUN`
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
