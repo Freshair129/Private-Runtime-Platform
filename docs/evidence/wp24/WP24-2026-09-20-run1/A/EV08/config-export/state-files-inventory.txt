@@ -1,0 +1,32 @@
+# files under XINFERENCE_HOME (the weights cache is a junction to the shared revision and is excluded)
+auth\auth.db	57344 bytes	HOLDS SECRETS - not exported
+download_tasks.db	16384 bytes	state, re-created on start
+launch_history.db	20480 bytes	state, re-created on start
+logs\audit.log	13466 bytes	state, re-created on start
+logs\audit.log.rotate.lock	0 bytes	state, re-created on start
+logs\xinference.log	22102 bytes	state, re-created on start
+logs\xinference.log.rotate.lock	0 bytes	state, re-created on start
+monitor_config.db	12288 bytes	state, re-created on start
+token_routers.db	86016 bytes	state, re-created on start
+token_routers.db-shm	32768 bytes	state, re-created on start
+token_routers.db-wal	0 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\.gitignore	1 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\CACHEDIR.TAG	43 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Lib\site-packages\__pycache__\_virtualenv.cpython-312.pyc	4776 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Lib\site-packages\_virtualenv.pth	18 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Lib\site-packages\_virtualenv.py	5246 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Lib\site-packages\_xinference_parent.pth	39 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate	4148 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate.bat	2728 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate.csh	2678 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate.fish	4389 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate.nu	4004 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate.ps1	2769 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate.xsh	3843 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\activate_this.py	2378 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\deactivate.bat	1730 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\pydoc.bat	1219 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\python.exe	274424 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\Scripts\pythonw.exe	263400 bytes	state, re-created on start
+virtualenv\v4\prp-typhoon25-qwen3-4b\transformers\3.12.10\pyvenv.cfg	156 bytes	state, re-created on start
+worker_recovery\127.0.0.1_57403\models.json	554 bytes	state, re-created on start

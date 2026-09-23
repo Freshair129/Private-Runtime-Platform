@@ -1,0 +1,39 @@
+{
+ "bundle_files_used": [
+  "environment.env",
+  "launch-params.json",
+  "model-registration.json",
+  "reference-from-source.json",
+  "state-files-inventory.txt"
+ ],
+ "junction_created": true,
+ "seconds_until_new_instance_answers": 31.2,
+ "bootstrap_status": 201,
+ "login_status": 200,
+ "register_status": 200,
+ "launch": {
+  "status": 200,
+  "body": {
+   "model_uid": "prp-a-llm"
+  },
+  "seconds": 49.3
+ },
+ "comparison_with_source": {
+  "models_fields_match": true,
+  "model_record_match": true,
+  "model_record_differences": {},
+  "greedy_answer_source": "2, 3, 5, 7, 11",
+  "greedy_answer_imported": "2, 3, 5, 7, 11",
+  "greedy_answer_match": true,
+  "usage_source": {
+   "prompt_tokens": 18,
+   "completion_tokens": 14,
+   "total_tokens": 32
+  },
+  "usage_imported": {
+   "prompt_tokens": 18,
+   "completion_tokens": 14,
+   "total_tokens": 32
+  }
+ }
+}

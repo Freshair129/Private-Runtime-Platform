@@ -2170,20 +2170,169 @@
       "per_candidate": {
         "A": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-23T16:45:00+00:00",
+          "finished_at": "2026-09-23T17:12:00+00:00",
+          "cold_or_warm": "Warm for the source instance (61 s launch, weights already in the host cache). The imported instance is the meaningful timing: it answered 31.2 s after start and launched the model in 49.3 s from the export bundle alone.",
+          "sample_count": "three response shapes captured for leakage (chat completion with headers, model listing, error); one export bundle of 5 files; one full rebuild on a fresh home and port; one key rotation of 4 steps with a 30 s refusal poll; one marker request traced across 57562 scanned files",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/config-export/ and the two step JSON files",
+          "source_observations": [
+            "SRC-09: candidate error bodies embed the internal actor address and pid and list every model uid on the cluster, which the source does not document as a disclosure surface.",
+            "SRC-09: a deployment is fully described by the registration payload plus launch parameters plus environment; nothing had to be copied out of the running instance's state for an identical rebuild."
+          ],
+          "measurements": [
+            {
+              "name": "step1.vendor_identifiers_in_prp_client_yaml",
+              "value": 0
+            },
+            {
+              "name": "step1.client_inventory",
+              "value": "12 paths / 14 operations, info.version 0.3.0, unchanged"
+            },
+            {
+              "name": "step1.validate_docs_errors",
+              "value": 0
+            },
+            {
+              "name": "step1.vendor_words_in_chat_completion_body",
+              "value": []
+            },
+            {
+              "name": "step1.chat_completion_headers",
+              "value": {
+                "server": "uvicorn"
+              }
+            },
+            {
+              "name": "step1.vendor_words_in_models_listing",
+              "value": [
+                "pytorch",
+                "qwen",
+                "transformers",
+                "typhoon",
+                "xinference"
+              ]
+            },
+            {
+              "name": "step1.error_body_discloses",
+              "value": [
+                "internal actor address",
+                "pid",
+                "every model uid on the cluster"
+              ]
+            },
+            {
+              "name": "step2.bundle_files",
+              "value": [
+                "environment.env",
+                "launch-params.json",
+                "model-registration.json",
+                "reference-from-source.json",
+                "state-files-inventory.txt"
+              ]
+            },
+            {
+              "name": "step2.secrets_in_bundle",
+              "value": false
+            },
+            {
+              "name": "step2.seconds_until_imported_instance_answers",
+              "value": 31.2
+            },
+            {
+              "name": "step2.imported_launch_seconds",
+              "value": 49.3
+            },
+            {
+              "name": "step2.models_fields_match",
+              "value": true
+            },
+            {
+              "name": "step2.model_record_match",
+              "value": true
+            },
+            {
+              "name": "step2.greedy_answer_match",
+              "value": true
+            },
+            {
+              "name": "step2.usage_match",
+              "value": {
+                "prompt_tokens": 18,
+                "completion_tokens": 14,
+                "total_tokens": 32
+              }
+            },
+            {
+              "name": "step3.overlap_window_both_keys_work",
+              "value": true
+            },
+            {
+              "name": "step3.seconds_until_old_key_refused",
+              "value": 0.027
+            },
+            {
+              "name": "step3.after_rotation",
+              "value": {
+                "old_key": 401,
+                "new_key": 200
+              }
+            },
+            {
+              "name": "step3.restart_required",
+              "value": false
+            },
+            {
+              "name": "step4.files_scanned",
+              "value": 57562
+            },
+            {
+              "name": "step4.files_changed_after_marker",
+              "value": 5
+            },
+            {
+              "name": "step4.files_containing_marker",
+              "value": 0
+            },
+            {
+              "name": "step4.vendor_datastores",
+              "value": [
+                "auth/auth.db",
+                "auth/encryption_key",
+                "auth/jwt_secret_key",
+                "launch_history.db",
+                "monitor_config.db",
+                "token_routers.db",
+                "download_tasks.db"
+              ]
+            }
+          ],
+          "observations": [
+            "Step 1: the public contract needs no vendor identifier. prp-client.yaml contains no occurrence of xinference, vllm, xoscar, typhoon, qwen or litellm, the client inventory is unchanged at 12 paths and 14 operations, and validate_docs reports 0 errors. The completion body leaks nothing either, because the model field echoes the model_uid that PRP itself chooses.",
+            "Step 1: the sharp finding is the error body. A candidate error carries the internal actor address and pid AND lists every model uid on the cluster, so forwarding it would disclose internal topology and other models' names to a caller. PRP's adapter must replace candidate error bodies wholesale, a stronger requirement than candidate B's, where the leak was confined to headers and ids.",
+            "Step 1: the model listing does carry vendor words (owned_by xinference, model_name, model_engine, model_format, model_family), and the completion headers carry server: uvicorn, the same infrastructure leak candidate B had. Since every client schema sets additionalProperties false, none of it can pass through by accident.",
+            "Step 2: a redacted bundle of five declarative files, with no key material, rebuilt the deployment exactly. The imported instance answered after 31.2 s, launched in 49.3 s, and matched the source on the /v1/models field set, on the full model record apart from address and created, on a fixed greedy answer (2, 3, 5, 7, 11) and on token usage (18/14/32). Nothing had to be copied out of the running instance's state.",
+            "Step 2: the only host-specific steps were generating new secrets and creating the weights junction, the Windows detail EV02 found.",
+            "Step 3: key rotation by overlap then drop works entirely online. Both keys served during the overlap, the deleted key was refused 0.027 s later, the new key kept working, and no step needed a restart. Candidate B needed a new container for each key change.",
+            "Step 3, the plan: because EV04 showed the candidate's key store is reversible, client keys stay with PRP as verifier-only and the candidate never holds one, so client-key rotation is invisible to the candidate. Only the administrative keys PRP uses to drive Xinference rotate through the candidate, by the overlap sequence measured here, and the auth directory must be treated as sensitive because anyone who can read it can decrypt those keys.",
+            "Step 4: no job data reaches any vendor datastore. A marker request was traced across 57 562 scanned files under XINFERENCE_HOME and the venv; only 5 files changed (two logs in each tree plus the run's own server log) and none contained the marker. The vendor's datastores are all local sqlite files under XINFERENCE_HOME, and nothing leaves the host, so PRP can fence deletion by owning the directory."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/config-export/environment.env",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/config-export/launch-params.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/config-export/model-registration.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/config-export/reference-from-source.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/config-export/state-files-inventory.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/step2-import-on-fresh-home.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/steps-1-3-4-leakage-rotation-datastores.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV08/xinference-ev08-import-excerpt.log"
+          ],
           "gate_verdicts": {
             "PRP-NFR-024": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only: ADAPT, and on this gate the exit story is good. The public contract needs no vendor identifier, the deployment exports to five declarative files and re-imports to an identical instance, key rotation is online with no restart, and no job data reaches a vendor datastore. PRP must carry an adapter that replaces candidate error bodies entirely (they disclose the internal address, pid and every model uid), strips the server header, keeps model_uid equal to the public model name, rotates the candidate's administrative keys by overlap then drop, and treats the auth directory as sensitive.",
+          "blocker": "DEV-06: the re-import was on this host with a fresh home directory and port rather than a clean second machine, so it proves the bundle is self-contained but not that it ports to different hardware. DEV-07: the exported environment is Windows-shaped. PRP's adapter layer does not exist before M4, so the strip and rewrite list is recorded as a requirement on PRP rather than exercised through a conformance test. Only one marker request was traced, and no long-running instance under real load was observed."
         },
         "B": {
           "status": "NOT_RUN",

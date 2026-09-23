@@ -1,0 +1,105 @@
+{
+ "step1_vendor_leakage": {
+  "chat_completion": {
+   "status": 200,
+   "headers": {
+    "date": "Wed, 23 Sep 2026 16:54:32 GMT",
+    "server": "uvicorn",
+    "content-length": "299",
+    "content-type": "application/json",
+    "Connection": "close"
+   },
+   "body_top_level_fields": [
+    "choices",
+    "created",
+    "id",
+    "model",
+    "object",
+    "usage"
+   ],
+   "id_prefix": "chatc",
+   "model_field": "prp-a-llm",
+   "vendor_words_in_body": []
+  },
+  "models_listing": {
+   "status": 200,
+   "fields": [
+    "accelerators",
+    "address",
+    "context_length",
+    "created",
+    "id",
+    "model_ability",
+    "model_description",
+    "model_engine",
+    "model_family",
+    "model_format",
+    "model_hub",
+    "model_lang",
+    "model_name",
+    "model_size_in_billions",
+    "model_type",
+    "multimodal_projector",
+    "object",
+    "owned_by",
+    "quantization",
+    "replica",
+    "revision",
+    "strict_system_first"
+   ],
+   "vendor_words_in_body": [
+    "pytorch",
+    "qwen",
+    "transformers",
+    "typhoon",
+    "xinference"
+   ]
+  },
+  "error_response": {
+   "status": 404,
+   "body": {
+    "detail": "[address=127.0.0.1:57403, pid=66248] Model not found in the model list, uid: no-such-model. Available model uids: ['prp-a-llm']"
+   },
+   "vendor_words_in_body": []
+  }
+ },
+ "step3_key_rotation": {
+  "key1_created": 201,
+  "key1_works": 200,
+  "key2_created": 201,
+  "overlap_window": {
+   "key1": 200,
+   "key2": 200
+  },
+  "delete_key1": 200,
+  "seconds_until_old_key_refused": 0.027,
+  "after_rotation": {
+   "key1": 401,
+   "key2": 200
+  },
+  "restart_required_for_any_step": false,
+  "note": "no process restart was needed at any step; candidate B needed a new container per key change"
+ },
+ "step4_job_data": {
+  "marker_request_status": 200,
+  "model_echoed_marker": true,
+  "files_scanned": 57562,
+  "files_changed_after_marker": 5,
+  "files_containing_marker": 0,
+  "changed_file_list": [
+   "home-ev08-src\\logs\\audit.log",
+   "home-ev08-src\\logs\\xinference.log",
+   "logs\\audit.log",
+   "logs\\xinference.log",
+   "xinference-ev08-src.log"
+  ],
+  "marker_hit_list": [],
+  "datastores_under_home": [
+   "auth\\auth.db",
+   "download_tasks.db",
+   "launch_history.db",
+   "monitor_config.db",
+   "token_routers.db"
+  ]
+ }
+}

@@ -1,0 +1,3 @@
+9:2026-09-23T16:57:12.986Z INFO xinference.core.worker pid:9808 role:local address:127.0.0.1:63664 node:DESKTOP-VETATMQ Metrics server is started at: http://127.0.0.1:54650
+37:2026-09-23T16:57:14.453Z INFO xinference.core.worker pid:9808 role:local address:127.0.0.1:63664 node:DESKTOP-VETATMQ Launch started: model_name=prp-typhoon25-qwen3-4b, model_uid=prp-a-ll
+384:2026-09-23T16:58:03.630Z INFO xinference.core.worker pid:9808 role:local address:127.0.0.1:63664 node:DESKTOP-VETATMQ Launch finished: model_name=prp-typhoon25-qwen3-4b, model_uid=prp-a-
