@@ -1827,22 +1827,137 @@
       "per_candidate": {
         "A": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-23T15:17:30+00:00",
+          "finished_at": "2026-09-23T15:31:30+00:00",
+          "cold_or_warm": "Warm start: the model loaded in 62 s with the weights already in the host cache. The recovery timings below are measured from the moment of the kill and include a full model load.",
+          "sample_count": "five fault cases, each measured once against a long generation: streaming cancel, non-streaming cancel, explicit abort, engine-process kill and supervisor restart; one control request to prove the token counter responds; 30 s replay windows after each case; a 240 s timed watch of the abandoned non-streaming generation and a 300 s recovery poll",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/launch-command.txt and the three case JSON files",
+          "source_observations": [
+            "SRC-09: restful_api.py catches asyncio.CancelledError on a disconnected client and calls model_ref.abort_request under asyncio.shield, and ModelActor mixes in CancelMixin. Confirmed for streaming; it does NOT hold for non-streaming requests, where the abandoned generation ran to completion.",
+            "SRC-09: the abort route is not visible in the route table by source inspection; it was found at runtime in /openapi.json as POST /v1/models/{model_uid}/requests/{request_id}/abort and needs a client-supplied request_id."
+          ],
+          "measurements": [
+            {
+              "name": "control.completed_request_moved_token_counter",
+              "value": "0 -> 11 tokens, so a flat counter afterwards is meaningful evidence"
+            },
+            {
+              "name": "a.streaming_cancel_seconds_until_idle",
+              "value": 3.53
+            },
+            {
+              "name": "a.non_streaming_cancel_seconds_until_idle",
+              "value": 61.5
+            },
+            {
+              "name": "a.non_streaming_cancel_tokens_produced_after_client_gone",
+              "value": 900
+            },
+            {
+              "name": "a2.abort_endpoint",
+              "value": "POST /v1/models/{model_uid}/requests/{request_id}/abort"
+            },
+            {
+              "name": "a2.abort_call_status_and_seconds",
+              "value": {
+                "status": 200,
+                "body": "{\"msg\":\"DONE\"}",
+                "seconds": 2.295
+              }
+            },
+            {
+              "name": "a2.seconds_until_idle_after_abort",
+              "value": 0.5
+            },
+            {
+              "name": "b.client_visible_ending_on_engine_kill",
+              "value": "HTTP 200, one chunk, stream ends with no [DONE] and no error object"
+            },
+            {
+              "name": "b.tokens_grew_in_30s_after_kill",
+              "value": 0
+            },
+            {
+              "name": "b.serve_count_30s_after_kill",
+              "value": 1.0
+            },
+            {
+              "name": "b.seconds_from_kill_until_uid_serves_again",
+              "value": 131.8
+            },
+            {
+              "name": "b.errors_during_recovery",
+              "value": [
+                "500 Model prp-a-llm-rep0 is in stopping state",
+                "400 Model not found in the model list"
+              ]
+            },
+            {
+              "name": "c.client_visible_ending_on_supervisor_restart",
+              "value": "ConnectionResetError WinError 10054"
+            },
+            {
+              "name": "c.seconds_until_api_answers_again",
+              "value": 52.8
+            },
+            {
+              "name": "c.custom_registrations_before_after",
+              "value": [
+                [
+                  "prp-typhoon25-qwen3-4b"
+                ],
+                []
+              ]
+            },
+            {
+              "name": "c.models_loaded_before_after",
+              "value": [
+                [
+                  "prp-a-llm"
+                ],
+                []
+              ]
+            },
+            {
+              "name": "c.request_after_restart",
+              "value": "404 Model not found in the model list, uid: prp-a-llm. Available model uids: []"
+            },
+            {
+              "name": "c.orphaned_worker_after_supervisor_kill",
+              "value": "force-killing the supervisor orphaned its WORKER process, which held the model actor sub-pool (xoscar start_sub_pool) with 10610 MiB of VRAM and recreated that sub-pool within about a minute when it was killed by hand; stopping the listener on port 9997 kills the API process only. VRAM fell to 2753 MiB and stayed there only after the orphaned worker itself was killed"
+            },
+            {
+              "name": "blind_replay_observed",
+              "value": false
+            }
+          ],
+          "observations": [
+            "Cancel works for streaming only. Closing the socket on a streaming generation stopped compute within 3.53 s, as the code implies. Closing the socket on a NON-streaming request stopped nothing: the model ran 61.5 s more and produced all 900 tokens it had been given, finishing into a socket nobody was reading. Candidate B stopped compute within 0.19 s in both modes.",
+            "The explicit abort endpoint is the dependable cancel: POST /v1/models/{uid}/requests/{request_id}/abort returned {'msg': 'DONE'} in 2.295 s and the model was idle 0.5 s later. It needs a client-supplied request_id, and it is the only path that also covers non-streaming work.",
+            "No blind replay in any case: generate_tokens_total stayed flat in every window after the client ended, including 30 s after the engine kill, against a control that proved the counter responds to a real completion.",
+            "The in-flight gauge goes stale across a fault: 30 s after the engine process was killed, model_serve_count still read 1 with nothing running. EV05 measured that same gauge as never over-counting under normal load, so it is trustworthy for pressure and untrustworthy for fault reconciliation.",
+            "Unrequested recovery again, and slower with the 4B model: the supervisor relaunched the dead replica by itself and the UID served again 131.8 s after the kill (EV03 measured 35-40 s for a 0.6B model). During that window requests failed with 500 'is in stopping state' and then 400 'not found'.",
+            "A supervisor restart loses all cluster state: the API answered again after 52.8 s but with no custom registration (it had been registered with persist false) and no loaded model, and a request for the UID returned 404 with 'Available model uids: []'. Nothing was replayed and nothing returned on its own; PRP must re-register and re-launch.",
+            "Force-killing the supervisor orphaned its worker process, not merely a stray model process: the orphaned worker held the model actor sub-pool with 10 610 MiB of VRAM and recreated it within about a minute when that sub-pool was killed by hand, which is the unbounded auto-recreate EV03 documented still running with no supervisor above it. Stopping the listener on port 9997 kills the API process only; VRAM fell to 2 753 MiB and stayed there only after the orphaned worker was killed. An operator restarting Xinference without reaping it meets a GPU already occupied by a model no supervisor knows about.",
+            "Step 3, the ending PRP cannot trust: an engine kill mid-generation gives HTTP 200 with a truncated stream, no [DONE] and no error object, which is indistinguishable from success by status code alone. PRP must treat any stream ending without an explicit [DONE] as UNKNOWN per ARCH 11. Candidate B at least emitted an in-stream error object on its engine kill; candidate A emitted nothing."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/case-a-client-cancel-and-abort.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/case-a-non-streaming-cancel-timed.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/case-b-c-engine-kill-and-supervisor-restart.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/xinference-ev06-after-restart-excerpt.log",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV06/xinference-ev06-server-excerpt.log"
+          ],
           "gate_verdicts": {
             "PRP-FR-020": "NOT_RUN",
             "PRP-FR-021": "NOT_RUN",
             "PRP-FR-022": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only: ADAPT. No blind replay was observed in any case and the state after a restart is readable, but PRP must carry the reconciliation itself: cancel through the explicit abort endpoint with a PRP-generated request_id rather than a socket close, since a socket close does nothing for non-streaming work; treat a stream ending without [DONE] as UNKNOWN rather than success; ignore model_serve_count across a fault; expect an unrequested replica relaunch (131.8 s here) and reconcile after it; and after a supervisor restart reap the orphaned worker process (killing the API listener is not enough, and the worker recreates the model actor while it lives), then re-register and re-launch.",
+          "blocker": "One GPU host (DEV-03) and a Windows-native transformers backend (DEV-07), so no timing comparison with candidate B is valid. The supervisor crash was simulated by force-killing the process; no power-loss or disk-fault case was attempted. Registrations with persist true were not tested, so how much a restart would preserve with them is unmeasured. Lease and quota reconciliation are PRP-side and do not exist before M4."
         },
         "B": {
           "status": "NOT_RUN",

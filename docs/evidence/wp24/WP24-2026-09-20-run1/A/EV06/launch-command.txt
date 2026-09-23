@@ -1,0 +1,12 @@
+# EV06 candidate A - as executed (auth disabled for this run; EV05 recorded both postures)
+set XINFERENCE_HOME=F:/prp-xinference-a/home
+set XINFERENCE_AUTH_ADVANCED=0
+F:\prp-xinference-a\Scripts\xinference-local.exe --host 127.0.0.1 --port 9997
+# model: shared_revision, registered as prp-typhoon25-qwen3-4b (persist: false), launched as uid prp-a-llm,
+#        transformers backend, n_gpu 1, one replica
+# worker metrics exporter for this run: http://127.0.0.1:53002/metrics (announced only in the server log)
+#
+# the abort endpoint is NOT visible in the route table by source inspection; it was found at runtime
+# in /openapi.json:
+#   POST /v1/models/{model_uid}/requests/{request_id}/abort
+# and it requires the CLIENT to supply request_id in the chat/completions body.

@@ -1,0 +1,6 @@
+6:2026-09-23T15:29:24.982Z INFO xinference.core.supervisor pid:9200 role:local address:127.0.0.1:28771 node:DESKTOP-VETATMQ Xinference supervisor 127.0.0.1:28771 started
+11:2026-09-23T15:29:25.156Z INFO xinference.core.worker pid:9200 role:local address:127.0.0.1:28771 node:DESKTOP-VETATMQ Connected to supervisor as a fresh worker
+23:2026-09-23T15:29:28.888Z ERROR xinference.core.supervisor pid:9200 role:local address:127.0.0.1:28771 node:DESKTOP-VETATMQ [request 9114a08f-b763-11f1-8fc9-d6d6dfac5530] Leave get_model, error: Mod
+28:  File "F:\prp-xinference-a\Lib\site-packages\xinference\core\supervisor.py", line 5196, in get_model
+30:ValueError: Model not found in the model list, uid: prp-a-llm. Available model uids: []
+31:2026-09-23T15:29:28.892Z ERROR xinference.api.utils pid:21092 role:local address:127.0.0.1:9997 node:DESKTOP-VETATMQ [address=127.0.0.1:28771, pid=9200] Model not found in the model list, uid: prp-

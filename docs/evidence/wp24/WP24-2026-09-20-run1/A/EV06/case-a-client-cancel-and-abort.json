@@ -1,0 +1,58 @@
+{
+ "a_streaming_cancel": {
+  "client": {
+   "status": 200,
+   "chunks_read": 3,
+   "seconds_open": 43.623
+  },
+  "after": {
+   "label": "after streaming cancel",
+   "window_seconds": 30,
+   "tokens_at_start": 0,
+   "tokens_at_end": 0,
+   "tokens_grew_after_client_gone": 0,
+   "serve_count_at_start": 1.0,
+   "serve_count_at_end": 0.0,
+   "seconds_until_serve_count_zero": 3.53
+  }
+ },
+ "a_non_streaming_cancel": {
+  "client": {
+   "closed_after_seconds": 4.0,
+   "note": "no response was ever read"
+  },
+  "after": {
+   "label": "after non-streaming cancel",
+   "window_seconds": 30,
+   "tokens_at_start": 0,
+   "tokens_at_end": 0,
+   "tokens_grew_after_client_gone": 0,
+   "serve_count_at_start": 1.0,
+   "serve_count_at_end": 1.0,
+   "seconds_until_serve_count_zero": null
+  }
+ },
+ "a2_explicit_abort": {
+  "request_id": "prp-ev06-abort-1",
+  "abort_call": {
+   "status": 200,
+   "body": "{\"msg\":\"DONE\"}",
+   "seconds": 2.295
+  },
+  "client": {
+   "status": 200,
+   "chunks_read": 10,
+   "seconds_open": 11.436
+  },
+  "after": {
+   "label": "after explicit abort",
+   "window_seconds": 30,
+   "tokens_at_start": 0,
+   "tokens_at_end": 0,
+   "tokens_grew_after_client_gone": 0,
+   "serve_count_at_start": 0.0,
+   "serve_count_at_end": 0.0,
+   "seconds_until_serve_count_zero": 0.5
+  }
+ }
+}

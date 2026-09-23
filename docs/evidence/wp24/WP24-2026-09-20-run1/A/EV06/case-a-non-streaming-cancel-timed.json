@@ -1,0 +1,69 @@
+{
+ "control_completed_request": {
+  "completion_tokens": 11,
+  "tokens_before": 0,
+  "tokens_after": 11.0,
+  "counter_moved": true
+ },
+ "non_streaming_cancel": {
+  "client_closed_after_seconds": 4.0,
+  "seconds_from_client_close_until_model_idle": 61.5,
+  "tokens_before": 11.0,
+  "tokens_after": 911.0,
+  "tokens_added_by_the_abandoned_request": 900.0,
+  "timeline_head": [
+   {
+    "t": 1.0,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 2.0,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 3.0,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 4.0,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 5.0,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 6.1,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   }
+  ],
+  "timeline_tail": [
+   {
+    "t": 58.5,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 59.5,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 60.5,
+    "serve_count": 1.0,
+    "tokens": 11.0
+   },
+   {
+    "t": 61.5,
+    "serve_count": 0.0,
+    "tokens": 911.0
+   }
+  ]
+ }
+}
