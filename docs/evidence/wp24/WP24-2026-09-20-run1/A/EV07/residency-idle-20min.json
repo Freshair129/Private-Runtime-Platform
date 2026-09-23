@@ -1,0 +1,464 @@
+{
+ "idle_minutes": 20.0,
+ "samples_taken": 41,
+ "vram_first": 8820,
+ "vram_last": 9235,
+ "vram_min": 8808,
+ "vram_max": 9237,
+ "vram_drop_mib": 429,
+ "uid_present_in_every_sample": true,
+ "samples_where_uid_absent": [],
+ "samples": [
+  {
+   "t_min": 0.0,
+   "vram_mib": 8820,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 0.5,
+   "vram_mib": 8864,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 1.0,
+   "vram_mib": 8826,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 1.5,
+   "vram_mib": 8808,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 2.0,
+   "vram_mib": 8808,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 2.51,
+   "vram_mib": 8808,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 3.01,
+   "vram_mib": 8808,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 3.51,
+   "vram_mib": 8808,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 4.01,
+   "vram_mib": 8808,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 4.51,
+   "vram_mib": 8809,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 5.01,
+   "vram_mib": 8809,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 5.51,
+   "vram_mib": 8809,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 6.01,
+   "vram_mib": 8809,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 6.51,
+   "vram_mib": 8809,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 7.02,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 7.52,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 8.02,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 8.52,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 9.02,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 9.52,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 10.02,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 10.52,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 11.02,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 11.52,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 12.03,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 12.53,
+   "vram_mib": 9237,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 13.03,
+   "vram_mib": 9236,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 13.53,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 14.03,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 14.53,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 15.03,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 15.53,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 16.03,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 16.54,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 17.04,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 17.54,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 18.04,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 18.54,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 19.04,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 19.54,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  },
+  {
+   "t_min": 20.04,
+   "vram_mib": 9235,
+   "models": [
+    "prp-a-llm"
+   ],
+   "exporter": {
+    "serve_count_series": false,
+    "model_load_series": true
+   }
+  }
+ ]
+}

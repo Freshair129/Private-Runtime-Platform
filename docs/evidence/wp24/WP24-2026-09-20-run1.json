@@ -2107,20 +2107,99 @@
       "per_candidate": {
         "A": {
           "status": "BLOCKED",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-23T17:20:00+00:00",
+          "finished_at": "2026-09-23T18:12:00+00:00",
+          "cold_or_warm": "Not applicable to the experiment, which did not run. For the partial: the model was launched warm (51 s) on a fresh XINFERENCE_HOME and then left idle for 20 minutes.",
+          "sample_count": "partial only: 41 idle samples at 30 s intervals over 20 minutes; one supervisor-kill and fresh-instance orphan test; two stalled launches observed on a reused home directory",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/FINDINGS.md and docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/test-design.md",
+          "source_observations": [
+            "SRC-09: there is no idle timeout, no model TTL and no keep-alive eviction anywhere for a loaded model; the only TTL in constants.py caches a memory reading for 90 s. Confirmed by a 20-minute idle watch.",
+            "SRC-09: _cleanup_gpu_orphans_on_startup only kills a GPU-holding process when its PPID is 1 AND its command line looks like vLLM, so it cannot act on a Windows transformers deployment. Confirmed by execution."
+          ],
+          "measurements": [
+            {
+              "name": "partial.idle_minutes",
+              "value": 20
+            },
+            {
+              "name": "partial.idle_samples",
+              "value": 41
+            },
+            {
+              "name": "partial.uid_present_in_every_sample",
+              "value": true
+            },
+            {
+              "name": "partial.vram_first_last_mib",
+              "value": [
+                8820,
+                9235
+              ]
+            },
+            {
+              "name": "partial.vram_min_max_mib",
+              "value": [
+                8808,
+                9237
+              ]
+            },
+            {
+              "name": "partial.silent_unload_events",
+              "value": 0
+            },
+            {
+              "name": "partial.idle_unload_mechanism_in_code",
+              "value": "none exists"
+            },
+            {
+              "name": "partial.placement_strategy_default",
+              "value": "XINFERENCE_LAUNCH_STRATEGY=IDLE_FIRST_LAUNCH_STRATEGY; skipped entirely when gpu_idx is passed at launch"
+            },
+            {
+              "name": "partial.launch_body_documented_in_openapi",
+              "value": false
+            },
+            {
+              "name": "partial.auto_recover_default",
+              "value": "unbounded; boundable by XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT, not disableable"
+            },
+            {
+              "name": "partial.orphan_after_supervisor_kill_vram_mib",
+              "value": 9235
+            },
+            {
+              "name": "partial.orphan_reaped_by_fresh_instance_startup_cleanup",
+              "value": false
+            },
+            {
+              "name": "partial.startup_cleanup_log",
+              "value": "Startup GPU orphan cleanup: 23 GPU-occupying process(es) found, none are vLLM orphans (all have live parents or non-matching cmdline)"
+            },
+            {
+              "name": "partial.stalled_launches_on_reused_home",
+              "value": "2 launches stalled about 10 minutes each with no VRAM allocated and no error; the same launch on a fresh home succeeded in 51 s"
+            }
+          ],
+          "observations": [
+            "EV07 itself did not run and its status is unchanged. scope_decisions.speech_in_scope is false (owner, 2026-09-20) and the procedure forbids substituting a stub, so no mixed chat/ASR/TTS load was attempted. A lalin-voice-worker-tts image exists on this host from unrelated work; it is not a WP10 deliverable and has no license receipt in shared_revision, so it was not used. Owner approved this candidate-side partial on 2026-09-24.",
+            "Partial, residency: the candidate never unloads a resident model. Over a 20-minute idle window the uid was present in all 41 samples, VRAM went from 8 820 to 9 235 MiB (it rose slightly, from other desktop software on the same card) and no unload or evict line appeared. The code has no idle timeout, model TTL or keep-alive eviction at all, so P1's resident-LLM requirement is met by default with nothing to disable.",
+            "Partial, placement: the supervisor chooses the GPU by XINFERENCE_LAUNCH_STRATEGY, default IDLE_FIRST_LAUNCH_STRATEGY, and that choice is skipped entirely when gpu_idx is passed at launch. This is the switch that makes candidate A obey a PRP-owned admission authority. It is not discoverable from the API: POST /v1/models has no documented request body at all in /openapi.json, so gpu_idx, request_limits and replica exist only in the source, the same pattern as EV05 and EV06.",
+            "Partial, orphan cleanup: the shipped startup cleanup does not reap what this deployment leaves behind. After a supervisor kill the orphan held 9 235 MiB, and a fresh instance (up in 51.6 s) left VRAM unchanged, logging '23 GPU-occupying process(es) found, none are vLLM orphans (all have live parents or non-matching cmdline)'. The cleanup only matches PPID 1 plus a vLLM-like command line, so on Windows with transformers it never fires. EV06's orphan finding now has its mechanism, and PRP must reap orphans itself.",
+            "Operational hazard found while running the partial: two launches stalled for about 10 minutes each with no VRAM and no error against the XINFERENCE_HOME reused from EV06, whose per-model virtualenv EV06's deliberate kills had left behind. The same registration and launch on a fresh home succeeded in 51 s. A hard kill can therefore leave the per-model environment in a state where later launches hang silently, and the recovery is to discard that home directory. Log rotation also failed repeatedly at the local date rollover with PermissionError WinError 32 because several processes hold the same log file."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/residency-idle-20min.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/stalled-launch-log-excerpt.log",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/startup-cleanup-log-excerpt.log",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/startup-orphan-cleanup-test.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV07/test-design.md"
+          ],
           "gate_verdicts": {
             "PRP-FR-018": "BLOCKED",
             "PRP-FR-044": "BLOCKED"
           },
-          "disposition_hint": null,
+          "disposition_hint": "Operator suggestion only, and for the partial only: on the residency question candidate A behaves as P1 needs, since it never unloads a resident model and its placement auto-management is fully disableable with gpu_idx. No disposition is proposed for EV07 itself, which did not run.",
           "blocker": "speech out of WP24 scope; blocked until WP10 (owner decision 2026-09-20)"
         },
         "B": {

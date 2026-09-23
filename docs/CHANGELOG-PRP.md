@@ -305,6 +305,14 @@ repository_integration: NOT_PERFORMED
 - เติม `experiments.EV08.per_candidate.A` (`disposition_hint` = **ADAPT**, artifacts 10 ไฟล์ รวม `config-export/`) — **`status` และ `gate_verdicts` (`PRP-NFR-024`) ยัง `NOT_RUN`**
 - ครบทุก mandatory gate ของ candidate A แล้ว (EV02, EV03, EV04, EV05, EV06, EV08) — ทุก `status` ยัง `NOT_RUN` รอ reviewer
 
+### WP24 EV07 candidate A · partial เฉพาะ residency (2026-09-24, C-2 / H3)
+- **EV07 ยัง `BLOCKED` และ blocker ไม่เปลี่ยน**: `scope_decisions.speech_in_scope = false` (owner 2026-09-20) และ procedure ห้ามใช้ stub จึง **ไม่รัน mixed chat + ASR + TTS**; image `lalin-voice-worker-tts` ที่มีบนเครื่องเป็นงานคนอื่น ไม่ใช่ deliverable ของ WP10 และไม่มี license receipt ใน `shared_revision` จึงไม่ใช้ · owner อนุมัติให้ทำเฉพาะส่วนฝั่ง candidate เมื่อ 2026-09-24
+- **candidate ไม่ unload โมเดลเองเลย**: ปล่อย idle 20 นาที เก็บ 41 sample → uid อยู่ครบทุก sample, VRAM 8 820 → 9 235 MiB (ขึ้นเล็กน้อยจากโปรแกรมอื่นบนการ์ด ไม่ใช่ลด) และไม่มี log unload/evict; ใน code **ไม่มี idle timeout / model TTL / keep-alive eviction** เลย → ข้อกำหนด P1 ที่ LLM ต้อง resident ผ่านโดย default ไม่มีอะไรต้องปิด
+- **placement เป็น auto-management ที่ปิดได้**: `XINFERENCE_LAUNCH_STRATEGY` default `IDLE_FIRST_LAUNCH_STRATEGY` แต่ถ้าส่ง `gpu_idx` ตอน launch จะข้าม strategy ทั้งหมด — เป็นสวิตช์ที่ทำให้ A เชื่อฟัง admission authority ของ PRP; **แต่ `POST /v1/models` ไม่มี request body ใน `/openapi.json` เลย** `gpu_idx` / `request_limits` / `replica` จึงรู้ได้จาก source เท่านั้น (รูปแบบเดียวกับ EV05 และ EV06)
+- **startup GPU-orphan cleanup ของ candidate ไม่ช่วยอะไรกับ deployment นี้**: หลัง kill supervisor orphan ถือ 9 235 MiB และ instance ใหม่ (ขึ้นใน 51.6 s) ไม่ลดลงเลย log บอกเอง `23 GPU-occupying process(es) found, none are vLLM orphans (all have live parents or non-matching cmdline)` เพราะเงื่อนไขคือ PPID 1 + cmdline แบบ vLLM เท่านั้น → ยืนยันกลไกเบื้องหลังสิ่งที่ EV06 เจอ PRP ต้อง reap เอง
+- **อันตรายเชิงปฏิบัติที่เจอระหว่างทาง**: launch **ค้างเงียบ ๆ ~10 นาที 2 ครั้ง** (ไม่จอง VRAM ไม่มี error) บน `XINFERENCE_HOME` ที่ใช้ซ้ำจาก EV06 ซึ่ง virtualenv ต่อโมเดลถูกทิ้งค้างจากการ kill ใน EV06 — ใช้ home ใหม่แล้ว launch สำเร็จใน 51 s; และตอนวันเปลี่ยน log rotation ล้มซ้ำ ๆ ด้วย `PermissionError WinError 32` เพราะหลาย process ถือ log ไฟล์เดียวกัน
+- เติมเฉพาะ `observations` / `measurements` / `artifacts` (6 ไฟล์) ใน `experiments.EV07.per_candidate.A` — **`status` ยัง `BLOCKED` และ `gate_verdicts` (`PRP-FR-018` / `044`) ยัง `NOT_RUN`**
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
