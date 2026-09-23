@@ -324,6 +324,19 @@ repository_integration: NOT_PERFORMED
 - **licenses**: runtime Apache-2.0 ทั้งชุด, torch BSD-3 + NVIDIA CUDA EULA ที่ bundle มา, โมเดลเป็น BYOM ต้องมี receipt ตาม SEC-007 — ไม่มี licence ที่ต้องจ่ายเงิน
 - **ทักษะที่ต้องมี** 6 ข้อ รวมถึงข้อที่ว่า **สามอย่างที่ต้องใช้ใน production ไม่มีใน API หรือเอกสาร ต้องอ่าน source เอง** (abort route, launch parameters, auth switch)
 
+### WP24 fit-gap 92 แถว + งานบันทึกค้าง (2026-09-24, C-2 / H2)
+- สร้าง **`docs/registry/reuse-fit-gap.WP24-2026-09-20-run1.json`** เป็น **copy** จาก template (template เดิมไม่ถูกแตะ ยืนยันแล้ว) ครบ **92 แถว เรียงและ id ตรงกับ template ทุกแถว**
+  - **24 แถว** ที่ STACK §6 ผูกกับ EV จริง เติมคอลัมน์ฝั่ง operator ครบ: `observed_capability` แยก A/B, `evidence` (path artifact จริง), `limitation`, `custom_gap`, `maintenance_exit_risk`, `pinned_version`, `upstream_source`
+  - **68 แถว** ที่ไม่มี EV ใดแมป (proof เป็นงานฝั่ง PRP เองหลัง M4) ใส่ **BLOCKER** ชัดเจนใน `limitation` ตาม §8 ข้อ 3 ที่ยอมรับ blocker แทน disposition ได้
+- **reviewer (เจ้าของ repo ตาม §9 ข้อ 4) รับ hint ของ operator เมื่อ 2026-09-24** → ลง `disposition` **19 แถว** เฉพาะกรณีที่ **hint ของ A และ B ตรงกัน** ค่านี้จึง **ไม่ได้เลือก candidate**: `BUILD-GAP` 7 แถว (FR-003..009), `ADAPT` 10 แถว (FR-010..015, FR-020..022, NFR-024), `CONFIGURE` 2 แถว (FR-018, NFR-023) · บันทึกที่มาไว้ทุกแถวใน `disposition_basis` รวมถึงว่า **ทางเลือก CONFIGURE ของ LiteLLM ใน FR-003..009 ยังไม่ถูกเลือก** เพราะขัด ADR-PRP เรื่อง client-key authority เดียว
+  - **reviewer ตัดสิน `NFR-019` / `021` / `022` = `ADAPT`** เมื่อ 2026-09-24 (hint ของ A ใน EV01 เปิดไว้ระหว่าง REUSE client SDK กับ ADAPT thin HTTP client และ EV02–EV03 ที่รออยู่รันเสร็จแล้ว; ของ B คือ ADAPT อยู่แล้ว) → PRP เขียน thin HTTP client เอง ไม่รับ SDK ของ vendor · ค่านี้เท่ากันทั้ง A และ B จึงไม่ได้เลือก candidate
+  - ยัง `UNASSESSED` โดยตั้งใจเหลือ `FR-017`, `FR-044` และ 68 แถวที่ไม่มี EV แมป — ทุกแถวมี BLOCKER ระบุไว้
+  - **ผลรวม: `disposition` ครบ 22 แถว (BUILD-GAP 7, ADAPT 13, CONFIGURE 2) และอีก 70 แถวมี BLOCKER → §8 ข้อ 3 ผ่านแล้ว** (ไม่มีแถวใดที่ไม่มีทั้ง disposition และ blocker, ไม่มี P1 Must เป็น DEFER)
+  - **`disposition` ไม่ใช่ gate verdict**: `status` ของทุก EV, `gate_verdicts` และ acceptance ทั้ง 92 แถวยัง `NOT_RUN` ตามเดิม
+- ชี้ `requirement_rows_file` ไปยัง fit-gap copy, ตั้ง `environment.weights_cache_kept_between_candidates: true` (หลักฐาน `A/EV02/reset-between-candidates.txt`) และแก้ `template_note` ที่ค้างอยู่ตั้งแต่ตอนรันแค่ EV01 + B
+- **DEV-02**: แก้ข้อความ `observed` ที่กลายเป็นเท็จ ("candidate A ยังไม่ได้รัน") ให้ตรงกับสถานะจริง และบันทึก `resolution` พร้อมหลักฐาน — **คง `status: OPEN` และ `reviewer_action` เดิมทุกตัวอักษร** เพราะการยอมรับลำดับการรันเป็นการตัดสินของ reviewer; deviation อื่นไม่ถูกแตะ
+- เพิ่ม **`AB-COMPARISON.md`** ที่ราก evidence ของ record เป็นเอกสารช่วยอ่านสำหรับ reviewer: เทียบ A กับ B ราย EV และราย operator cost จากหลักฐานที่ merge แล้ว **ไม่มีการวัดใหม่และไม่มี verdict ใด ๆ** · ขึ้นต้นด้วยคำเตือน DEV-07 ว่าตัวเลขเวลาเทียบกันไม่ได้ · ตรวจแล้วว่า **ตัวเลขทุกตัว 134 ค่าไล่กลับไปหาต้นทางในไฟล์หลักฐาน 160 ไฟล์ได้ครบ** และ claim เชิงคุณภาพที่เสี่ยงทำให้เข้าใจผิด 4 ข้อถูกไล่ทีละข้อ (`/invocations` ของ B ที่ไม่ต้องใช้ credential, telemetry ไป `stats.vllm.ai`, โหมดอ่าน `/key/info`, และการที่ B ไม่เคยลอง upgrade/rollback ขณะที่ A ลองแล้ว)
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

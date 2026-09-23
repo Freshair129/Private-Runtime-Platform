@@ -1,0 +1,3312 @@
+{
+  "kind": "TEMPLATE_NOT_RESULTS",
+  "version": "0.4.0-draft",
+  "record_id": "WP24-2026-09-20-run1",
+  "derived_from_template": "docs/registry/reuse-fit-gap-template.json",
+  "prepared_on": "2026-09-24",
+  "preparation_note": "Copy of the template filled with WP24 run evidence. Operator-owned columns only: candidate, pinned_version, upstream_source, observed_capability, evidence, limitation, custom_gap and maintenance_exit_risk come from the merged run record and the artifact tree. disposition is left UNASSESSED and runtime_test_status stays NOT_RUN for every row: the verdicts belong to the reviewer, and the operator may record only a disposition_hint, which lives per experiment in the run record. Procedure section 8 item 3 is satisfied row by row either by an operator hint recorded in the run record for the requirement's experiment, or by an explicit BLOCKER stated in `limitation` for the 68 rows no WP24 experiment maps to.",
+  "row_counts": {
+    "total": 92,
+    "with_wp24_experiment_evidence": 24,
+    "blocked_no_experiment_maps": 68,
+    "disposition_unassessed": 70,
+    "disposition_assigned": 22,
+    "by_disposition": {
+      "UNASSESSED": 70,
+      "BUILD-GAP": 7,
+      "ADAPT": 13,
+      "CONFIGURE": 2
+    }
+  },
+  "reviewer_action_required": "Reviewer decisions of 2026-09-24 are applied: the operator hints were accepted for the 19 rows where candidate A and candidate B were hinted the same disposition, and ADAPT was chosen for PRP-NFR-019, PRP-NFR-021 and PRP-NFR-022, where candidate A's EV01 hint had left REUSE and ADAPT open. None of these values selects a candidate, because each is the same for A and B; the basis is recorded per row in disposition_basis. PRP-FR-017 and PRP-FR-044 remain UNASSESSED behind stated blockers, as do the 68 rows that no WP24 experiment maps to, which procedure section 8 item 3 allows. Still outstanding for the reviewer: the decision_receipt (candidate selection, rejected_alternatives, rollback_exit_plan and signature) and the seven OPEN deviations.",
+  "canonical_requirements": "docs/SRS-PRP.md",
+  "experiments": {
+    "EV01": {
+      "title": "Clean control install",
+      "expected_evidence": "Python version/lock, no desktop dependency, control import without ML/GPU",
+      "gate": [
+        "PRP-NFR-019",
+        "PRP-NFR-021",
+        "PRP-NFR-022"
+      ]
+    },
+    "EV02": {
+      "title": "Real A/B registration",
+      "expected_evidence": "protected endpoint auth, model profile, distinct physical GPUs and epochs",
+      "gate": [
+        "PRP-FR-010",
+        "PRP-FR-011",
+        "PRP-FR-012",
+        "PRP-FR-013",
+        "PRP-FR-014",
+        "PRP-FR-015"
+      ]
+    },
+    "EV03": {
+      "title": "Target binding",
+      "expected_evidence": "request lease matches actual node, including framework routing/retry",
+      "gate": [
+        "PRP-NFR-023"
+      ]
+    },
+    "EV04": {
+      "title": "Identity/key semantics",
+      "expected_evidence": "hash/verifier or conforming authority, no reveal, scoped listing/jobs/files/revoke",
+      "gate": [
+        "PRP-FR-003",
+        "PRP-FR-004",
+        "PRP-FR-005",
+        "PRP-FR-006",
+        "PRP-FR-007",
+        "PRP-FR-008",
+        "PRP-FR-009"
+      ]
+    },
+    "EV05": {
+      "title": "Atomic multi-process load",
+      "expected_evidence": "no duplicated capacity/quota holds; no bypass direct worker",
+      "gate": [
+        "PRP-FR-017",
+        "PRP-FR-018"
+      ]
+    },
+    "EV06": {
+      "title": "Timeout/restart",
+      "expected_evidence": "UNKNOWN/QUARANTINED evidence, no blind inference replay",
+      "gate": [
+        "PRP-FR-020",
+        "PRP-FR-021",
+        "PRP-FR-022"
+      ]
+    },
+    "EV07": {
+      "title": "Mixed chat/speech",
+      "expected_evidence": "resident profile + actual placement, no silent unload or OOM under admitted load",
+      "gate": [
+        "PRP-FR-018",
+        "PRP-FR-044"
+      ]
+    },
+    "EV08": {
+      "title": "Adapter/exit",
+      "expected_evidence": "public schemas unchanged; config export; key rotation plan; deletion fences preserved",
+      "gate": [
+        "PRP-NFR-024"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "requirement_id": "PRP-FR-001",
+      "title": "Independent bootstrap",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-001",
+      "proof": "deployment",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (deployment) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-002",
+      "title": "Application-neutral boundary",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-002",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-003",
+      "title": "PRP-owned organization isolation",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-003",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "No organization concept exists: the auth schema has users and API keys only (EV04 step 2).",
+        "B": "Bare vLLM has no tenancy at all; LiteLLM offers teams (EV04, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV04"
+        ],
+        "artifact_folders": [
+          "A/EV04: EV04/ (4 artifacts)",
+          "B/EV04: EV04/ (7 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "A cannot express organization isolation; PRP must own it.",
+      "disposition": "BUILD-GAP",
+      "custom_gap": "PRP builds organization isolation itself.",
+      "maintenance_exit_risk": "Adopting the candidate's user model would silently flatten tenancy.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV04. Candidate A: BUILD-GAP for the key authority, because its store is reversible. Candidate B, bare vLLM: BUILD-GAP for FR-003..009, no scope vocabulary and no revoke API. Both candidates agree, so this value does not select a candidate. Candidate B's LiteLLM layer was hinted CONFIGURE for issuance, scoping, storage and revocation; the operator recorded that whether LiteLLM may be the key authority, against ADR-PRP's rule of exactly one client-key authority, is the reviewer's call and it was NOT taken here."
+    },
+    {
+      "requirement_id": "PRP-FR-004",
+      "title": "Roles and delegated management",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-004",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Real user scopes exist and are enforced: 12 values including admin, keys:create, keys:manage, users:manage; a non-admin got 403 both for listing keys and for revealing another user's key (EV04 step 2).",
+        "B": "Bare vLLM has no roles; LiteLLM has key-level scoping (EV04, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV04"
+        ],
+        "artifact_folders": [
+          "A/EV04: EV04/ (4 artifacts)",
+          "B/EV04: EV04/ (7 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Scopes are per user, not per organization or application.",
+      "disposition": "BUILD-GAP",
+      "custom_gap": "Mapping PRP roles onto the candidate's scopes, for administrative access only.",
+      "maintenance_exit_risk": "Scope names are vendor-specific and shift between versions.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV04. Candidate A: BUILD-GAP for the key authority, because its store is reversible. Candidate B, bare vLLM: BUILD-GAP for FR-003..009, no scope vocabulary and no revoke API. Both candidates agree, so this value does not select a candidate. Candidate B's LiteLLM layer was hinted CONFIGURE for issuance, scoping, storage and revocation; the operator recorded that whether LiteLLM may be the key authority, against ADR-PRP's rule of exactly one client-key authority, is the reviewer's call and it was NOT taken here."
+    },
+    {
+      "requirement_id": "PRP-FR-005",
+      "title": "Scoped key issuance",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-005",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-10",
+          "finding": "Documented recoverable/reveal-able native keys do not by themselves satisfy verifier-only client keys (PRP-FR-005); Xinference may still be evaluated for internal lifecycle under separately protected service credentials.",
+          "doc_ref": "ADR-PRP-004; ARCH-PRP 3; STACK-EVALUATION-PRP 4; SECURITY-DATA-PRP 9. Framework delegation and Python isolation",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-03",
+          "finding": "LiteLLM virtual keys/routing are an optional key or router layer for A or B, not a mandatory dependency and not a reason for a second user-key store; implicit retries, failover or hedging must not bypass admission or the original deadline.",
+          "doc_ref": "STACK-EVALUATION-PRP 2; ARCH-PRP 3; API-PRP addendum",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "FAILS by the procedure's own criterion: GET /v1/admin/keys/{id}/reveal returned the plaintext key matching the one issued, because create_api_key_for_user stores both sha256(key) and an AES-encrypted copy, and the AES key sits in the same directory as the database (EV04 step 1).",
+        "B": "LiteLLM stores key hashes; plaintext is not recoverable from its store (EV04, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV04"
+        ],
+        "artifact_folders": [
+          "A/EV04: EV04/ (4 artifacts)",
+          "B/EV04: EV04/ (7 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Criterion in WP24-EXPERIMENT-PROCEDURE EV04: FR-005 fails as soon as a key can be read back after issue. Confirmed by execution, not inferred.",
+      "disposition": "BUILD-GAP",
+      "custom_gap": "PRP holds all client keys itself, verifier-only, as ADR-PRP already requires.",
+      "maintenance_exit_risk": "Any backup of XINFERENCE_HOME/auth carries recoverable client keys.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV04. Candidate A: BUILD-GAP for the key authority, because its store is reversible. Candidate B, bare vLLM: BUILD-GAP for FR-003..009, no scope vocabulary and no revoke API. Both candidates agree, so this value does not select a candidate. Candidate B's LiteLLM layer was hinted CONFIGURE for issuance, scoping, storage and revocation; the operator recorded that whether LiteLLM may be the key authority, against ADR-PRP's rule of exactly one client-key authority, is the reviewer's call and it was NOT taken here."
+    },
+    {
+      "requirement_id": "PRP-FR-006",
+      "title": "Key rotation and revocation",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-006",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Rotation and revocation both work and are fast: a deleted key was refused 0.037 s later, a deleted user's token 0.012 s later with its refresh token returning 401, and rotation by overlap-then-drop needed no restart (EV04 step 3, EV08 step 3).",
+        "B": "LiteLLM can rotate, but each key change needed a new container (EV08, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV04"
+        ],
+        "artifact_folders": [
+          "A/EV04: EV04/ (4 artifacts)",
+          "B/EV04: EV04/ (7 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Applies to the candidate's own administrative keys; client keys are not held here (see FR-005).",
+      "disposition": "BUILD-GAP",
+      "custom_gap": "PRP drives rotation of the candidate's administrative keys by overlap-then-drop.",
+      "maintenance_exit_risk": "Rotation depends on a store that is reversible (FR-005).",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV04. Candidate A: BUILD-GAP for the key authority, because its store is reversible. Candidate B, bare vLLM: BUILD-GAP for FR-003..009, no scope vocabulary and no revoke API. Both candidates agree, so this value does not select a candidate. Candidate B's LiteLLM layer was hinted CONFIGURE for issuance, scoping, storage and revocation; the operator recorded that whether LiteLLM may be the key authority, against ADR-PRP's rule of exactly one client-key authority, is the reviewer's call and it was NOT taken here."
+    },
+    {
+      "requirement_id": "PRP-FR-007",
+      "title": "Capability and model grants",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-007",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Per-key model permissions exist (permission_type/permission_value, default all) and an expiry can be set; both were applied and read back (EV04 step 2).",
+        "B": "LiteLLM supports model and budget scoping (EV04, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV04"
+        ],
+        "artifact_folders": [
+          "A/EV04: EV04/ (4 artifacts)",
+          "B/EV04: EV04/ (7 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Grants cover models; there is no capability concept beyond the user scope list.",
+      "disposition": "BUILD-GAP",
+      "custom_gap": "PRP maps capability grants onto model permissions plus its own checks.",
+      "maintenance_exit_risk": "Permission rows live in the same reversible store as the keys.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV04. Candidate A: BUILD-GAP for the key authority, because its store is reversible. Candidate B, bare vLLM: BUILD-GAP for FR-003..009, no scope vocabulary and no revoke API. Both candidates agree, so this value does not select a candidate. Candidate B's LiteLLM layer was hinted CONFIGURE for issuance, scoping, storage and revocation; the operator recorded that whether LiteLLM may be the key authority, against ADR-PRP's rule of exactly one client-key authority, is the reviewer's call and it was NOT taken here."
+    },
+    {
+      "requirement_id": "PRP-FR-008",
+      "title": "Atomic quotas and honest usage",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-008",
+      "proof": "real PostgreSQL",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "No quota exists: the only limits are failure-based rate limits (rate_limit_max_failures / window / ban seconds). No token or cost quota is available (EV04 step 2).",
+        "B": "LiteLLM has budgets backed by PostgreSQL (EV04, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV04"
+        ],
+        "artifact_folders": [
+          "A/EV04: EV04/ (4 artifacts)",
+          "B/EV04: EV04/ (7 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Proof for this requirement is real PostgreSQL, which is PRP-side and not available before M4.",
+      "disposition": "BUILD-GAP",
+      "custom_gap": "PRP implements atomic quotas and honest usage accounting itself.",
+      "maintenance_exit_risk": "Relying on the candidate's rate limits would under-count usage.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV04. Candidate A: BUILD-GAP for the key authority, because its store is reversible. Candidate B, bare vLLM: BUILD-GAP for FR-003..009, no scope vocabulary and no revoke API. Both candidates agree, so this value does not select a candidate. Candidate B's LiteLLM layer was hinted CONFIGURE for issuance, scoping, storage and revocation; the operator recorded that whether LiteLLM may be the key authority, against ADR-PRP's rule of exactly one client-key authority, is the reviewer's call and it was NOT taken here."
+    },
+    {
+      "requirement_id": "PRP-FR-009",
+      "title": "Service-account accountability",
+      "srs_section": "5.1 Identity, keys และ quotas",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Identity",
+      "acceptance_test": "PRP-AT-009",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [
+        "EV04"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Accountability is partial: the audit log records the API key name and prefix, the endpoint and the caller, and keys belong to users (EV04, EV08 step 4).",
+        "B": "Not measured for bare vLLM beyond the absence of identity (EV04, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV04"
+        ],
+        "artifact_folders": [
+          "A/EV04: EV04/ (4 artifacts)",
+          "B/EV04: EV04/ (7 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Service accounts as such were not exercised; only users and their keys.",
+      "disposition": "BUILD-GAP",
+      "custom_gap": "PRP owns service-account identity; the candidate's users cover its own administration.",
+      "maintenance_exit_risk": "Audit rows are local files with no integrity protection.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV04. Candidate A: BUILD-GAP for the key authority, because its store is reversible. Candidate B, bare vLLM: BUILD-GAP for FR-003..009, no scope vocabulary and no revoke API. Both candidates agree, so this value does not select a candidate. Candidate B's LiteLLM layer was hinted CONFIGURE for issuance, scoping, storage and revocation; the operator recorded that whether LiteLLM may be the key authority, against ADR-PRP's rule of exactly one client-key authority, is the reviewer's call and it was NOT taken here."
+    },
+    {
+      "requirement_id": "PRP-FR-010",
+      "title": "Controlled node enrollment",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-010",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "The cluster reports its own membership: /v1/workers lists each worker by address with its model replicas, and /v1/supervisor returns the supervisor address (EV02 step 2).",
+        "B": "vLLM has no enrollment concept; a node is a container someone started (EV02, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV02"
+        ],
+        "artifact_folders": [
+          "A/EV02: EV02/ (14 artifacts)",
+          "B/EV02: EV02/ (23 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Enrollment is implicit: a worker that connects is a member. There is no admission control on nodes.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP owns node enrollment and treats the cluster listing as an observation.",
+      "maintenance_exit_risk": "A rogue local process could register as a worker; nothing authenticates enrollment.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV02. Candidate A: ADAPT, and better than B on this gate. Candidate B: ADAPT. Both agree, so the value does not select a candidate."
+    },
+    {
+      "requirement_id": "PRP-FR-011",
+      "title": "Qualification receipt",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-011",
+      "proof": "pinned runtime + hardware",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "No qualification receipt: the candidate exposes no epoch and created is always 0 in /v1/models (EV02 step 2).",
+        "B": "No receipt either; only process_start_time_seconds in /metrics (EV02, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV02"
+        ],
+        "artifact_folders": [
+          "A/EV02: EV02/ (14 artifacts)",
+          "B/EV02: EV02/ (23 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Proof requires a pinned runtime plus hardware; the candidate supplies neither a receipt nor an epoch.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP issues and stores the qualification receipt and its own epoch.",
+      "maintenance_exit_risk": "Nothing in the candidate ties a running model to a qualification event.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV02. Candidate A: ADAPT, and better than B on this gate. Candidate B: ADAPT. Both agree, so the value does not select a candidate."
+    },
+    {
+      "requirement_id": "PRP-FR-012",
+      "title": "Pinned capability profiles",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-012",
+      "proof": "pinned runtime",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Profiles are pinned per model and read back: /v1/models returns model_format, model_size_in_billions, quantization, context_length, model_family and model_ability; re-registering the same name with a different profile was refused with 400 (EV02 step 2 and step 3).",
+        "B": "Only id and max_model_len are exposed (EV02, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV02"
+        ],
+        "artifact_folders": [
+          "A/EV02: EV02/ (14 artifacts)",
+          "B/EV02: EV02/ (23 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "request_limits is absent from the listing, so part of the effective profile cannot be read back (EV05 step 3).",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP stores the authoritative profile and reconciles it against the listing.",
+      "maintenance_exit_risk": "A profile field that cannot be read back cannot be verified after a restart.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV02. Candidate A: ADAPT, and better than B on this gate. Candidate B: ADAPT. Both agree, so the value does not select a candidate."
+    },
+    {
+      "requirement_id": "PRP-FR-013",
+      "title": "Physical resource deduplication",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-013",
+      "proof": "real PostgreSQL",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Placement is reported as a device index (accelerators [\"0\"]) with a per-replica address, but no GPU UUID, so deduplication needs an index-to-UUID join PRP performs itself (EV02 step 2).",
+        "B": "Nothing is reported; the GPU had to be found with nvidia-smi (EV02, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV02"
+        ],
+        "artifact_folders": [
+          "A/EV02: EV02/ (14 artifacts)",
+          "B/EV02: EV02/ (23 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "The capacity-counting negative test did not run: the second replica failed on the host paging file (EV02 step 3).",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP joins device index to GPU UUID and owns physical deduplication.",
+      "maintenance_exit_risk": "An index is not stable across driver or host changes.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV02. Candidate A: ADAPT, and better than B on this gate. Candidate B: ADAPT. Both agree, so the value does not select a candidate."
+    },
+    {
+      "requirement_id": "PRP-FR-014",
+      "title": "Fresh health observations",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Observability",
+      "acceptance_test": "PRP-AT-014",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Health observations are available but shallow: model presence in /v1/models, worker-to-replica mapping, and a metrics exporter. The in-flight gauge is honest under load (0 over-counts in 384 scrapes) but goes STALE across a fault, still reading 1 thirty seconds after the process died (EV05 step 2, EV06).",
+        "B": "Gauges did not over-count but lag intake (EV05, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV02"
+        ],
+        "artifact_folders": [
+          "A/EV02: EV02/ (14 artifacts)",
+          "B/EV02: EV02/ (23 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Freshness cannot be trusted after a fault, which is exactly when it matters.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP treats candidate health as a signal only and runs its own liveness probe.",
+      "maintenance_exit_risk": "A stale gauge after a crash can make a dead runtime look busy.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV02. Candidate A: ADAPT, and better than B on this gate. Candidate B: ADAPT. Both agree, so the value does not select a candidate."
+    },
+    {
+      "requirement_id": "PRP-FR-015",
+      "title": "Safe runtime lifecycle",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Registry",
+      "acceptance_test": "PRP-AT-015",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Lifecycle is safe in the small and unsafe in the large: launch, terminate and relaunch all work, but the supervisor relaunches a dead replica unasked (35-40 s on 0.6B, 131.8 s on the 4B) with a NEW address each time, and killing the supervisor orphans the worker, which keeps the GPU and recreates the model (EV03, EV06, EV07 partial).",
+        "B": "vLLM does not restart its own engine; the container exits and recovery needs a supervisor (EV06, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV02"
+        ],
+        "artifact_folders": [
+          "A/EV02: EV02/ (14 artifacts)",
+          "B/EV02: EV02/ (23 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Auto-recreation can be bounded by XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT but not disabled.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP bounds auto-recreate, reconciles after an unrequested relocation, and reaps orphaned workers.",
+      "maintenance_exit_risk": "An orphaned worker holds VRAM invisibly and resurrects models after a restart.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV02. Candidate A: ADAPT, and better than B on this gate. Candidate B: ADAPT. Both agree, so the value does not select a candidate."
+    },
+    {
+      "requirement_id": "PRP-FR-016",
+      "title": "PRP Router selection",
+      "srs_section": "5.2 Registry และ PRP Router",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Router",
+      "acceptance_test": "PRP-AT-016",
+      "proof": "integration + hardware",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration + hardware) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-017",
+      "title": "Durable admission transaction",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-017",
+      "proof": "real PostgreSQL + fault injection",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV05"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Candidate side only: the runtime rejects over-limit work with HTTP 429 when request_limits is set, and its in-flight gauge never over-counted (EV05 step 2).",
+        "B": "vLLM queued the excess instead of rejecting it (EV05, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV05"
+        ],
+        "artifact_folders": [
+          "A/EV05: EV05/ (9 artifacts)",
+          "B/EV05: EV05/ (10 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "BLOCKER: the durable admission transaction requires real PostgreSQL and fault injection on the PRP side, which does not exist before M4. The procedure states this explicitly, so AT-017 stays NOT_RUN regardless of candidate behaviour.",
+      "disposition": "UNASSESSED",
+      "custom_gap": "PRP implements the durable admission transaction; the candidate contributes only backpressure.",
+      "maintenance_exit_risk": "Treating a candidate 429 as an admission decision would put the authority in the wrong place.",
+      "disposition_basis": "Left UNASSESSED on purpose: a BLOCKER is stated in `limitation` and neither candidate hint dispositions it (PRP's own M4 work). Section 8 item 3 accepts a stated blocker."
+    },
+    {
+      "requirement_id": "PRP-FR-018",
+      "title": "Shared GPU reservation authority",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-B",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-018",
+      "proof": "hardware + concurrency",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV05",
+        "EV07"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-12",
+          "finding": "Ray logical resources are scheduling tokens, not VRAM caps; candidate C must still measure residency and enforce physical admission.",
+          "doc_ref": "ARCH-PRP 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "With request_limits 4, twelve concurrent requests from three processes gave 4x200 and 8x429, and the gauge peaked at exactly 4 with no over-count in 185 scrapes. The default is unlimited (-1), and the rejection is DEFERRED: an over-limit request waited 6.525 s, until the running batch finished, before being refused. The limit is readable only from the unauthenticated metrics exporter, not from /v1/models (EV05). The model also stays resident: 41 idle samples over 20 minutes with no unload, and no idle timeout exists in the code (EV07 partial).",
+        "B": "max_num_seqs 4 queued the excess in three waves; the value is not exposed by any endpoint (EV05, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV05",
+          "EV07"
+        ],
+        "artifact_folders": [
+          "A/EV05: EV05/ (9 artifacts)",
+          "B/EV05: EV05/ (10 artifacts)",
+          "A/EV07: EV07/ (6 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "EV07's mixed chat/speech load is BLOCKED on WP10, so shared reservation across speech and chat is unmeasured.",
+      "disposition": "CONFIGURE",
+      "custom_gap": "PRP sets request_limits explicitly, scrapes the exporter for limit and in-flight, and never relies on the 429 as fast backpressure.",
+      "maintenance_exit_risk": "The exporter that carries the only readable limit needs no credential.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV05. Candidate A: CONFIGURE for FR-018, stronger than B on this gate. Candidate B: CONFIGURE for FR-018. Both agree. FR-017 is deliberately left UNASSESSED with a blocker: neither hint dispositions it, because the durable admission transaction is PRP's own M4 work."
+    },
+    {
+      "requirement_id": "PRP-FR-019",
+      "title": "Bounded fair queues",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-019",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-020",
+      "title": "Uncertain execution fencing",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Execution",
+      "acceptance_test": "PRP-AT-020",
+      "proof": "fault injection + hardware",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV06"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Fencing is the weak point: killing the engine mid-generation returned HTTP 200 with a truncated stream, no [DONE] and no error object, which is indistinguishable from success by status alone. No blind replay occurred in any case (EV06).",
+        "B": "An engine kill produced an in-stream error object; a restart produced a stream that stopped with neither (EV06, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV06"
+        ],
+        "artifact_folders": [
+          "A/EV06: EV06/ (8 artifacts)",
+          "B/EV06: EV06/ (13 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Candidate A gives the caller no way to distinguish UNKNOWN from FINISHED at the transport level.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP maps any stream ending without an explicit [DONE] to UNKNOWN and never trusts the HTTP status.",
+      "maintenance_exit_risk": "A client that checks only the status code reads a killed generation as success.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV06. Candidate A: ADAPT. Candidate B: ADAPT. Both agree."
+    },
+    {
+      "requirement_id": "PRP-FR-021",
+      "title": "Absolute deadlines and cancellation",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Execution",
+      "acceptance_test": "PRP-AT-021",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV06"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Cancellation works only for streaming: a socket close stopped compute in 3.53 s, but a non-streaming cancel stopped nothing and the model ran 61.5 s longer, producing all 900 tokens. The explicit abort endpoint POST /v1/models/{uid}/requests/{request_id}/abort returned DONE in 2.295 s and left the model idle 0.5 s later (EV06).",
+        "B": "Client cancel stopped compute within 0.19 s for streaming and non-streaming alike (EV06, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV06"
+        ],
+        "artifact_folders": [
+          "A/EV06: EV06/ (8 artifacts)",
+          "B/EV06: EV06/ (13 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "The abort route is absent from the route table and was found only in /openapi.json at runtime; it needs a client-supplied request_id.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP generates request_id per attempt and cancels through the abort endpoint, never by closing the socket.",
+      "maintenance_exit_risk": "Any integration written from the socket-close assumption silently wastes GPU time.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV06. Candidate A: ADAPT. Candidate B: ADAPT. Both agree."
+    },
+    {
+      "requirement_id": "PRP-FR-022",
+      "title": "Retry classification",
+      "srs_section": "5.3 Admission, execution และ uncertainty",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Execution",
+      "acceptance_test": "PRP-AT-022",
+      "proof": "integration",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV06"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Retry classification is clean on the candidate side: no request-level retry, failover or hedging exists anywhere in the request path, so there is nothing to disable, and no second attempt was ever made (EV03 step 4, EV06).",
+        "B": "LiteLLM has retry and fallback that must be configured off (EV03, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV06"
+        ],
+        "artifact_folders": [
+          "A/EV06: EV06/ (8 artifacts)",
+          "B/EV06: EV06/ (13 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "The candidate does relocate replicas unasked, which is a different axis from request retry (NFR-023).",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP classifies retries itself; the candidate adds no hidden attempts to account for.",
+      "maintenance_exit_risk": "A future version could add request-level retry; the absence is not a configuration guarantee.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV06. Candidate A: ADAPT. Candidate B: ADAPT. Both agree."
+    },
+    {
+      "requirement_id": "PRP-FR-023",
+      "title": "Model catalog",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "API",
+      "acceptance_test": "PRP-AT-023",
+      "proof": "contract",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-024",
+      "title": "Chat completion and context budget",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Chat Adapter",
+      "acceptance_test": "PRP-AT-024",
+      "proof": "contract + runtime",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract + runtime) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-025",
+      "title": "Streaming honesty",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Chat Adapter",
+      "acceptance_test": "PRP-AT-025",
+      "proof": "contract + fault injection",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract + fault injection) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-026",
+      "title": "Tools as data only",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Chat Adapter",
+      "acceptance_test": "PRP-AT-026",
+      "proof": "contract",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-027",
+      "title": "Usage receipts",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Accounting",
+      "acceptance_test": "PRP-AT-027",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-028",
+      "title": "Stateless inference default",
+      "srs_section": "5.4 Chat API",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-028",
+      "proof": "privacy integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Inference batching/KV/weights",
+        "Keys/model access/routing"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (privacy integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-029",
+      "title": "Bounded audio upload",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-029",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-030",
+      "title": "Sandboxed media decoding",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-030",
+      "proof": "sandbox + fault injection",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (sandbox + fault injection) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-031",
+      "title": "ASR contract",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-031",
+      "proof": "runtime + audio corpus",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-07",
+          "finding": "Lalin-AI asr/tts pipelines at commit 512e5c4 are a reuse candidate from a prior source review, not a certified current production backend; only a headless voice-worker profile may be reused.",
+          "doc_ref": "SOURCES-PRP register; ARCH-PRP 3 speech runtime row",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (runtime + audio corpus) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-032",
+      "title": "No-speech and unclear outcome",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-032",
+      "proof": "audio corpus",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (audio corpus) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-033",
+      "title": "Approved TTS voices",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-033",
+      "proof": "runtime + policy",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-07",
+          "finding": "Lalin-AI asr/tts pipelines at commit 512e5c4 are a reuse candidate from a prior source review, not a certified current production backend; only a headless voice-worker profile may be reused.",
+          "doc_ref": "SOURCES-PRP register; ARCH-PRP 3 speech runtime row",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-08",
+          "finding": "The F5-TTS-THAI model card describes Thai/English support and limitations on long or some words; model and voice licensing remain an approval gate and do not waive quality or voice-rights tests.",
+          "doc_ref": "SECURITY-DATA-PRP 8. License/provenance gate; SRS-PRP 11 qualification workloads",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (runtime + policy) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-034",
+      "title": "Speech text fidelity",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-034",
+      "proof": "audio corpus",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (audio corpus) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-035",
+      "title": "Speech response contracts",
+      "srs_section": "5.5 ASR/TTS",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "API",
+      "acceptance_test": "PRP-AT-035",
+      "proof": "contract + runtime",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "ASR/TTS"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract + runtime) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-036",
+      "title": "Native asynchronous operations",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Jobs",
+      "acceptance_test": "PRP-AT-036",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-037",
+      "title": "Idempotent job creation",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Jobs",
+      "acceptance_test": "PRP-AT-037",
+      "proof": "real PostgreSQL",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (real PostgreSQL) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-038",
+      "title": "Job visibility and control",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Jobs",
+      "acceptance_test": "PRP-AT-038",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-039",
+      "title": "Artifact ownership",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-039",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-040",
+      "title": "Controlled delivery grants",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-040",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-041",
+      "title": "Retention and erasure",
+      "srs_section": "5.6 Jobs และ artifacts",
+      "phase": "P1-B",
+      "epic": "E05",
+      "owner": "Artifact",
+      "acceptance_test": "PRP-AT-041",
+      "proof": "fault injection + restore",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Job persistence",
+        "Artifact storage"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (fault injection + restore) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-042",
+      "title": "Worker adapter contract",
+      "srs_section": "5.7 Worker contract และ residency",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Worker Adapter",
+      "acceptance_test": "PRP-AT-042",
+      "proof": "contract",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "ASR/TTS",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-043",
+      "title": "Lalin-derived voice isolation",
+      "srs_section": "5.7 Worker contract และ residency",
+      "phase": "P1-B",
+      "epic": "E04",
+      "owner": "Speech Adapter",
+      "acceptance_test": "PRP-AT-043",
+      "proof": "contract + packaging",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "ASR/TTS",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-07",
+          "finding": "Lalin-AI asr/tts pipelines at commit 512e5c4 are a reuse candidate from a prior source review, not a certified current production backend; only a headless voice-worker profile may be reused.",
+          "doc_ref": "SOURCES-PRP register; ARCH-PRP 3 speech runtime row",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract + packaging) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-044",
+      "title": "Safe model residency",
+      "srs_section": "5.7 Worker contract และ residency",
+      "phase": "P1-B",
+      "epic": "E02",
+      "owner": "Admission",
+      "acceptance_test": "PRP-AT-044",
+      "proof": "hardware",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [
+        "Launch/list/terminate",
+        "ASR/TTS",
+        "Serving replicas"
+      ],
+      "evaluation_experiments": [
+        "EV07"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-12",
+          "finding": "Ray logical resources are scheduling tokens, not VRAM caps; candidate C must still measure residency and enforce physical admission.",
+          "doc_ref": "ARCH-PRP 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Residency holds: over a 20-minute idle window the model was present in all 41 samples with VRAM steady, and the shipped code has no idle timeout, model TTL or keep-alive eviction at all. Placement auto-management (IDLE_FIRST_LAUNCH_STRATEGY) is fully disabled by passing gpu_idx at launch (EV07 partial).",
+        "B": "Not measured: EV07 is BLOCKED for candidate B as well."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV07"
+        ],
+        "artifact_folders": [
+          "A/EV07: EV07/ (6 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "BLOCKER: EV07 proper is BLOCKED until WP10 delivers a licensed speech candidate; the mixed chat/ASR/TTS load, its VRAM series and OOM behaviour are unmeasured for both candidates.",
+      "disposition": "UNASSESSED",
+      "custom_gap": "PRP pins placement with gpu_idx and records that parameter itself, since the API does not document it.",
+      "maintenance_exit_risk": "A future default could introduce eviction; nothing in the API would announce it.",
+      "disposition_basis": "Left UNASSESSED on purpose: EV07 is BLOCKED for both candidates until WP10 delivers a licensed speech candidate; a BLOCKER is stated in `limitation`."
+    },
+    {
+      "requirement_id": "PRP-FR-045",
+      "title": "Operational telemetry",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Observability",
+      "acceptance_test": "PRP-AT-045",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-046",
+      "title": "Actionable alerts",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Observability",
+      "acceptance_test": "PRP-AT-046",
+      "proof": "integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-047",
+      "title": "Auditable management",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Audit",
+      "acceptance_test": "PRP-AT-047",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-048",
+      "title": "Independent operator console",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Console",
+      "acceptance_test": "PRP-AT-048",
+      "proof": "browser e2e",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (browser e2e) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-049",
+      "title": "Minimal independent playground",
+      "srs_section": "5.8 Operations และ client experience",
+      "phase": "P1-B",
+      "epic": "E07",
+      "owner": "Reference Client",
+      "acceptance_test": "PRP-AT-049",
+      "proof": "browser e2e",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (browser e2e) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-050",
+      "title": "Reproducible independent deployment",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Operations",
+      "acceptance_test": "PRP-AT-050",
+      "proof": "deployment",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (deployment) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-051",
+      "title": "Backup and recovery",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Operations",
+      "acceptance_test": "PRP-AT-051",
+      "proof": "restore rehearsal",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (restore rehearsal) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-052",
+      "title": "Canary and rollback",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Operations",
+      "acceptance_test": "PRP-AT-052",
+      "proof": "rehearsal",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (rehearsal) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-053",
+      "title": "Compatibility and exit path",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E07",
+      "owner": "API",
+      "acceptance_test": "PRP-AT-053",
+      "proof": "contract + portability",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract + portability) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-054",
+      "title": "No mandatory LINE dependency",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-A",
+      "epic": "E07",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-054",
+      "proof": "deployment + contract",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (deployment + contract) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-055",
+      "title": "External LINE integration contract",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-C",
+      "epic": "E07",
+      "owner": "Integration Adapter",
+      "acceptance_test": "PRP-AT-055",
+      "proof": "integration + authorized live LINE",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-04",
+          "finding": "LINE webhook ingress (raw-body signature verification, event dedupe, durable ingress before HTTP 200) is owned by the external adapter outside PRP.",
+          "doc_ref": "API-PRP 9",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-05",
+          "finding": "LINE reply tokens are single-use and time-bounded; audio delivery needs HTTPS-accessible MP3/M4A with duration in milliseconds.",
+          "doc_ref": "API-PRP 9",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-06",
+          "finding": "LINE push retry key applies only to the same payload and recipient; acceptance does not prove user read or delivery.",
+          "doc_ref": "API-PRP 9",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (integration + authorized live LINE) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-FR-056",
+      "title": "Phase-boundary enforcement",
+      "srs_section": "5.9 Deployment, integrations และ extensions",
+      "phase": "P1-A",
+      "epic": "E08",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-056",
+      "proof": "contract",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (contract) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-001",
+      "title": "Isolation correctness",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-057",
+      "proof": "SECURITY",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (SECURITY) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-002",
+      "title": "Revocation bound",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-058",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-003",
+      "title": "Admission overhead",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-059",
+      "proof": "load mock",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (load mock) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-004",
+      "title": "Warm chat latency",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-060",
+      "proof": "hardware W1",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (hardware W1) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-005",
+      "title": "Voice pipeline latency",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-061",
+      "proof": "hardware W2",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (hardware W2) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-006",
+      "title": "Mixed-workload protection",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-062",
+      "proof": "hardware W3",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (hardware W3) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-007",
+      "title": "Durability and settlement",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-063",
+      "proof": "fault injection",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (fault injection) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-008",
+      "title": "ASR quality",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-064",
+      "proof": "audio quality",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (audio quality) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-009",
+      "title": "TTS quality",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-065",
+      "proof": "audio quality",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-08",
+          "finding": "The F5-TTS-THAI model card describes Thai/English support and limitations on long or some words; model and voice licensing remain an approval gate and do not waive quality or voice-rights tests.",
+          "doc_ref": "SECURITY-DATA-PRP 8. License/provenance gate; SRS-PRP 11 qualification workloads",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (audio quality) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-010",
+      "title": "No-speech gate",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-066",
+      "proof": "audio quality",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (audio quality) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-011",
+      "title": "Observability freshness",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-067",
+      "proof": "fault injection",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (fault injection) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-012",
+      "title": "Recovery objectives",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-068",
+      "proof": "restore rehearsal",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (restore rehearsal) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-013",
+      "title": "Accessible client flow",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-069",
+      "proof": "browser manual + e2e",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (browser manual + e2e) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-014",
+      "title": "Bounded resource use",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-B",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-070",
+      "proof": "adversarial load",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (adversarial load) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-015",
+      "title": "Reproducible configuration",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-071",
+      "proof": "release rehearsal",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (release rehearsal) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-016",
+      "title": "Independent operation",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-072",
+      "proof": "portability",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (portability) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-017",
+      "title": "No hidden content egress",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-073",
+      "proof": "egress capture",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (egress capture) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-018",
+      "title": "Service honesty",
+      "srs_section": "6 Non-functional requirements",
+      "phase": "P1-C",
+      "epic": "E06",
+      "owner": "Quality",
+      "acceptance_test": "PRP-AT-074",
+      "proof": "operations review",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (operations review) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-001",
+      "title": "Private transport",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-075",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-02",
+          "finding": "vLLM endpoint API-key protection alone is insufficient; private TLS or an authenticated tunnel and permitted callers are still required.",
+          "doc_ref": "SRS-PRP PRP-SEC-001",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-002",
+      "title": "Secret custody",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-076",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-003",
+      "title": "SSRF and egress",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-077",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-004",
+      "title": "Object authorization",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-078",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-005",
+      "title": "Untrusted input",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-079",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-006",
+      "title": "Secure administration",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-080",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-007",
+      "title": "Voice rights and model provenance",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-B",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-081",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-08",
+          "finding": "The F5-TTS-THAI model card describes Thai/English support and limitations on long or some words; model and voice licensing remain an approval gate and do not waive quality or voice-rights tests.",
+          "doc_ref": "SECURITY-DATA-PRP 8. License/provenance gate; SRS-PRP 11 qualification workloads",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-008",
+      "title": "Content minimization",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-082",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-009",
+      "title": "Deletion and cache boundary",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-B",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-083",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-010",
+      "title": "Supply-chain pinning",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-084",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-16",
+          "finding": "uv distinguishes locked from frozen installs; verify lock freshness before install and never auto-upgrade at startup.",
+          "doc_ref": "OPS-PRP 14. RB11 Python environment and launch boundaries; Coding-Standards 7",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-011",
+      "title": "Trust-owner limitation",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-085",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-012",
+      "title": "Service credential boundary",
+      "srs_section": "7 Security requirements",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-086",
+      "proof": "security integration",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (security integration) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-019",
+      "title": "Python-first control plane",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E01",
+      "owner": "Core",
+      "acceptance_test": "PRP-AT-087",
+      "proof": "build + dependency isolation",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV01"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-13",
+          "finding": "FastAPI/Pydantic are the first evaluation candidate for typed request validation and OpenAPI on the thin API; API processes never load models.",
+          "doc_ref": "ARCH-PRP 3; ADR-PRP-009",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-14",
+          "finding": "FastAPI worker processes have separate memory; model globals must not live in web workers and adding workers must not multiply resident models.",
+          "doc_ref": "STACK-EVALUATION-PRP 4; ARCH-PRP 13",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-16",
+          "finding": "uv distinguishes locked from frozen installs; verify lock freshness before install and never auto-upgrade at startup.",
+          "doc_ref": "OPS-PRP 14. RB11 Python environment and launch boundaries; Coding-Standards 7",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-17",
+          "finding": "Ruff is the proposed lint/format tool; exact toolchain pins are set at WP25.",
+          "doc_ref": "Coding-Standards 10",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "EV01 passed for both candidates: a Python client can drive the candidate without ML packages in the control plane.",
+        "B": "EV01 passed."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV01"
+        ],
+        "artifact_folders": [
+          "A/EV01: EV01/ (1 artifacts)",
+          "B/EV01: EV01/ (1 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "EV01 predates this session; see its own record entry.",
+      "disposition": "ADAPT",
+      "custom_gap": null,
+      "maintenance_exit_risk": "The candidate's own process tree is Python, but it is not the control plane.",
+      "disposition_basis": "Reviewer decision, 2026-09-24. EV01 passed for both candidates. Candidate B's hint was ADAPT (a thin HTTP client in adapters/runtimes); candidate A's hint deliberately left REUSE (client SDK) and ADAPT open until EV02-EV03 had run. Those have now run, and the reviewer chose ADAPT, so PRP writes its own thin HTTP client rather than adopting a vendor SDK. This value is the same for both candidates and therefore selects neither."
+    },
+    {
+      "requirement_id": "PRP-NFR-020",
+      "title": "Evidence-based reuse before build",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "G0",
+      "epic": "E02",
+      "owner": "Architecture + QA",
+      "acceptance_test": "PRP-AT-088",
+      "proof": "design evidence + isolated spikes",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [],
+      "source_review": [
+        {
+          "source": "SRC-01",
+          "finding": "vLLM provides OpenAI-compatible serving; the PRP client subset must be tested against the pinned release because endpoint and security behaviour depend on the release.",
+          "doc_ref": "SRS-PRP 8 API contract baseline; ARCH-PRP 3",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-03",
+          "finding": "LiteLLM virtual keys/routing are an optional key or router layer for A or B, not a mandatory dependency and not a reason for a second user-key store; implicit retries, failover or hedging must not bypass admission or the original deadline.",
+          "doc_ref": "STACK-EVALUATION-PRP 2; ARCH-PRP 3; API-PRP addendum",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-11",
+          "finding": "Ray Serve LLM is conditional candidate C for replica orchestration, not an automatic requirement and not stacked on Xinference by default.",
+          "doc_ref": "ARCH-PRP 3; STACK-EVALUATION-PRP 2",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-13",
+          "finding": "FastAPI/Pydantic are the first evaluation candidate for typed request validation and OpenAPI on the thin API; API processes never load models.",
+          "doc_ref": "ARCH-PRP 3; ADR-PRP-009",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": []
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "No WP24 experiment maps to this requirement: STACK-EVALUATION section 6 assigns it no gate, and its proof (design evidence + isolated spikes) is PRP's own implementation, which does not exist before migration step M4. BLOCKER: cannot be dispositioned from WP24 evidence; it is decided when the PRP adapter/context exists (SDD-PRP-REPO section 11, M4).",
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-021",
+      "title": "API and model process isolation",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E02",
+      "owner": "Core + Runtime",
+      "acceptance_test": "PRP-AT-089",
+      "proof": "process integration + real runtime",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV01"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-14",
+          "finding": "FastAPI worker processes have separate memory; model globals must not live in web workers and adding workers must not multiply resident models.",
+          "doc_ref": "STACK-EVALUATION-PRP 4; ARCH-PRP 13",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-15",
+          "finding": "vLLM engine/native process behaviour and start-method constraints are version-sensitive; verify against the selected release and keep the engine in its own environment.",
+          "doc_ref": "ARCH-PRP 13; SOURCES-PRP register",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Process isolation holds by construction: the API process, the worker and one sub-pool per model replica are separate processes, confirmed repeatedly (EV05 step 1, EV06, EV07 partial).",
+        "B": "vLLM runs the engine in its own process inside the container (EV01/EV06, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV01"
+        ],
+        "artifact_folders": [
+          "A/EV01: EV01/ (1 artifacts)",
+          "B/EV01: EV01/ (1 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "Isolation also means the API listener is not the whole system: killing it leaves the worker alive.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP manages the process tree, not a single process.",
+      "maintenance_exit_risk": "An orphaned worker survives the API and holds the GPU.",
+      "disposition_basis": "Reviewer decision, 2026-09-24. EV01 passed for both candidates. Candidate B's hint was ADAPT (a thin HTTP client in adapters/runtimes); candidate A's hint deliberately left REUSE (client SDK) and ADAPT open until EV02-EV03 had run. Those have now run, and the reviewer chose ADAPT, so PRP writes its own thin HTTP client rather than adopting a vendor SDK. This value is the same for both candidates and therefore selects neither."
+    },
+    {
+      "requirement_id": "PRP-NFR-022",
+      "title": "Reproducible isolated Python environments",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E06",
+      "owner": "Build + Operations",
+      "acceptance_test": "PRP-AT-090",
+      "proof": "build + supply-chain review",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV01"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-16",
+          "finding": "uv distinguishes locked from frozen installs; verify lock freshness before install and never auto-upgrade at startup.",
+          "doc_ref": "OPS-PRP 14. RB11 Python environment and launch boundaries; Coding-Standards 7",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-15",
+          "finding": "vLLM engine/native process behaviour and start-method constraints are version-sensitive; verify against the selected release and keep the engine in its own environment.",
+          "doc_ref": "ARCH-PRP 13; SOURCES-PRP register",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Environments are reproducible but fragile: a five-file redacted bundle rebuilt an identical instance (same model record, same greedy answer, same token usage), yet in-place pip upgrade failed four times with WinError 32 and left the environment unable to report its own version (EV08 step 2, operator cost).",
+        "B": "A container launched from the redacted export matched the source on startup args and a fixed answer (EV08, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV01"
+        ],
+        "artifact_folders": [
+          "A/EV01: EV01/ (1 artifacts)",
+          "B/EV01: EV01/ (1 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "The candidate also builds a per-model virtualenv under XINFERENCE_HOME, which a hard kill can leave in a state where later launches hang silently for about 10 minutes.",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP rebuilds rather than upgrades in place, and keeps the export bundle as the deployment source of truth.",
+      "maintenance_exit_risk": "Security patching cannot rely on an in-place upgrade on this platform.",
+      "disposition_basis": "Reviewer decision, 2026-09-24. EV01 passed for both candidates. Candidate B's hint was ADAPT (a thin HTTP client in adapters/runtimes); candidate A's hint deliberately left REUSE (client SDK) and ADAPT open until EV02-EV03 had run. Those have now run, and the reviewer chose ADAPT, so PRP writes its own thin HTTP client rather than adopting a vendor SDK. This value is the same for both candidates and therefore selects neither."
+    },
+    {
+      "requirement_id": "PRP-NFR-023",
+      "title": "Delegated framework authority conformance",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-A",
+      "epic": "E03",
+      "owner": "Security + Admission",
+      "acceptance_test": "PRP-AT-091",
+      "proof": "framework contract + race + fault",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV03"
+      ],
+      "source_review": [
+        {
+          "source": "SRC-09",
+          "finding": "Xinference documents launch/list/terminate and a supervisor/worker topology whose support depends on engine/model combinations; PRP-safe bound routing of a reserved lease to the actual worker is a spike requirement, not a supported-feature claim.",
+          "doc_ref": "ARCH-PRP 3 and 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-03",
+          "finding": "LiteLLM virtual keys/routing are an optional key or router layer for A or B, not a mandatory dependency and not a reason for a second user-key store; implicit retries, failover or hedging must not bypass admission or the original deadline.",
+          "doc_ref": "STACK-EVALUATION-PRP 2; ARCH-PRP 3; API-PRP addendum",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        },
+        {
+          "source": "SRC-12",
+          "finding": "Ray logical resources are scheduling tokens, not VRAM caps; candidate C must still measure residency and enforce physical admission.",
+          "doc_ref": "ARCH-PRP 11; STACK-EVALUATION-PRP 4",
+          "status": "SOURCE_REVIEWED_NOT_RUNTIME_TESTED"
+        }
+      ],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "Binding to a model UID held for 40 of 40 requests, and there is no request-level retry or hedging to disable. But the client cannot choose or even see a replica (strict 0,1,0,1 round-robin, no replica named in any response), and the supervisor RELOCATES replicas unasked with a new address each time, which is what the requirement forbids (EV03).",
+        "B": "LiteLLM's retry and fallback had to be configured off; binding held once they were (EV03, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV03"
+        ],
+        "artifact_folders": [
+          "A/EV03: EV03/ (9 artifacts)",
+          "B/EV03: EV03/ (12 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "One GPU host, so this is replica binding rather than host binding (DEV-03).",
+      "disposition": "CONFIGURE",
+      "custom_gap": "PRP runs one replica per UID, bounds auto-recreate, reconciles after relocation, and scrapes the exporter for per-replica attribution.",
+      "maintenance_exit_risk": "An address PRP recorded stops being valid after any unrequested recovery.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV03. Candidate A: CONFIGURE with conditions PRP carries itself. Candidate B: CONFIGURE for the binding property once retry, fallback and cooldown settings are disabled. Both agree."
+    },
+    {
+      "requirement_id": "PRP-NFR-024",
+      "title": "Portable framework binding and exit",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "P1-C",
+      "epic": "E08",
+      "owner": "API + Operations",
+      "acceptance_test": "PRP-AT-092",
+      "proof": "portability + migration rehearsal",
+      "candidate": "A_AND_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV08"
+      ],
+      "source_review": [],
+      "upstream_source": {
+        "A": "https://github.com/xorbitsai/inference (SRC-09, SRC-10)",
+        "B": "https://github.com/vllm-project/vllm (SRC-02); LiteLLM SRC-03"
+      },
+      "pinned_version": {
+        "A": "xinference 3.4.0 (transformers 5.17.0, torch 2.14.0+cu130), Windows-native venv",
+        "B": "vLLM in a Linux container; LiteLLM only as the key/proxy layer in EV03/EV04"
+      },
+      "observed_capability": {
+        "A": "The public contract needs no vendor identifier (prp-client.yaml has none; inventory unchanged at 12 paths / 14 operations) and the deployment exports to five declarative files that re-import to an identical instance. But candidate error bodies carry the internal actor address, the pid and every model uid on the cluster (EV08).",
+        "B": "The public contract was likewise unaffected; vLLM leaked vendor content in headers and ids (EV08, B)."
+      },
+      "evidence": {
+        "run_record": "docs/evidence/wp24/WP24-2026-09-20-run1.json",
+        "experiments": [
+          "EV08"
+        ],
+        "artifact_folders": [
+          "A/EV08: EV08/ (10 artifacts)",
+          "B/EV08: EV08/ (18 artifacts)"
+        ],
+        "operator_cost": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+      },
+      "runtime_test_status": "NOT_RUN",
+      "limitation": "The re-import ran on this host with a fresh home directory, not a clean second machine (DEV-06).",
+      "disposition": "ADAPT",
+      "custom_gap": "PRP's adapter replaces candidate error bodies wholesale and strips the server header.",
+      "maintenance_exit_risk": "Forwarding a candidate error would disclose internal topology and other models' names.",
+      "disposition_basis": "Reviewer accepted the operator hints on 2026-09-24 (the reviewer is the repository owner, per procedure section 9 item 4). EV08. Candidate A: ADAPT. Candidate B: ADAPT. Both agree."
+    }
+  ]
+}
