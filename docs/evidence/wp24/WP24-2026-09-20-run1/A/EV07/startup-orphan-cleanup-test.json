@@ -1,0 +1,59 @@
+{
+ "before_kill": {
+  "vram_mib": 9235,
+  "processes": [
+   {
+    "name": "xinference-local.exe",
+    "pid": 60524,
+    "ppid": 39900
+   },
+   {
+    "name": "python.exe",
+    "pid": 53556,
+    "ppid": 60524
+   },
+   {
+    "name": "python.exe",
+    "pid": 67156,
+    "ppid": 20176
+   }
+  ]
+ },
+ "supervisor_pid_killed": 66824,
+ "after_kill": {
+  "vram_mib": 9235,
+  "processes": [
+   {
+    "name": "python.exe",
+    "pid": 67156,
+    "ppid": 20176
+   }
+  ],
+  "port_9997_listener": null
+ },
+ "after_fresh_instance": {
+  "seconds_until_up": 51.6,
+  "vram_mib": 9235,
+  "processes": [
+   {
+    "name": "python.exe",
+    "pid": 67156,
+    "ppid": 20176
+   },
+   {
+    "name": "xinference-local.exe",
+    "pid": 60164,
+    "ppid": 26824
+   },
+   {
+    "name": "python.exe",
+    "pid": 49036,
+    "ppid": 60164
+   }
+  ]
+ },
+ "cleanup_log_lines": [
+  "2026-09-23T18:07:21.721Z INFO xinference.core.worker pid:68448 role:local address:127.0.0.1:20193 node:DESKTOP-VETATMQ Startup GPU orphan cleanup: 23 GPU-occupying process(es) found, none are vLLM orphans (all have live "
+ ],
+ "orphan_reaped_by_startup_cleanup": false
+}
