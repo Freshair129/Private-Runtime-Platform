@@ -283,6 +283,18 @@ repository_integration: NOT_PERFORMED
 - step 3: `request_limits` **อ่านกลับจาก `/v1/models` ไม่ได้** (21 field ไม่มีค่านี้) อ่านได้ทางเดียวคือ `xinference:model_request_limit` บน exporter ที่ไม่ต้องใช้ credential; ตัวคุมอื่น (`XINFERENCE_BATCH_SIZE` 32, `XINFERENCE_BATCH_INTERVAL` 0.003, `XINFERENCE_MAX_CONCURRENT_LAUNCHES` 5) เป็น env ล้วน ไม่ expose
 - เติม `experiments.EV05.per_candidate.A` (`disposition_hint` = CONFIGURE สำหรับ **FR-018** และดีกว่า B ใน gate นี้, artifacts 9 ไฟล์) — **`FR-017` ยัง dispositioned ไม่ได้** เพราะ durable admission transaction เป็นฝั่ง PRP (M4) ตามที่ procedure ระบุ; **`status` และ `gate_verdicts` (`PRP-FR-017` / `018`) ยัง `NOT_RUN`**
 
+### WP24 EV06 candidate A · timeout / restart (2026-09-23, C-2 / H3)
+- รันบน `shared_revision` ปิด auth (`XINFERENCE_AUTH_ADVANCED=0`) **ไม่ต้องมี deviation ใหม่**; ใช้ `model_serve_count` + `generate_tokens_total` จาก exporter เป็นหลักฐาน พร้อม control ที่พิสูจน์ว่า counter ขยับจริง (0 → 11 tokens)
+- **cancel ได้เฉพาะ streaming**: ปิด socket ระหว่าง stream → compute หยุดใน **3.53 s** แต่ปิด socket ของ request **non-streaming → ไม่หยุดเลย** โมเดลวิ่งต่ออีก **61.5 s** จนครบ **900 token** แล้วเขียนใส่ socket ที่ไม่มีใครอ่าน (B หยุดทั้งสองแบบใน 0.19 s)
+- **abort endpoint ใช้ได้จริงและเป็นทางที่พึ่งได้**: `POST /v1/models/{uid}/requests/{request_id}/abort` (หาไม่เจอจาก route table ต้องอ่าน `/openapi.json` ตอนรัน) → `{"msg":"DONE"}` ใน **2.295 s** และ idle ใน 0.5 s ครอบคลุม non-streaming ที่ socket close ทำไม่ได้ ต้องให้ client ส่ง `request_id` เอง
+- **ไม่มี blind replay ในทุกกรณี** — `generate_tokens_total` นิ่งทุกหน้าต่างรวมถึง 30 s หลัง kill engine
+- **แต่ gauge ค้างหลัง fault**: 30 s หลัง kill `model_serve_count` ยังอ่านได้ **1** ทั้งที่ไม่มีอะไรวิ่ง (EV05 วัดว่าไม่เคยนับเกินตอนโหลดปกติ) → ใช้ reconcile หลัง fault ไม่ได้
+- **relaunch เองอีกครั้งและช้ากว่าเดิม**: uid กลับมารับงาน **131.8 s** หลัง kill (EV03 วัด 35–40 s บนโมเดล 0.6B) ระหว่างนั้น request ล้มด้วย 500 `is in stopping state` แล้ว 400 `not found`
+- **restart supervisor = สูญทุกอย่าง**: API กลับมาใน **52.8 s** แต่ registration (`persist: false`) หายและไม่มีโมเดลโหลดอยู่ ขอ uid เดิมได้ 404 `Available model uids: []` — ไม่มี replay และไม่มีอะไรกลับมาเอง PRP ต้อง register + launch ใหม่
+- **kill supervisor ทิ้ง worker ค้าง**: worker process รอดมาถือ model actor sub-pool ไว้ **10 610 MiB VRAM** และเมื่อฆ่า sub-pool ทิ้ง worker **สร้างขึ้นมาใหม่ภายในราวหนึ่งนาที** (auto-recreate ที่ default ไม่จำกัด ตาม EV03) — ปิดพอร์ต 9997 ฆ่าแค่ process API เท่านั้น ต้องฆ่า worker ที่ค้างก่อน VRAM จึงลงเหลือ 2 753 MiB และไม่ฟื้นอีก
+- **ending ที่เชื่อไม่ได้ (step 3)**: kill engine กลางคัน client ได้ **HTTP 200 + stream ขาด ไม่มี `[DONE]` และไม่มี error object** แยกจากสำเร็จด้วย status ไม่ได้ → ต้อง map เป็น `UNKNOWN` ตาม ARCH §11 (B ยังส่ง error object ใน stream ตอน kill engine)
+- เติม `experiments.EV06.per_candidate.A` (`disposition_hint` = **ADAPT**, artifacts 8 ไฟล์) — **`status` และ `gate_verdicts` (`PRP-FR-020`..`022`) ยัง `NOT_RUN`**
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
