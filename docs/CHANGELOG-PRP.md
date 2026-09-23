@@ -313,6 +313,17 @@ repository_integration: NOT_PERFORMED
 - **อันตรายเชิงปฏิบัติที่เจอระหว่างทาง**: launch **ค้างเงียบ ๆ ~10 นาที 2 ครั้ง** (ไม่จอง VRAM ไม่มี error) บน `XINFERENCE_HOME` ที่ใช้ซ้ำจาก EV06 ซึ่ง virtualenv ต่อโมเดลถูกทิ้งค้างจากการ kill ใน EV06 — ใช้ home ใหม่แล้ว launch สำเร็จใน 51 s; และตอนวันเปลี่ยน log rotation ล้มซ้ำ ๆ ด้วย `PermissionError WinError 32` เพราะหลาย process ถือ log ไฟล์เดียวกัน
 - เติมเฉพาะ `observations` / `measurements` / `artifacts` (6 ไฟล์) ใน `experiments.EV07.per_candidate.A` — **`status` ยัง `BLOCKED` และ `gate_verdicts` (`PRP-FR-018` / `044`) ยัง `NOT_RUN`**
 
+### WP24 operator cost · candidate A (2026-09-24, C-2 / H3)
+- บันทึกเฉพาะสิ่งที่วัด/นับได้จริงตาม STACK §7 **ไม่มีการสรุปเป็นเปอร์เซ็นต์** ลงใน `A/OPERATOR-COST.md` + `candidates[A].operator_cost_measurements`
+- **deploy**: prerequisite 3 ข้อ (ไม่จับเวลา) + **7 ขั้นตอนต่อการ deploy** โดย **ขั้นที่ 3 คือการลง CUDA torch ทับใหม่ ซึ่งไม่มีที่ไหนบอกและข้ามไม่ได้** (ลง `xinference` แล้วมันทับด้วย `torch 2.14.0+cpu` → `gpu_count 0`); เวลา: venv 5.6 s, `pip install` 200.1 s, server ตอบ 200 ใน **24–44 s**, launch โมเดล **49–62 s** (warm) / **100 s** (cold) — ประมาณ 4.5 นาทีถึงโมเดลพร้อมเสิร์ฟ ไม่รวมดาวน์โหลด (DEV-06: ไม่ใช่ตัวเลขจาก host สะอาด)
+- **footprint**: venv **3.97 GiB**, weights 7.51 GiB, pip cache 4.73 GiB
+- **services**: process tree (API + worker + sub-pool ต่อ replica) — **สั่ง start ครั้งเดียวแต่ไม่ใช่ process เดียวที่ต้องดูแล**, ต้องมี **orphan reaper ของ PRP เอง** และ firewall หน้า metrics ที่ไม่ต้องใช้ credential; **ไม่ต้องมี database ภายนอกและไม่ต้องมี proxy** (ต่างจาก B ที่ต้องมี PostgreSQL ให้ LiteLLM)
+- **datastores**: sqlite + ไฟล์กุญแจใต้ `XINFERENCE_HOME` ทั้งหมดอยู่ในเครื่อง และไม่มี prompt/response ตกลงไป (57 562 ไฟล์ 0 hit)
+- **custom gap code**: 8 แถวผูกกับ requirement จริง (key authority, epoch + GPU UUID join, reconcile หลัง relocation, admission ผ่าน `request_limits` + exporter, abort ด้วย `request_id` + map `UNKNOWN`, pin `gpu_idx`, แทนที่ error body, orphan reaper)
+- **upgrade / rollback ที่ลองจริง**: `pip install -U` **ล้มทั้ง 4 ครั้ง** ด้วย `WinError 32` ที่ `Scripts/xinference-local.exe` — **ไม่ใช่ race** เพราะหยุด runtime แล้วเหลือ 0 process, rename ด้วยมือก็ `Device or resource busy` และยังล็อกอยู่หลังรอ 60 s และ 120 s; ที่แย่คือ **ความล้มเหลวทิ้ง environment ไว้พัง** (`importlib.metadata` หา `xinference` ไม่เจอ, pip เตือน `invalid distribution ~inference`) ทั้งที่ไฟล์ .exe เดิมยังรัน server ได้ · **ทางที่ใช้ได้จริงคือสร้าง venv ใหม่แล้ว re-import bundle** (venv 5.6 s + install 200.1 s + bundle ของ EV08 → ตอบใน 31.2 s, launch 49.3 s, พฤติกรรมตรงกับต้นฉบับ) — ทดสอบใน venv ชั่วคราว evidence venv ไม่ถูกแตะและยืนยันแล้วว่ายังสมบูรณ์
+- **licenses**: runtime Apache-2.0 ทั้งชุด, torch BSD-3 + NVIDIA CUDA EULA ที่ bundle มา, โมเดลเป็น BYOM ต้องมี receipt ตาม SEC-007 — ไม่มี licence ที่ต้องจ่ายเงิน
+- **ทักษะที่ต้องมี** 6 ข้อ รวมถึงข้อที่ว่า **สามอย่างที่ต้องใช้ใน production ไม่มีใน API หรือเอกสาร ต้องอ่าน source เอง** (abort route, launch parameters, auth switch)
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

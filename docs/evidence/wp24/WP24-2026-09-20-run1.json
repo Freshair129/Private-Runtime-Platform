@@ -293,15 +293,117 @@
       "gate_failures": [],
       "blocked_items": [],
       "operator_cost_measurements": {
-        "deploy_steps_count": null,
-        "deploy_wall_clock_minutes_cold": null,
-        "services_to_operate": [],
-        "datastores_to_operate": [],
-        "custom_gap_code": [],
-        "upgrade_steps_tried": null,
-        "rollback_steps_tried": null,
-        "licenses_required": [],
-        "operator_skills_required": []
+        "deploy_steps_count": {
+          "prerequisites_once_per_host_not_timed": 3,
+          "per_deployment_performed": 7,
+          "detail": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md",
+          "note": "step 3 of the 7 is reinstalling the CUDA torch build, which is undocumented and mandatory: installing xinference==3.4.0 replaces it with torch 2.14.0+cpu and the cluster then reports gpu_count 0 (EV02)."
+        },
+        "deploy_wall_clock_minutes_cold": {
+          "venv_create_seconds": 5.6,
+          "pip_install_seconds": 200.1,
+          "server_start_to_first_200_seconds": [
+            24,
+            28,
+            31.2,
+            32,
+            44
+          ],
+          "model_launch_seconds_warm": [
+            49.3,
+            51,
+            55,
+            61,
+            62
+          ],
+          "model_launch_seconds_cold": 100,
+          "note": "measured on this host with the pip cache and the weights already local, so it is not a clean-host figure (DEV-06); candidate B recorded the same caveat for its image pull and weights download. Sum of one clean sequence: about 4.5 minutes to a serving model excluding downloads."
+        },
+        "services_to_operate": [
+          "the xinference-local process tree: an API process plus a worker process plus one sub-pool process per model replica. One command to start, but not one process to manage: killing the API listener leaves the worker alive (EV06).",
+          "an orphan reaper, written by PRP: force-killing the supervisor leaves the worker holding 10 610 MiB of VRAM and recreating the model actor, and the candidate's own startup cleanup only matches PPID 1 plus a vLLM-like command line, so it never fires on this deployment (EV06, EV07 partial).",
+          "a host firewall or network policy in front of the metrics endpoints: every listener is loopback-bound, but /metrics on the API port and the whole worker exporter answer without any credential while the API returns 401, and they disclose model_uid, worker_address, gpu_index and xinference_home (EV05).",
+          "no external database and no proxy layer are required, unlike candidate B, which needed PostgreSQL for LiteLLM virtual keys."
+        ],
+        "datastores_to_operate": [
+          "auth/auth.db: users and API keys, stored hashed AND AES-encrypted, the encrypted copy reversible (EV04)",
+          "auth/encryption_key and auth/jwt_secret_key: key material, in the same directory as the database they protect",
+          "launch_history.db, monitor_config.db, token_routers.db, download_tasks.db",
+          "cache/v2/<model>: the weights, reached here through a Windows junction",
+          "virtualenv/v4/<model>/<engine>/<python>: a per-model virtual environment the runtime builds; a hard kill can leave it in a state where later launches hang silently for about 10 minutes with no error, and the recovery is to discard the home directory (EV07 partial)",
+          "all local to the host: a marker request was traced across 57 562 scanned files and none contained it, so no prompt or response content reaches any of them (EV08)"
+        ],
+        "custom_gap_code": [
+          {
+            "requirement": "PRP-FR-003..009",
+            "work": "the whole client-key authority, verifier-only",
+            "evidence": "GET /v1/admin/keys/{id}/reveal returns the plaintext key and the AES key sits beside the database (EV04)"
+          },
+          {
+            "requirement": "PRP-FR-010..015",
+            "work": "PRP's own epoch, and a join from device index to GPU UUID",
+            "evidence": "the candidate gives accelerators [\"0\"] and a replica address but no UUID and no epoch; created is always 0 (EV02)"
+          },
+          {
+            "requirement": "PRP-FR-010..015, PRP-NFR-023",
+            "work": "reconciliation after an unrequested replica relocation",
+            "evidence": "the supervisor relaunches a dead replica by itself, 35-40 s on a 0.6B model and 131.8 s on the 4B, and the replica address changes every time (EV03, EV06)"
+          },
+          {
+            "requirement": "PRP-FR-017/018",
+            "work": "set request_limits at launch and scrape the metrics exporter for the limit and the in-flight count",
+            "evidence": "the default is unlimited and /v1/models does not report request_limits at all (EV05)"
+          },
+          {
+            "requirement": "PRP-FR-020..022",
+            "work": "cancel through the explicit abort endpoint with a PRP-generated request_id, and map a stream ending without [DONE] to UNKNOWN",
+            "evidence": "closing the socket does nothing for non-streaming work (61.5 s of compute spent after the client left) and a killed engine returns HTTP 200 with a truncated stream and no error object (EV06)"
+          },
+          {
+            "requirement": "PRP-NFR-023",
+            "work": "pin placement with gpu_idx at launch",
+            "evidence": "otherwise the supervisor chooses the GPU by IDLE_FIRST_LAUNCH_STRATEGY (EV07 partial)"
+          },
+          {
+            "requirement": "PRP-NFR-024",
+            "work": "an adapter that replaces candidate error bodies wholesale and strips the server header",
+            "evidence": "errors carry the internal actor address, the pid and every model uid on the cluster (EV08)"
+          },
+          {
+            "requirement": "operations",
+            "work": "an orphan reaper and a bound on XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT, plus PRP-side documentation of launch parameters",
+            "evidence": "POST /v1/models has no documented request body in /openapi.json, so gpu_idx, request_limits and replica exist only in the source (EV07 partial)"
+          }
+        ],
+        "upgrade_steps_tried": {
+          "method": "pip install -U xinference==3.4.0 over a working 3.3.0 environment, in a throwaway venv so the evidence deployment was never at risk",
+          "attempts": 4,
+          "result": "FAILED every time with OSError WinError 32 on Scripts/xinference-local.exe",
+          "not_a_race": "the runtime was stopped first and zero processes from that environment remained; a manual rename returned Device or resource busy, and the file was still locked after 60 s and again after 120 s. The holder was not identified: no Sysinternals tooling on this host.",
+          "damage": "the failed attempts left the environment broken: importlib.metadata could no longer find xinference and pip reported 'Ignoring invalid distribution ~inference', while the old 3.3.0 executables still started a working server",
+          "detail": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+        },
+        "rollback_steps_tried": {
+          "pip_rollback": "pip install xinference==3.3.0 over the broken environment returned the same WinError 32 and a non-zero exit, although the server still started afterwards in 28.2 s reporting 3.3.0",
+          "working_path": "rebuild the environment and re-import the configuration bundle: venv create 5.6 s plus install 200.1 s, then EV08's five-file bundle gave an instance answering in 31.2 s and a model launching in 49.3 s, matching the original on the model record, a fixed greedy answer and token usage",
+          "conclusion": "on this Windows host candidate A cannot be upgraded or rolled back in place; the operator path that works is rebuild plus re-import, which is also why the export bundle matters operationally",
+          "detail": "docs/evidence/wp24/WP24-2026-09-20-run1/A/OPERATOR-COST.md"
+        },
+        "licenses_required": [
+          "Xinference 3.4.0: Apache-2.0 (source headers and package metadata)",
+          "xoscar 0.10.0, transformers 5.17.0, accelerate 1.15.0, bcrypt 5.0.0: Apache-2.0",
+          "torch 2.14.0+cu130: BSD-3-Clause, with bundled NVIDIA CUDA components under the NVIDIA CUDA EULA",
+          "the model: BYOM, the owner brings it and holds its rights, and a licence receipt per SEC-007 is required before activation (scope_decisions.model_licensing)",
+          "no paid licence is required for the runtime itself"
+        ],
+        "operator_skills_required": [
+          "Python virtual environments and pip index pinning, including why the PyPI torch wheel displaces the CUDA build and how to restore it from the cu130 index",
+          "Windows specifics: directory junctions (the launch path tries to create a symlink and fails without the privilege), and log files shared by several processes that break rotation at the date rollover with PermissionError WinError 32",
+          "process-tree management for an actor system: the API process, the worker and the per-replica sub-pools are separate, and they must be reaped in the right order",
+          "reading the vendor's source, because three things needed in production are absent from the API and the documentation: the abort route, the launch parameters and the auth switch",
+          "Prometheus-style metrics scraping, since the only per-replica attribution and the only readable concurrency limit live in the exporter",
+          "sqlite handling and file-level access control for the auth directory"
+        ]
       },
       "reset_between_candidates": {
         "performed": true,
