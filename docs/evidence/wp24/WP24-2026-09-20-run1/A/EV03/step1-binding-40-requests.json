@@ -1,0 +1,401 @@
+{
+ "bound_addresses": {
+  "prp-a-t1": "127.0.0.1:53737",
+  "prp-a-t2": "127.0.0.1:53943"
+ },
+ "workers_view": [
+  {
+   "work-ip": "127.0.0.1:25216",
+   "models": {
+    "prp-a-t1-rep0": {
+     "model_type": "LLM",
+     "address": "127.0.0.1:53737",
+     "accelerators": [
+      "0"
+     ],
+     "model_name": "qwen3",
+     "model_lang": [
+      "en",
+      "zh"
+     ],
+     "model_ability": [
+      "chat",
+      "reasoning",
+      "hybrid",
+      "tools"
+     ],
+     "model_description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE) models. Built upon extensive training, Qwen3 delivers groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support.",
+     "model_format": "pytorch",
+     "model_size_in_billions": "0_6",
+     "model_family": "qwen3",
+     "quantization": "none",
+     "multimodal_projector": null,
+     "model_hub": "huggingface",
+     "revision": null,
+     "context_length": 40960,
+     "strict_system_first": false,
+     "model_engine": "transformers"
+    },
+    "prp-a-t2-rep0": {
+     "model_type": "LLM",
+     "address": "127.0.0.1:53943",
+     "accelerators": [
+      "0"
+     ],
+     "model_name": "qwen3",
+     "model_lang": [
+      "en",
+      "zh"
+     ],
+     "model_ability": [
+      "chat",
+      "reasoning",
+      "hybrid",
+      "tools"
+     ],
+     "model_description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE) models. Built upon extensive training, Qwen3 delivers groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support.",
+     "model_format": "pytorch",
+     "model_size_in_billions": "0_6",
+     "model_family": "qwen3",
+     "quantization": "none",
+     "multimodal_projector": null,
+     "model_hub": "huggingface",
+     "revision": null,
+     "context_length": 40960,
+     "strict_system_first": false,
+     "model_engine": "transformers"
+    }
+   }
+  }
+ ],
+ "requests": [
+  {
+   "uid": "prp-a-t1",
+   "i": 0,
+   "id": "chat6c607769-0bf9-4b39-b494-ba6b7df59544",
+   "model_field": "prp-a-t1",
+   "seconds": 15.587,
+   "content": "0"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 0,
+   "id": "chat01cd6ca8-4bcc-4e81-bb65-4ad13b8c011e",
+   "model_field": "prp-a-t2",
+   "seconds": 12.349,
+   "content": "0"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 1,
+   "id": "chat30a5e02a-6f8b-4bc6-bece-2e4f6b341e5c",
+   "model_field": "prp-a-t1",
+   "seconds": 0.431,
+   "content": "Number 1."
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 1,
+   "id": "chatd74af4dc-84db-4aba-a8e3-51a573c0e1b5",
+   "model_field": "prp-a-t2",
+   "seconds": 0.447,
+   "content": "Number 1."
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 2,
+   "id": "chatbe6e8fde-a04f-4a9e-8cdc-bc7d9b48f61f",
+   "model_field": "prp-a-t1",
+   "seconds": 0.409,
+   "content": "Number 2."
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 2,
+   "id": "chat92085765-9305-406f-a509-e628fe391cb4",
+   "model_field": "prp-a-t2",
+   "seconds": 0.424,
+   "content": "Number 2."
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 3,
+   "id": "chat25c85ffb-4aab-47b5-85dc-455a967be409",
+   "model_field": "prp-a-t1",
+   "seconds": 0.445,
+   "content": "3"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 3,
+   "id": "chat2c7cf28a-5bbf-4f2c-b0e7-57008c11d662",
+   "model_field": "prp-a-t2",
+   "seconds": 0.448,
+   "content": "3"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 4,
+   "id": "chatbb8a1ad2-f30e-4be1-a005-986b6b122cf5",
+   "model_field": "prp-a-t1",
+   "seconds": 0.421,
+   "content": "4"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 4,
+   "id": "chat3f249f1b-0664-4939-a28f-c21482a0a3e6",
+   "model_field": "prp-a-t2",
+   "seconds": 0.426,
+   "content": "4"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 5,
+   "id": "chatacd27961-5e98-48f9-865f-94e22e9550c4",
+   "model_field": "prp-a-t1",
+   "seconds": 0.403,
+   "content": "Number 5."
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 5,
+   "id": "chat5a79fd01-f60c-4032-b006-a06871da2c0a",
+   "model_field": "prp-a-t2",
+   "seconds": 0.424,
+   "content": "Number 5."
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 6,
+   "id": "chat3c9f142a-dde1-4bc0-96cb-10be477e7bf1",
+   "model_field": "prp-a-t1",
+   "seconds": 0.417,
+   "content": "6"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 6,
+   "id": "chatda40f544-329b-40f6-909c-338cf79f08f1",
+   "model_field": "prp-a-t2",
+   "seconds": 0.41,
+   "content": "6"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 7,
+   "id": "chat791aeff2-0626-4fb9-b8a7-e2306f8071b4",
+   "model_field": "prp-a-t1",
+   "seconds": 0.43,
+   "content": "Number 7."
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 7,
+   "id": "chat4859cff5-2c9c-4e65-8c88-af19857f3b52",
+   "model_field": "prp-a-t2",
+   "seconds": 0.418,
+   "content": "Number 7."
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 8,
+   "id": "chat64a8074f-5ae9-4933-8782-0932b1f4af48",
+   "model_field": "prp-a-t1",
+   "seconds": 0.438,
+   "content": "Number 8."
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 8,
+   "id": "chatf81190bd-b3f5-483e-ae23-e2abc28c11ae",
+   "model_field": "prp-a-t2",
+   "seconds": 0.43,
+   "content": "Number 8."
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 9,
+   "id": "chate7dfa9d9-3443-4f57-b649-74cf95dbca90",
+   "model_field": "prp-a-t1",
+   "seconds": 0.421,
+   "content": "9"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 9,
+   "id": "chat40af5da1-c368-4974-87d9-fd38858a1c64",
+   "model_field": "prp-a-t2",
+   "seconds": 0.45,
+   "content": "9"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 10,
+   "id": "chatb06f4862-0deb-4b65-80ed-e06a00df80b8",
+   "model_field": "prp-a-t1",
+   "seconds": 0.472,
+   "content": "Number 10."
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 10,
+   "id": "chat4b922508-81a2-4053-aacf-c3d5a8d99887",
+   "model_field": "prp-a-t2",
+   "seconds": 2.952,
+   "content": "Number 10."
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 11,
+   "id": "chat3c230ea4-03dc-4e5f-bf0b-88cd34b80b16",
+   "model_field": "prp-a-t1",
+   "seconds": 0.409,
+   "content": "Number 11."
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 11,
+   "id": "chatcdee1753-4864-4b19-a9be-1034a50f4c26",
+   "model_field": "prp-a-t2",
+   "seconds": 0.438,
+   "content": "Number 11."
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 12,
+   "id": "chat406e71cd-f419-4736-936d-550ff5a76e16",
+   "model_field": "prp-a-t1",
+   "seconds": 0.413,
+   "content": "Number 12 is **12"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 12,
+   "id": "chat328a6284-be51-40b6-b66f-850204e36c66",
+   "model_field": "prp-a-t2",
+   "seconds": 0.424,
+   "content": "Number 12 is **12"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 13,
+   "id": "chat6d24a09f-0ec7-4095-bc01-48e7741e927d",
+   "model_field": "prp-a-t1",
+   "seconds": 0.412,
+   "content": "Number 13 is **13"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 13,
+   "id": "chat14eb7c33-faec-47c3-9314-a67296edffd4",
+   "model_field": "prp-a-t2",
+   "seconds": 0.408,
+   "content": "Number 13 is **13"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 14,
+   "id": "chat7b3cf47b-f18e-4c8e-86d9-725495f13c7a",
+   "model_field": "prp-a-t1",
+   "seconds": 0.41,
+   "content": "Number 14 is **14"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 14,
+   "id": "chat25ac6368-3861-4cad-9e95-bf0db5d14c6f",
+   "model_field": "prp-a-t2",
+   "seconds": 0.418,
+   "content": "Number 14 is **14"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 15,
+   "id": "chat93e4cf2b-784a-4346-a120-e887bb927d80",
+   "model_field": "prp-a-t1",
+   "seconds": 0.428,
+   "content": "Number 15 is **15"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 15,
+   "id": "chat95d58a80-4983-466f-9614-bd79c8b01c70",
+   "model_field": "prp-a-t2",
+   "seconds": 0.435,
+   "content": "Number 15 is **15"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 16,
+   "id": "chat618ba185-4a0f-43c8-a1b0-78fa259324fa",
+   "model_field": "prp-a-t1",
+   "seconds": 0.425,
+   "content": "Number 16 is **16"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 16,
+   "id": "chat168d11c7-186e-4d70-b24e-a93b0a347b0b",
+   "model_field": "prp-a-t2",
+   "seconds": 0.41,
+   "content": "Number 16 is **16"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 17,
+   "id": "chat6cb3e1b6-c5a8-4415-8063-5757274c32ce",
+   "model_field": "prp-a-t1",
+   "seconds": 0.434,
+   "content": "Number 17 is **17"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 17,
+   "id": "chatb3881cbb-00e5-442f-85f0-184742243202",
+   "model_field": "prp-a-t2",
+   "seconds": 0.438,
+   "content": "Number 17 is **17"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 18,
+   "id": "chat9c7840a9-a443-4b4b-b644-3e38c118c017",
+   "model_field": "prp-a-t1",
+   "seconds": 0.427,
+   "content": "Number 18 is **18"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 18,
+   "id": "chat03e914f4-d75f-475e-af31-7f496fe20123",
+   "model_field": "prp-a-t2",
+   "seconds": 0.449,
+   "content": "Number 18 is **18"
+  },
+  {
+   "uid": "prp-a-t1",
+   "i": 19,
+   "id": "chat7251788e-0311-4f81-99bd-389a940e3c8d",
+   "model_field": "prp-a-t1",
+   "seconds": 0.474,
+   "content": "Number 19 is **19"
+  },
+  {
+   "uid": "prp-a-t2",
+   "i": 19,
+   "id": "chatd3ffc241-119d-499e-837e-5b43bec1e98d",
+   "model_field": "prp-a-t2",
+   "seconds": 0.494,
+   "content": "Number 19 is **19"
+  }
+ ],
+ "request_count": 40,
+ "distinct_completion_ids": 40,
+ "model_field_matches_requested_uid": 40,
+ "server_log_mentions_per_bound_address": {
+  "prp-a-t1": 0,
+  "prp-a-t2": 0
+ },
+ "server_log_window_bytes": 10678
+}

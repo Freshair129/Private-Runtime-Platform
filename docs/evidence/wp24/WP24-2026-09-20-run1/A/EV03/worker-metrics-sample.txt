@@ -1,0 +1,8 @@
+# HELP xinference:generate_tokens_total Total number of generated tokens (LLM only).
+# TYPE xinference:generate_tokens_total counter
+xinference:generate_tokens_total{engine="transformers",format="pytorch",gpu_index="0",model_name="qwen3",model_type="LLM",model_uid="prp-a-t1",quantization="none",replica_index="0",worker_address="127.0.0.1:25216"} 99
+xinference:generate_tokens_total{engine="transformers",format="pytorch",gpu_index="0",model_name="qwen3",model_type="LLM",model_uid="prp-a-t2",quantization="none",replica_index="0",worker_address="127.0.0.1:25216"} 99
+xinference:generate_tokens_total{engine="transformers",format="pytorch",gpu_index="0",model_name="qwen3",model_type="LLM",model_uid="prp-a-dual",quantization="none",replica_index="0",worker_address="127.0.0.1:25216"} 200
+xinference:generate_tokens_total{engine="transformers",format="pytorch",gpu_index="0",model_name="qwen3",model_type="LLM",model_uid="prp-a-dual",quantization="none",replica_index="1",worker_address="127.0.0.1:25216"} 67
+# HELP xinference:input_tokens_total_counter Total number of input tokens (LLM only).
+# TYPE xinference:input_tokens_total_counter counter

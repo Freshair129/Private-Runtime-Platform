@@ -129,6 +129,16 @@
       "reviewer_action": "Accept for the identity gates, or require candidate A to be redeployed on a Linux host with the same engine before any performance comparison is recorded.",
       "resolution": null,
       "status": "OPEN"
+    },
+    {
+      "id": "DEV-08",
+      "experiment": "EV03 (candidate A)",
+      "requirement": "procedure section 3 item 1: the same model revision for every candidate",
+      "observed": "EV03 for candidate A used the built-in qwen3 0.6B model instead of shared_revision, so that two live targets could exist on one 16 GiB GPU. EV02 measured 10 956 MiB for a single 4B replica and a second launch failed on the host paging file.",
+      "mitigation": "EV03 asks where a request goes, which does not depend on which weights are loaded; the binding, round-robin, kill and recovery observations are properties of the supervisor. Every other candidate-A experiment uses shared_revision.",
+      "reviewer_action": "Accept the smaller model for EV03, or require the binding tests to be repeated on hardware that can hold two replicas of shared_revision.",
+      "resolution": null,
+      "status": "OPEN"
     }
   ],
   "environment": {
@@ -983,20 +993,117 @@
       "per_candidate": {
         "A": {
           "status": "NOT_RUN",
-          "started_at": null,
-          "finished_at": null,
-          "cold_or_warm": null,
-          "sample_count": null,
-          "commands_log": null,
-          "source_observations": [],
-          "measurements": [],
-          "observations": [],
-          "artifacts": [],
+          "started_at": "2026-09-22T21:44:44+00:00",
+          "finished_at": "2026-09-22T21:58:16+00:00",
+          "cold_or_warm": "Cold for the first target (the 0.6B model was downloaded on first launch, 158 s) and warm for the others (32 s and 62 s). Request measurements were taken with every model already loaded.",
+          "sample_count": "40 requests for step 1 (20 per UID), 20 requests for step 2 against a two-replica UID, one idle-replica kill and one mid-flight kill for step 3, plus 4 follow-up requests during recovery and a 30-step recovery poll",
+          "commands_log": "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/FINDINGS.md, docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/launch-command.txt and the four step JSON files",
+          "source_observations": [
+            "SRC-09: the supervisor's own code resolves a client model_uid to a replica with itertools.cycle over active replicas, so replica choice is never the client's. Confirmed by execution: a strict 0,1,0,1 alternation over 20 requests.",
+            "SRC-09: constants.py documents XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT as 'None (default) = unbounded retry', which is the switch that bounds the automatic replica recreation this run observed."
+          ],
+          "measurements": [
+            {
+              "name": "step1.requests",
+              "value": 40
+            },
+            {
+              "name": "step1.responses_matching_addressed_uid",
+              "value": 40
+            },
+            {
+              "name": "step1.requests_crossing_to_another_uid",
+              "value": 0
+            },
+            {
+              "name": "step2.requests",
+              "value": 20
+            },
+            {
+              "name": "step2.replica_sequence",
+              "value": "0,1,0,1,... strict alternation"
+            },
+            {
+              "name": "step2.token_split_replica0_replica1",
+              "value": [
+                48,
+                51
+              ]
+            },
+            {
+              "name": "step2.response_field_naming_replica",
+              "value": null
+            },
+            {
+              "name": "step2.models_listing_addresses_for_two_replica_uid",
+              "value": 1
+            },
+            {
+              "name": "step3.midflight_kill_client_result",
+              "value": "HTTP 200, stream closed after 1 chunk as if normal"
+            },
+            {
+              "name": "step3.tokens_regenerated_on_killed_replica",
+              "value": 0
+            },
+            {
+              "name": "step3.tokens_regenerated_on_other_replica",
+              "value": 0
+            },
+            {
+              "name": "step3.requests_during_recovery",
+              "value": "400 Model not found in the model list / 500 Model is in stopping state; not re-routed to the healthy replica"
+            },
+            {
+              "name": "step3.replica_auto_recovery_seconds",
+              "value": [
+                35,
+                40
+              ]
+            },
+            {
+              "name": "step3.replica_address_after_each_recovery",
+              "value": [
+                "127.0.0.1:54535",
+                "127.0.0.1:59967",
+                "127.0.0.1:60162"
+              ]
+            },
+            {
+              "name": "step4.request_level_retry_failover_hedging",
+              "value": "none found in the request path"
+            },
+            {
+              "name": "step4.auto_recreate_default",
+              "value": "unbounded; bounded only by XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT"
+            }
+          ],
+          "observations": [
+            "Binding holds at UID level: 40 of 40 requests were served by the UID they were addressed to, with the metrics counter of only that UID moving. No request crossed to the other target.",
+            "A client cannot choose or even see a replica. With replica=2 the supervisor alternated strictly 0,1,0,1 over 20 requests, no response field named the replica, and /v1/models showed a single address for a UID that had two replicas. If PRP needs a lease bound to one physical runtime, it must run one replica per UID.",
+            "Per-request attribution exists only in the worker metrics exporter, on a separate port announced only in the server log, with model_uid, replica_index, gpu_index and worker_address labels. Neither the response, nor any header, nor the access log attributes a request to a replica. The counter also moves only when a request finishes, so an in-flight request cannot be attributed.",
+            "Killing the replica that was serving a streaming request ended the stream with HTTP 200 after one chunk, as though it had finished normally, and neither replica's token counter grew afterwards. The work was not re-run anywhere: no blind replay and no silent failover.",
+            "While a replica is dead or stopping, requests that round-robin sends to it fail with 400 Model not found in the model list or 500 Model is in stopping state. They are not re-routed to the healthy replica, so a UID with two replicas is partially unavailable during recovery.",
+            "The supervisor relaunches a dead replica by itself, twice observed, taking about 35 and 40 s, and each recovery gives the replica a NEW address. NFR-023 forbids replica relocation that escapes the lease: candidate A never retries a request, but it does relocate a replica without being asked, and the address PRP recorded stops being valid.",
+            "No request-level retry, failover or hedging exists in the request path at all; the retry settings in the code govern launching models, not re-sending requests. There is therefore nothing to disable, and step 4's second-attempt deadline question never arose because no second attempt was made.",
+            "A model UID ending in -rep<number> is refused, since that suffix names replicas internally."
+          ],
+          "artifacts": [
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/FINDINGS.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/launch-command.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/step1-binding-40-requests.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/step2-replica-roundrobin-20-requests.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/step3a-kill-idle-replica.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/step3b-kill-serving-replica-midflight.json",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/test-design.md",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/worker-metrics-sample.txt",
+            "docs/evidence/wp24/WP24-2026-09-20-run1/A/EV03/xinference-ev03-server-excerpt.log"
+          ],
           "gate_verdicts": {
             "PRP-NFR-023": "NOT_RUN"
           },
-          "disposition_hint": null,
-          "blocker": null
+          "disposition_hint": "Operator suggestion only: CONFIGURE, with conditions PRP carries itself. Binding to a UID held for every request, and the candidate has no hidden retry or failover to switch off, which is what NFR-023 asks first. PRP must then: run one replica per UID so a lease binds to one runtime, treat the replica address as unstable because automatic recovery changes it, bound the auto-recreate with XINFERENCE_MODEL_ACTOR_AUTO_RECOVER_LIMIT and reconcile after a relocation it did not request, and scrape the worker metrics exporter for the only per-replica attribution available.",
+          "blocker": "One GPU host (DEV-03), so this is replica binding rather than host binding; Windows-native transformers (DEV-07); a 0.6B model instead of shared_revision for this experiment (DEV-08). The throttled-target variant of step 3 was not run."
         },
         "B": {
           "status": "NOT_RUN",
