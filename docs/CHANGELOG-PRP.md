@@ -369,6 +369,11 @@ repository_integration: NOT_PERFORMED
 - บันทึกใน [PROP-2026-09-24](../.brain/proposals/PROP-2026-09-24-lalin-worker-adapter-boundary.md) ว่า DEC-01 ปิดด้วย ADR นี้แล้ว — **DEC-02 / DEC-04 / DEC-05 ยังรอ owner รับทราบ และ DEC-03 รอบันทึกตอน WP03 freeze**
 - ยังไม่แก้ `contracts/openapi/prp-worker.yaml` เพราะยัง `DRAFT` และการเปลี่ยนแปลงจริงเกิดที่ WP03 freeze
 
+### PROP-2026-09-24 · owner รับทราบ DEC-02 / DEC-04 / DEC-05 (2026-09-24, C-1 / H2)
+- สถานะเอกสารเปลี่ยนจาก "รออนุมัติ" เป็น **DECIDED**: **DEC-01** ปิดด้วย [ADR-PRP-014](ADR-PRP.md#ADR-PRP-014) · **DEC-02 / DEC-04 / DEC-05 owner รับทราบแล้ว ไม่ต้องแก้สัญญา ทำ adapter ได้เมื่อ M4 เปิด** · **DEC-03** ตกลงตามที่เขียนไว้ รอบันทึกใน mapping table ตอน WP03 freeze
+- กำกับรายข้อไว้ในเอกสาร: **DEC-02** แปลงชื่อใน adapter ล้วน · **DEC-04** worker ดึงเสียงจาก `artifact_grant_url` และผลกลับทาง `InvocationResult` ส่วน multipart อยู่ฝั่ง client — โครง adapter 6 ขั้นตอนในเอกสารคือรูปแบบที่ตกลง · **DEC-05** รับทราบรวมถึงข้อที่ว่า TTL sweep และ erasure tombstone เป็นข้อบังคับตาม PRP-FR-041 ไม่ใช่ทางเลือก และ **worker ไม่ใช่เจ้าของนโยบาย retention**
+- ไม่แก้สัญญาใด ไม่เปิด M4 ไม่เปลี่ยน status ใด
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

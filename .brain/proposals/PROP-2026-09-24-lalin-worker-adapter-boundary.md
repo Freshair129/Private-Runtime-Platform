@@ -1,6 +1,6 @@
 # PROP-2026-09-24 — Worker adapter boundary: answers to the five Lalin decisions
 
-**Status:** PROPOSAL — awaiting owner approval. Nothing here is binding, and nothing here opens M4.
+**Status:** DECIDED, 2026-09-24. DEC-01 is accepted as [ADR-PRP-014](../../docs/ADR-PRP.md#ADR-PRP-014). DEC-02, DEC-04 and DEC-05 are acknowledged by the repository owner and need no contract change, so the adapter may be built against them when M4 opens. DEC-03 is agreed as written here and is recorded in the mapping table at the WP03 freeze. Nothing here opens M4, and no contract is changed by this document.
 **Date:** 2026-09-24
 **Author:** Operator (assistant), at the owner's request
 **Requested by:** Lalin worker team, "[Lalin → PRP] ขอข้อตัดสิน 5 ข้อ ก่อนเขียน RuntimeInvoker adapter ที่ M4",
@@ -24,6 +24,8 @@ document.
 ---
 
 ## DEC-04 — where audio enters and where the result leaves
+
+> **ACKNOWLEDGED 2026-09-24** by the repository owner. The worker pulls from `artifact_grant_url` and the result returns in `InvocationResult`; multipart stays on the client edge. No contract change, and the six-step adapter flow below is the agreed shape. Buildable at M4.
 
 **They proposed:** the worker takes multipart on submit and serves the result from `/output`, but
 `prp-worker.yaml` has neither route and the client contract says multipart is waiting on the M4 upload
@@ -102,6 +104,8 @@ at the cost of two epoch-shaped fields.
 
 ## DEC-03 — the proposed fence mapping inverts what `fence_token` means
 
+> **AGREED 2026-09-24** as written: `fence_token` is the content fence, `deadline_at` maps directly, and a lease correlator is added only if the Lalin Admission genuinely needs one. To be recorded in the mapping table at the WP03 freeze.
+
 **They proposed:** `fence_token → lease_id`, `Invocation.deadline_at → deadline_at`, and leaving
 `content_fence` empty until there is a use case.
 
@@ -127,12 +131,16 @@ erasure fencing depends on.
 
 ## DEC-02 — `runtime_uid` and `runtime_id`
 
+> **ACKNOWLEDGED 2026-09-24** by the repository owner. No contract change; the adapter translates the name. Buildable at M4.
+
 **Agreed as proposed.** Pure adapter translation, no contract change on either side.
 `InvocationResult.runtime_uid` is the PRP-side name.
 
 ---
 
 ## DEC-05 — who deletes the payload
+
+> **ACKNOWLEDGED 2026-09-24** by the repository owner, including that the TTL sweep and the erasure tombstone are required by PRP-FR-041 rather than optional, and that the worker is never the retention authority. No contract change. Buildable at M4.
 
 **They proposed:** delete as soon as the result is fetched, with a sweeper as a safety net, and noted
 this is a data policy rather than a technical question.
@@ -169,11 +177,11 @@ All three match positions PRP already holds; recorded here so the adapter work c
 
 ## What the owner is being asked to approve
 
-| item | needs | effect if approved |
+| item | state on 2026-09-24 | what remains |
 |---|---|---|
-| DEC-02, DEC-04, DEC-05 | owner acknowledgement only | adapter work can proceed on these at M4; no contract changes |
-| DEC-01 | **an ADR** appended to `ADR-PRP.md`, applied at WP03 freeze | `ExecutionEvidence.runtime_epoch` becomes an opaque string, or gains a sibling field |
-| DEC-03 | WP03 freeze note | `fence_token` documented as the content fence in the mapping table; a lease correlator added only if their Admission requires it |
+| DEC-02, DEC-04, DEC-05 | **acknowledged by the owner** | nothing; the adapter may be built against them when M4 opens |
+| DEC-01 | **accepted as ADR-PRP-014** (opaque string, 128 characters, synthesis rule in the ADR) | the contract edit itself, carried out at the WP03 freeze per that ADR |
+| DEC-03 | **agreed as written** | record `fence_token` as the content fence in the WP03 mapping table; add a lease correlator only if the Lalin Admission requires one |
 
 None of this opens M4, changes the frozen client contract, or alters any WP24 verdict. If DEC-01 is
 approved, the ADR should be written before WP03 freezes the worker contract, because after the freeze
