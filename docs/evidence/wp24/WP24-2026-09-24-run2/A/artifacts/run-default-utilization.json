@@ -1,0 +1,168 @@
+{
+ "image": "xprobe/xinference:v3.4.0",
+ "volume": "prp-wp24-run2-home",
+ "started_at": "2026-09-25T05:00:31+0700",
+ "note": "virtualenv already installed on the volume by the v2 run",
+ "vram_before": {
+  "used_mib": 1296,
+  "free_mib": 14755
+ },
+ "cold_start": {
+  "seconds_to_api_200": 16.2,
+  "wall_seconds_including_docker": 19.3
+ },
+ "register_status": 200,
+ "engines_offered": "{\"Transformers\": [{\"model_name\": \"prp-typhoon25-qwen3-4b\", \"model_format\": \"pytorch\", \"model_size_in_billions\": 4, \"quantizations\": [\"none\"], \"support_draft_model\": false}]}",
+ "launch": {
+  "launch_status": 200,
+  "launch_body": "ok",
+  "launch_call_seconds": 266.8,
+  "first_completion": {
+   "answer": "2, 3, 5, 7, 11",
+   "usage": {
+    "prompt_tokens": 18,
+    "completion_tokens": 15,
+    "total_tokens": 33
+   }
+  },
+  "tag": "cold",
+  "listed_in_models_seconds": 10.2,
+  "seconds_to_first_200_completion": 275.4,
+  "last_probe": [
+   200,
+   "{'id': 'chat0bea73ea-b864-11f1-aca3-12ebf13236d2', 'object': 'chat.completion', 'created': 1790287526, 'model': 'prp-a-llm', 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': '2, 3,"
+  ]
+ },
+ "vram_when_ready": {
+  "used_mib": 15361,
+  "free_mib": 690
+ },
+ "engine_log_values": {
+  "load_weights_seconds": [
+   "52.91"
+  ],
+  "model_loading_gib": [
+   "7.64"
+  ],
+  "gpu_kv_cache_size_tokens": [
+   "33,728"
+  ],
+  "max_concurrency": [
+   "8,192",
+   "4.12"
+  ],
+  "graph_capture_seconds": [
+   "52"
+  ]
+ },
+ "engine_log_tail": ".38 GiB (estimated), difference: 0.22 GiB (133.3%).\n(EngineCore pid=185) INFO 09-24 22:05:16 [gpu_worker.py:888] Free memory on device (14.8/15.9 GiB) on startup. Desired GPU memory utilization is (0.9, 14.31 GiB). Actual usage is 8.59 GiB for consumed memory (weights + non-torch), 1.09 GiB for peak activation, and 0.16 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=4643894784` (4.32 GiB) to fit into requested memory, or `--kv-cache-memory=5171230208` (4.82 GiB) to fully utilize gpu memory. Current kv cache memory in use is 4.63 GiB.\n(EngineCore pid=185) INFO 09-24 22:05:17 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.\n(EngineCore pid=185) INFO 09-24 22:05:17 [torch_utils.py:287] Reducing Torch threads from 14 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.\n(EngineCore pid=185) INFO 09-24 22:05:17 [core.py:372] init engine (profile, create kv cache, warmup model) took 190.89 s (compilation: 20.24 s)\n(EngineCore pid=185) INFO 09-24 22:05:18 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])\nWARNING 09-24 22:05:26 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().",
+ "smoke_warm": {
+  "status": 200,
+  "wall_ms": 345,
+  "answer": "2, 3, 5, 7, 11",
+  "usage": {
+   "prompt_tokens": 18,
+   "completion_tokens": 15,
+   "total_tokens": 33
+  }
+ },
+ "warm_restart": {
+  "seconds_to_api_200": 14.1,
+  "wall_seconds_including_docker": 16.7,
+  "models_after": [],
+  "family_after_restart_status": 200
+ },
+ "watchdog_samples": [
+  {
+   "t": "05:00:52",
+   "container": "running|0|false",
+   "host_free_ram_gib": "3.32",
+   "vram": {
+    "used_mib": 1296,
+    "free_mib": 14755
+   }
+  },
+  {
+   "t": "05:01:23",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.89",
+   "vram": {
+    "used_mib": 10177,
+    "free_mib": 5874
+   }
+  },
+  {
+   "t": "05:01:54",
+   "container": "running|0|false",
+   "host_free_ram_gib": "2.58",
+   "vram": {
+    "used_mib": 10199,
+    "free_mib": 5852
+   }
+  },
+  {
+   "t": "05:02:25",
+   "container": "running|0|false",
+   "host_free_ram_gib": "3.65",
+   "vram": {
+    "used_mib": 10244,
+    "free_mib": 5807
+   }
+  },
+  {
+   "t": "05:02:55",
+   "container": "running|0|false",
+   "host_free_ram_gib": "4.52",
+   "vram": {
+    "used_mib": 10293,
+    "free_mib": 5758
+   }
+  },
+  {
+   "t": "05:03:26",
+   "container": "running|0|false",
+   "host_free_ram_gib": "4.26",
+   "vram": {
+    "used_mib": 10434,
+    "free_mib": 5617
+   }
+  },
+  {
+   "t": "05:03:57",
+   "container": "running|0|false",
+   "host_free_ram_gib": "2.59",
+   "vram": {
+    "used_mib": 15176,
+    "free_mib": 875
+   }
+  },
+  {
+   "t": "05:04:28",
+   "container": "running|0|false",
+   "host_free_ram_gib": "4.03",
+   "vram": {
+    "used_mib": 15328,
+    "free_mib": 723
+   }
+  },
+  {
+   "t": "05:04:59",
+   "container": "running|0|false",
+   "host_free_ram_gib": "3.91",
+   "vram": {
+    "used_mib": 15340,
+    "free_mib": 711
+   }
+  },
+  {
+   "t": "05:05:30",
+   "container": "running|0|false",
+   "host_free_ram_gib": "4.03",
+   "vram": {
+    "used_mib": 1310,
+    "free_mib": 14741
+   }
+  }
+ ],
+ "finished_at": "2026-09-25T05:05:43+0700"
+}

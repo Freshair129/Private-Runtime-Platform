@@ -374,6 +374,16 @@ repository_integration: NOT_PERFORMED
 - กำกับรายข้อไว้ในเอกสาร: **DEC-02** แปลงชื่อใน adapter ล้วน · **DEC-04** worker ดึงเสียงจาก `artifact_grant_url` และผลกลับทาง `InvocationResult` ส่วน multipart อยู่ฝั่ง client — โครง adapter 6 ขั้นตอนในเอกสารคือรูปแบบที่ตกลง · **DEC-05** รับทราบรวมถึงข้อที่ว่า TTL sweep และ erasure tombstone เป็นข้อบังคับตาม PRP-FR-041 ไม่ใช่ทางเลือก และ **worker ไม่ใช่เจ้าของนโยบาย retention**
 - ไม่แก้สัญญาใด ไม่เปิด M4 ไม่เปลี่ยน status ใด
 
+### WP24 run 2 · candidate A บน Linux ด้วย vLLM engine — วัด parity กับ candidate B (2026-09-25, C-2 / H3)
+- สร้าง record ใหม่ `WP24-2026-09-24-run2` เพราะ run 1 ปิดและอนุมัติแล้ว; run 2 **ไม่แก้** verdict, status หรือ disposition ของ run 1 และทุก acceptance ยัง `NOT_RUN` ตามคำสั่ง owner "วัดอย่างเดียว ไม่ต้องตัดสินใหม่"
+- รัน candidate A ใน Linux container ด้วย vLLM engine บน GPU, weights และ revision เดียวกับ candidate B: `Model loading took 7.64 GiB` **เท่ากันทั้งสองฝั่ง** = หลักฐาน parity ที่ DEV-07 ขาดไป; `Loading weights` 56.57 s (A) เทียบ 64.72 s (B)
+- รันสองรอบและเทียบเฉพาะรอบที่ตรงกัน: รอบแรกใช้ default utilization ของ Xinference, รอบสองตั้ง `gpu_memory_utilization 0.70` ให้ตรงกับ B
+- ตัวเลขที่มาจาก KV cache (19 744 tokens / 2.41x เทียบ 10 576 tokens / 1.29x) **ไม่ใช่ like-for-like** เพราะ engine คนละ version — บันทึกเป็น **DEV-09** (vLLM 0.30.0 เทียบ 0.29.0) พร้อมคำเตือนใน log ของ B เองเรื่อง CUDA graph memory profiling
+- **DEV-07 แคบลง ไม่ใช่ถูกลบ**: ความต่าง platform + engine หายไปแล้ว เหลือความต่าง engine version เดียว; เอกสารไม่เสนอแก้ run 1 — การตัดสินว่า trigger ใน `rollback_exit_plan` ถึงหรือยังเป็นดุลพินิจของ reviewer
+- findings ที่ยืนได้ด้วยตัวเอง: `GET /v1/engines/{model}` รายงานเฉพาะ `Transformers` แต่ launch ด้วย `model_engine: vllm` ได้ 200 จริง; model ปรากฏใน `/v1/models` ก่อนพร้อมให้บริการ **265 s** (ระหว่างนั้นตอบ 503) — listing ไม่ใช่ readiness; registration หายหลัง restart บน Linux เหมือนที่ EV06 วัดบน Windows จึงไม่ใช่อาการเฉพาะ Windows; image tag `v3.4.0` บรรจุ `3.4.1.dev0+g99868ea70.d20260911` จึง pin ด้วย tag ไม่ได้; vLLM ไม่มีใน image ต้องติดตั้ง on demand ~13 GB ตอน launch แรก; `XINFERENCE_HOME` วางบน Windows path ไม่ได้เพราะ symlink privilege
+- operator finding: paging file ของ Windows โตจาก 43.58 GiB เป็น **71 266 MiB (69.6 GiB)** ระหว่างการรัน ขณะที่ peak usage สูงสุดตลอดอายุเครื่องเพียง **8 978 MiB (8.8 GiB)** ทำให้ C: เหลือ 2.3 GB; นี่คือสาเหตุจริงของ container **exit 255** (`OOMKilled=false` ไม่มี traceback) ไม่ใช่ OOM — เป็น feedback loop ที่ต้องกำหนดขอบเขต paging file ถ้าจะ deploy candidate A บน Windows host
+- artifacts: `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md` พร้อม run JSON สองรอบ, trace ของรอบติดตั้ง, log เต็มของ engine และ harness ทั้งสองตัว; validator `errors: []`
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 
