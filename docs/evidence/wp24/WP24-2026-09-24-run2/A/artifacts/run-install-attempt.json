@@ -1,0 +1,148 @@
+{
+ "image": "xprobe/xinference:v3.4.0",
+ "volume": "prp-wp24-run2-home",
+ "started_at": "2026-09-25T04:49:35+0700",
+ "vram_before": {
+  "used_mib": 1332,
+  "free_mib": 14719
+ },
+ "cold_start": {
+  "seconds_to_api_200": 22.2,
+  "wall_seconds_including_docker": 23.8
+ },
+ "register": {
+  "status": 200,
+  "body": "ok"
+ },
+ "engines_offered": {
+  "status": 200,
+  "body": "{\"Transformers\": [{\"model_name\": \"prp-typhoon25-qwen3-4b\", \"model_format\": \"pytorch\", \"model_size_in_billions\": 4, \"quantizations\": [\"none\"], \"support_draft_model\": false}]}"
+ },
+ "launch_vllm_engine": {
+  "status": null,
+  "body": "still running at budget"
+ },
+ "model_ready_seconds": 505.2,
+ "vram_when_ready": {
+  "used_mib": 2597,
+  "free_mib": 13454
+ },
+ "engine_log_values": {},
+ "engine_log_tail": "_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)\n(EngineCore pid=429) INFO 09-24 21:58:44 [parallel_state.py:1827] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_c4734214d68047d5ac0f46478d33431f backend=nccl\n(EngineCore pid=429) INFO 09-24 21:58:44 [parallel_state.py:2267] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A\n(EngineCore pid=429) INFO 09-24 21:58:44 [gpu_worker.py:441] Using V2 Model Runner\n(EngineCore pid=429) WARNING 09-24 21:58:46 [buffer_utils.py:47] Pinned memory is not available on this platform; falling back to device memory for UVA buffers.\n(EngineCore pid=429) INFO 09-24 21:58:46 [model_runner.py:396] Loading model from scratch...",
+ "watchdog_samples": [
+  {
+   "t": "04:50:02",
+   "container": "running|0|false",
+   "host_free_ram_gib": "2.03",
+   "docker_used": "88G"
+  },
+  {
+   "t": "04:50:33",
+   "container": "running|0|false",
+   "host_free_ram_gib": "2.45",
+   "docker_used": "88G"
+  },
+  {
+   "t": "04:51:06",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.66",
+   "docker_used": "89G"
+  },
+  {
+   "t": "04:51:38",
+   "container": "running|0|false",
+   "host_free_ram_gib": "2.3",
+   "docker_used": "90G"
+  },
+  {
+   "t": "04:52:09",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.45",
+   "docker_used": "91G"
+  },
+  {
+   "t": "04:52:41",
+   "container": "running|0|false",
+   "host_free_ram_gib": "0.93",
+   "docker_used": "92G"
+  },
+  {
+   "t": "04:53:17",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.15",
+   "docker_used": "93G"
+  },
+  {
+   "t": "04:53:51",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.08",
+   "docker_used": "93G"
+  },
+  {
+   "t": "04:54:24",
+   "container": "running|0|false",
+   "host_free_ram_gib": "3.56",
+   "docker_used": "94G"
+  },
+  {
+   "t": "04:54:56",
+   "container": "running|0|false",
+   "host_free_ram_gib": "5.13",
+   "docker_used": "94G"
+  },
+  {
+   "t": "04:55:28",
+   "container": "running|0|false",
+   "host_free_ram_gib": "3.84",
+   "docker_used": "95G"
+  },
+  {
+   "t": "04:56:00",
+   "container": "running|0|false",
+   "host_free_ram_gib": "3.5",
+   "docker_used": "96G"
+  },
+  {
+   "t": "04:56:34",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.6",
+   "docker_used": "98G"
+  },
+  {
+   "t": "04:57:10",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.31",
+   "docker_used": "99G"
+  },
+  {
+   "t": "04:57:48",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.66",
+   "docker_used": "100G"
+  },
+  {
+   "t": "04:58:21",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.78",
+   "docker_used": "100G"
+  },
+  {
+   "t": "04:58:53",
+   "container": "running|0|false",
+   "host_free_ram_gib": "1.82",
+   "docker_used": "101G"
+  }
+ ],
+ "smoke": {
+  "status": 503,
+  "wall_ms": 78,
+  "answer": "{\"detail\":\"Model is loading, please retry later: [address=0.0.0.0:51981, pid=37] Model prp-a-llm is loading, please retry later\"}",
+  "usage": null
+ },
+ "warm_restart": {
+  "seconds_to_api_200": 18.1,
+  "wall_seconds_including_docker": 23.0,
+  "models_after": []
+ },
+ "finished_at": "2026-09-25T04:59:18+0700"
+}
