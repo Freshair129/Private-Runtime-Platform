@@ -64,7 +64,21 @@ class RuntimeIdentity(ContractModel):
         ),
     ]
     profile_hash: str
-    profile_epoch: Annotated[StrictInt, Field(ge=0)]
+    profile_epoch: Annotated[
+        StrictInt,
+        Field(
+            description="PRP-minted profile-binding epoch; the runtime restart token is runtime_epoch.",
+            ge=0,
+        ),
+    ]
+    runtime_epoch: Annotated[
+        str,
+        Field(
+            description="Actual runtime epoch token. Opaque and compared for equality only; never parsed or ordered.",
+            max_length=128,
+            min_length=1,
+        ),
+    ]
     engine: Annotated[
         str,
         Field(
@@ -126,10 +140,16 @@ class Readiness(ContractModel):
     state: Annotated[
         Literal["READY", "NOT_READY", "UNKNOWN"],
         Field(
-            description="NOT_READY covers loading/draining (added in this draft for review at WP03; API-PRP §7 lists READY/UNKNOWN). UNKNOWN means the adapter cannot observe the engine."
+            description="READY is a fresh, qualified observation for the requested PRP profile epoch; NOT_READY is a known ineligible, loading, draining, or epoch-mismatch state; UNKNOWN means no fresh, trustworthy observation is available."
         ),
     ]
-    profile_epoch: Annotated[StrictInt, Field(description="Actual epoch of the runtime", ge=0)]
+    profile_epoch: Annotated[
+        StrictInt,
+        Field(
+            description="Current PRP-minted profile-binding epoch; the actual runtime restart token is reported separately as runtime_epoch by describe.",
+            ge=0,
+        ),
+    ]
     observed_at: AwareDatetime
     limits: Limits | None = None
 
@@ -335,7 +355,12 @@ class ExecutionEvidence(ContractModel):
     )
     attempt_id: UUID
     runtime_epoch: Annotated[
-        StrictInt, Field(description="Actual runtime epoch at observation", ge=0)
+        str,
+        Field(
+            description="Actual runtime epoch token at observation; opaque and compared for equality only, never parsed or ordered.",
+            max_length=128,
+            min_length=1,
+        ),
     ]
     evidence: Literal["RUNNING", "FINISHED", "UNKNOWN"]
     detail: EvidenceDetail | None = None
@@ -369,10 +394,32 @@ class InvocationRequest(ContractModel):
     )
     invocation_id: UUID
     attempt_id: UUID
+    runtime_uid: Annotated[
+        str,
+        Field(
+            description="Expected runtime UID reserved by PRP; the adapter must verify exact equality before dispatch.",
+            min_length=1,
+        ),
+    ]
+    physical_resource_id: Annotated[
+        str,
+        Field(
+            description="Expected physical resource reserved by PRP; the adapter must verify exact equality before dispatch.",
+            min_length=1,
+        ),
+    ]
+    runtime_epoch: Annotated[
+        str,
+        Field(
+            description="Expected actual runtime epoch token from the reserved target; opaque and compared for equality only.",
+            max_length=128,
+            min_length=1,
+        ),
+    ]
     profile_epoch: Annotated[
         StrictInt,
         Field(
-            description="Epoch the reservation was made against; the worker rejects a mismatch with 409 EPOCH_MISMATCH",
+            description="PRP-minted profile epoch the reservation was made against, not the runtime restart epoch; a mismatch yields 409 EPOCH_MISMATCH before execution.",
             ge=0,
         ),
     ]
@@ -410,6 +457,14 @@ class InvocationResult(ContractModel):
     attempt_id: UUID
     runtime_uid: str
     physical_resource_id: str
+    runtime_epoch: Annotated[
+        str,
+        Field(
+            description="Actual runtime epoch token for this attempt; opaque and compared for equality only, never parsed or ordered.",
+            max_length=128,
+            min_length=1,
+        ),
+    ]
     profile_epoch: Annotated[StrictInt, Field(ge=0)]
     kind: Annotated[
         Literal["chat", "asr"],

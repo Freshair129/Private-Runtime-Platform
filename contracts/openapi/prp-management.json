@@ -271,7 +271,7 @@
       "post": {
         "operationId": "createKey",
         "summary": "Issue a scoped inference key for a principal or application",
-        "description": "The secret is returned exactly once. PRP stores a verifier only (PRP-FR-005); no later call, export or backup can reveal it.",
+        "description": "The first response contains the secret once. A replay with the same Idempotency-Key and canonical payload returns the stable receipt without plaintext; a different payload with the same key returns 409. If the first response was lost, revoke and reissue the key. PRP stores a verifier only (PRP-FR-005); no later call, export or backup can reveal the secret.",
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -310,6 +310,24 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/KeyIssued"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Idempotent replay; stable receipt returned without plaintext. If the first response was lost, revoke and reissue the key.",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyIssuanceReplayReceipt"
                 }
               }
             }
@@ -404,6 +422,7 @@
       "post": {
         "operationId": "rotateKey",
         "summary": "Rotate a key; the new secret is shown once, the old verifier expires per grace policy",
+        "description": "The first successful response contains the new secret once. A replay with the same Idempotency-Key and canonical payload returns the stable issuance receipt without plaintext; a different payload with the same key returns 409. If the first response was lost, revoke and reissue the key.",
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -428,7 +447,7 @@
         ],
         "responses": {
           "200": {
-            "description": "New secret issued once",
+            "description": "First response contains the secret; an idempotent replay returns a stable receipt without plaintext.",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -440,7 +459,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/KeyIssued"
+                  "$ref": "#/components/schemas/KeyIssuanceResponse"
                 }
               }
             }
@@ -535,7 +554,272 @@
       "post": {
         "operationId": "revokeKey",
         "summary": "Revoke a key immediately",
+        "description": "Revocation is terminal. A revoked key cannot be resumed; issue a new key instead.",
         "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/keys/{key_id}/suspend": {
+      "parameters": [
+        {
+          "name": "key_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "suspendKey",
+        "summary": "Suspend a key reversibly",
+        "description": "Suspension blocks new use but retains the key record. It may be resumed only while unexpired and not revoked. Requires the current version and records an audit event.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mutation applied",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prp/admin/v1/keys/{key_id}/resume": {
+      "parameters": [
+        {
+          "name": "key_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "resumeKey",
+        "summary": "Resume a suspended key",
+        "description": "Resumes a suspended, unexpired key. Revoked and expired keys are terminal and cannot be resumed. Requires the current version and records an audit event.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          },
           {
             "name": "If-Match",
             "in": "header",
@@ -2495,7 +2779,13 @@
       },
       "AccessGrantRequest": {
         "type": "object",
+        "description": "Inference capability grant within an organization; management permissions remain governed by OperatorSession or OperatorKey role and scope.",
         "properties": {
+          "organization_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
           "subject_type": {
             "type": "string",
             "enum": [
@@ -2505,18 +2795,21 @@
             ]
           },
           "subject_id": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
           },
           "pool_id": {
             "type": "string",
             "format": "uuid"
           },
-          "scopes": {
+          "capabilities": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/CapabilityGrant"
             },
-            "minItems": 1
+            "minItems": 1,
+            "uniqueItems": true
           },
           "expires_at": {
             "type": [
@@ -2527,16 +2820,24 @@
           }
         },
         "required": [
+          "organization_id",
           "subject_type",
           "subject_id",
           "pool_id",
-          "scopes"
+          "capabilities",
+          "expires_at"
         ],
         "additionalProperties": false
       },
       "KeyRequest": {
         "type": "object",
+        "description": "Issues a client inference key bound to one organization and owning principal or application. Management permissions are not client-key capabilities.",
         "properties": {
+          "organization_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
           "subject_type": {
             "type": "string",
             "enum": [
@@ -2545,22 +2846,34 @@
             ]
           },
           "subject_id": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
           },
-          "scopes": {
+          "capabilities": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/CapabilityGrant"
             },
-            "minItems": 1
+            "minItems": 1,
+            "uniqueItems": true
           },
-          "pool_ids": {
+          "model_aliases": {
             "type": "array",
             "items": {
               "type": "string",
-              "format": "uuid"
+              "minLength": 1,
+              "maxLength": 128
             },
-            "minItems": 1
+            "minItems": 1,
+            "uniqueItems": true,
+            "description": "Public PRP model aliases; vendor model IDs and physical pool IDs are not accepted."
+          },
+          "quota_policy_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Reference to the PRP quota policy bound to this key."
           },
           "expires_at": {
             "type": [
@@ -2575,15 +2888,19 @@
           }
         },
         "required": [
+          "organization_id",
           "subject_type",
           "subject_id",
-          "scopes",
-          "pool_ids"
+          "capabilities",
+          "model_aliases",
+          "quota_policy_id",
+          "expires_at"
         ],
         "additionalProperties": false
       },
       "KeyIssued": {
         "type": "object",
+        "description": "Initial key issuance response. The secret is present only in this response and is never retained for replay.",
         "properties": {
           "key_id": {
             "type": "string",
@@ -2597,11 +2914,48 @@
             "type": "string",
             "description": "Non-secret prefix for identification in logs and UI"
           },
-          "scopes": {
+          "secret_available": {
+            "const": true
+          },
+          "organization_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "subject_type": {
+            "type": "string",
+            "enum": [
+              "principal",
+              "application"
+            ]
+          },
+          "subject_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "capabilities": {
             "type": "array",
             "items": {
-              "type": "string"
-            }
+              "$ref": "#/components/schemas/CapabilityGrant"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "model_aliases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "quota_policy_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
           },
           "expires_at": {
             "type": [
@@ -2625,12 +2979,76 @@
           "key_id",
           "secret",
           "key_prefix",
-          "scopes",
+          "secret_available",
+          "organization_id",
+          "subject_type",
+          "subject_id",
+          "capabilities",
+          "model_aliases",
+          "quota_policy_id",
+          "expires_at",
           "version",
           "audit_event_id",
           "request_id"
         ],
         "additionalProperties": false
+      },
+      "KeyIssuanceReplayReceipt": {
+        "type": "object",
+        "description": "Stable idempotency replay receipt. The secret was not retained and cannot be recovered; revoke and reissue if the first response was lost.",
+        "properties": {
+          "key_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "key_prefix": {
+            "type": "string",
+            "description": "Non-secret prefix for identification in logs and UI"
+          },
+          "secret_available": {
+            "const": false,
+            "description": "The plaintext secret is never retained and cannot be recovered after the first response."
+          },
+          "version": {
+            "type": "string"
+          },
+          "audit_event_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "key_id",
+          "key_prefix",
+          "secret_available",
+          "version",
+          "audit_event_id"
+        ],
+        "additionalProperties": false
+      },
+      "KeyIssuanceResponse": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/KeyIssued"
+          },
+          {
+            "$ref": "#/components/schemas/KeyIssuanceReplayReceipt"
+          }
+        ],
+        "description": "The first successful response contains the plaintext secret; a replay contains only the stable receipt."
+      },
+      "CapabilityGrant": {
+        "type": "string",
+        "description": "Inference capabilities only. Management permissions are granted and checked separately through management authentication and roles.",
+        "enum": [
+          "chat:invoke",
+          "asr:invoke",
+          "tts:invoke",
+          "jobs:read",
+          "jobs:cancel",
+          "artifacts:read",
+          "artifacts:delete"
+        ]
       },
       "PoolRequest": {
         "type": "object",
