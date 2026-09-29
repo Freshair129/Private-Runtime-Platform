@@ -24,6 +24,7 @@ class ErrorBody(ContractModel):
         "EXPIRED_KEY",
         "SCOPE_DENIED",
         "POLICY_DENIED",
+        "POLICY_EXISTS",
         "NOT_FOUND",
         "IDEMPOTENCY_CONFLICT",
         "VERSION_CONFLICT",
@@ -39,10 +40,17 @@ class MutationReceipt(ContractModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    resource_id: str
+    resource_id: Annotated[
+        str,
+        Field(
+            description="Stable policy identifier for createPolicy; other operations return their target resource identifier."
+        ),
+    ]
     version: Annotated[
         str,
-        Field(description="New resource version to send as If-Match on the next mutation"),
+        Field(
+            description="Opaque resource version to send unchanged as If-Match on the next mutation; on creation this is the initial version."
+        ),
     ]
     audit_event_id: UUID
     request_id: str
@@ -50,6 +58,20 @@ class MutationReceipt(ContractModel):
 
 class ModelAliase(RootModel[str]):
     root: Annotated[str, Field(max_length=128, min_length=1)]
+
+
+class KeyRotationRequest(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    overlap_seconds: Annotated[
+        StrictInt,
+        Field(
+            description="Seconds the old verifier remains valid after rotation; callers may shorten but never exceed the 24-hour default maximum.",
+            ge=1,
+            le=86400,
+        ),
+    ] = 86400
 
 
 class KeyIssuanceReplayReceipt(ContractModel):
@@ -142,12 +164,85 @@ class ProfileApproval(ContractModel):
     approved_until: AwareDatetime | None = None
 
 
-class PolicyScope(ContractModel):
+class PolicySubjectScope(ContractModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    organization_id: str | None = None
-    application_id: str | None = None
+    subject_type: Literal["principal", "application"]
+    subject_id: Annotated[str, Field(max_length=128, min_length=1)]
+
+
+class WindowBudget(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    limit: Annotated[
+        StrictInt,
+        Field(
+            description="Maximum units admitted in any trailing interval of this duration; events exactly at the interval's lower boundary are excluded.",
+            ge=0,
+        ),
+    ]
+    window_seconds: Annotated[
+        StrictInt, Field(description="Length of the rolling interval in seconds.", ge=1)
+    ]
+
+
+class RetentionPolicySettings(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    async_payload_terminal_ttl_seconds: Annotated[
+        StrictInt,
+        Field(
+            description="Retention after terminal state, at most 24 hours.",
+            ge=0,
+            le=86400,
+        ),
+    ]
+    async_payload_max_age_seconds: Annotated[
+        StrictInt,
+        Field(
+            description="Absolute payload age, at most 48 hours from creation.",
+            ge=1,
+            le=172800,
+        ),
+    ]
+    raw_audio_max_age_seconds: Annotated[
+        StrictInt,
+        Field(
+            description="Absolute raw/orphan audio age, at most 24 hours from upload.",
+            ge=1,
+            le=86400,
+        ),
+    ]
+    generated_audio_retention_seconds: Annotated[
+        StrictInt,
+        Field(
+            description="Default seven-day retention; authorized deletion may shorten it.",
+            ge=1,
+        ),
+    ]
+    job_usage_audit_metadata_retention_days: Annotated[
+        StrictInt,
+        Field(
+            description="Metadata retention in days; policy may shorten the 90-day default.",
+            ge=1,
+            le=90,
+        ),
+    ]
+    operational_log_retention_days: Annotated[
+        StrictInt,
+        Field(description="Default 30-day retention for redacted operational logs.", ge=1),
+    ]
+    share_grant_max_ttl_seconds: Annotated[
+        StrictInt,
+        Field(
+            description="Maximum share-grant TTL; actual expiry must also be no later than artifact expiry.",
+            ge=1,
+            le=86400,
+        ),
+    ]
 
 
 class ExportRequest(ContractModel):
@@ -268,7 +363,7 @@ class KeyRequest(ContractModel):
     quota_policy_id: Annotated[
         str,
         Field(
-            description="Reference to the PRP quota policy bound to this key.",
+            description="Stable resource_id of the quota policy for this key's exact organization and owning subject. All keys for that subject share subject-scope quota counters; the organization policy is also enforced when present.",
             max_length=128,
             min_length=1,
         ),
@@ -310,7 +405,14 @@ class KeyIssued(ContractModel):
         Field(min_length=1),
     ]
     model_aliases: Annotated[list[ModelAliase], Field(min_length=1)]
-    quota_policy_id: Annotated[str, Field(max_length=128, min_length=1)]
+    quota_policy_id: Annotated[
+        str,
+        Field(
+            description="Stable resource_id of this key's exact subject quota policy; all keys for that subject share its counters.",
+            max_length=128,
+            min_length=1,
+        ),
+    ]
     expires_at: AwareDatetime | None
     version: str
     audit_event_id: UUID
@@ -346,9 +448,47 @@ class QualificationReceipt(ContractModel):
     recorded_at: AwareDatetime
 
 
-class PolicyUpdate(ContractModel):
+class PolicyScope(ContractModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    scope: PolicyScope | None = None
-    settings: dict[str, Any]
+    organization_id: Annotated[str, Field(max_length=128, min_length=1)]
+    subject: PolicySubjectScope | None = None
+
+
+class QuotaPolicySettings(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    requests: WindowBudget
+    tokens: WindowBudget
+    audio_seconds: WindowBudget
+    active_jobs: Annotated[
+        StrictInt, Field(description="Maximum simultaneously active jobs.", ge=0)
+    ]
+    queued_jobs: Annotated[
+        StrictInt, Field(description="Maximum simultaneously queued jobs.", ge=0)
+    ]
+    storage_bytes: Annotated[
+        StrictInt,
+        Field(description="Maximum retained storage allowance in bytes.", ge=0),
+    ]
+
+
+class PolicyWrite(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    scope: PolicyScope
+    settings: QuotaPolicySettings | RetentionPolicySettings
+
+
+class PolicyResource(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    resource_id: Annotated[str, Field(max_length=128, min_length=1)]
+    policy_kind: Literal["quota", "retention"]
+    scope: PolicyScope
+    settings: QuotaPolicySettings | RetentionPolicySettings
+    version: Annotated[str, Field(max_length=128, min_length=1)]

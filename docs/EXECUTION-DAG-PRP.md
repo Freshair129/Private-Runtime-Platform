@@ -28,9 +28,9 @@ LINE canary and P2 image/video remain separate follow-on tracks. They do not blo
 ## 2. Current baseline and entry conditions
 
 - M1–M3 and the Python skeletons exist. `apps/control-api` has contract-bound routes but no adapters; requests fail closed with `503 STATE_STORE_UNAVAILABLE`. `workers/voice` has the worker contract and lifecycle skeleton but no speech engine. Preserve these seams; do not regenerate the skeleton from scratch.
-- WP24 run 1's approved receipt selects candidate A and explicitly satisfies the WP24 decision prerequisite for WP03. Run 2 is supplemental measurement only and does not reopen that decision; DEV-09 remains a limitation on cross-candidate cache/concurrency comparison. WP01 scope and ownership remain NOT_STARTED and block formal WP03 readiness; D1–D5 approval does not freeze the contracts or mark implementation complete.
-- Worker and management contracts remain DRAFT until WP03 freeze. All 92 acceptance cases remain `NOT_RUN`; existing unit/contract tests are not runtime acceptance evidence.
-- Before coding, reconcile the roadmap's work-package status fields with the delivered M3/WP24 artifacts. Update statuses only from their canonical receipts; do not infer PASS from files existing.
+- WP24 run 1's approved receipt selects candidate A and satisfies the WP24 decision prerequisite for WP03. Run 2 is supplemental measurement only and does not reopen that decision; DEV-09 remains a limitation on cross-candidate cache/concurrency comparison. The WP01 scope/ownership decision receipt was approved 2026-09-30; WP01 implementation remains `NOT_STARTED`.
+- Worker and management contracts remain DRAFT pending a separate formal WP03 freeze decision. The D6 management lifecycle, quota, deployment-ceiling, and key-rotation semantics are recorded. All 92 acceptance cases remain `NOT_RUN`; WP01/WP03 approval does not constitute runtime implementation or acceptance evidence.
+- The roadmap now records the approved WP24 decision receipt separately from implementation status. Keep work-package implementation statuses `NOT_STARTED` until implementation evidence exists; do not infer PASS from files existing.
 
 Sources: `apps/control-api/README.md`; `workers/voice/README.md`; `docs/CHANGELOG-PRP.md` (M3 and WP24 entries); `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md`; `docs/TEST-PRP.md` §1.
 
@@ -39,7 +39,7 @@ Sources: `apps/control-api/README.md`; `workers/voice/README.md`; `docs/CHANGELO
 ```mermaid
 flowchart TD
   BASE["Baseline reconciliation<br/>M3 scaffold retained; WP24 evidence/status reconciled"]
-  WP01["WP01 Scope and ownership freeze"]
+  WP01["WP01 Scope/ownership decision approved; implementation pending"]
   WP02["WP02 Hardware/runtime inventory"]
   WP24["WP24 Approved candidate binding; track DEV-09 measurement limitation"]
   WP03["WP03 Freeze contracts, authority, and secret design"]
@@ -164,7 +164,7 @@ The approved roadmap initially required deployment/rollback runbooks from WP18 a
 
 **Correction applied:** the DEV gate owns a short deploy/revert instruction based on WP04/WP25 artifacts; WP18 remains after WP17 for full restore, recovery, and release evidence. WP IDs are unchanged. The root cause and prevention are recorded in [RCA-2026-09-29-roadmap-dev-wp18-cycle](../.brain/rca/RCA-2026-09-29-roadmap-dev-wp18-cycle.md).
 
-Status discrepancy to reconcile at preflight: WP24 still displays `NOT_STARTED` in the roadmap despite run evidence. Do not silently turn WP24 or any acceptance case to PASS.
+WP24 implementation may remain `NOT_STARTED`: the approved run 1 decision receipt satisfies its WP03 decision prerequisite, while run 2 is measurement-only. No WP24 status discrepancy remains to reconcile at preflight. Do not infer implementation PASS or change any acceptance case from this receipt.
 
 ## 8. Definition of done for this plan
 

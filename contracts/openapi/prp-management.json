@@ -3,7 +3,7 @@
   "info": {
     "title": "PRP - Private Management Contract",
     "version": "0.4.0-draft",
-    "description": "DRAFT machine-readable form of the management operation inventory in API-PRP §8. The inventory is fixed by that document; field-level schemas remain to be frozen at G0 (WP03) and are therefore minimal here. Every mutation requires role + scope, a current version (If-Match), an idempotent operation identity where retryable (Idempotency-Key) and produces a redacted audit event. Inference client keys never authorize these routes. No operation here may run a host reboot, kill or model load in response to a user inference request. Not implemented or tested."
+    "description": "DRAFT machine-readable form of the management operation inventory in API-PRP §8. Management policies have one stable resource per kind and canonical scope, with create/read/update semantics. Deployment quota ceilings are operator configuration outside this API. Key rotation preserves grants and expiry, and quota windows use trailing rolling intervals. Formal WP03 freeze remains gated by WP01 evidence. Every mutation requires the approved role/action matrix and explicit scope, a current version (If-Match), an idempotent operation identity where retryable (Idempotency-Key), and produces a redacted audit event. Inference client keys never authorize these routes. No operation here may run a host reboot, kill or model load in response to a user inference request. Not implemented or tested."
   },
   "x-prp-status": "DRAFT",
   "x-prp-freeze-gate": "WP03",
@@ -29,7 +29,7 @@
     "/prp/admin/v1/grants": {
       "post": {
         "operationId": "createAccessGrant",
-        "summary": "Grant an organization, principal or application access to a pool with scopes",
+        "summary": "Grant an organization, principal or application access to a pool with capabilities",
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -127,7 +127,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -247,7 +247,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -387,7 +387,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -421,8 +421,8 @@
       ],
       "post": {
         "operationId": "rotateKey",
-        "summary": "Rotate a key; the new secret is shown once, the old verifier expires per grace policy",
-        "description": "The first successful response contains the new secret once. A replay with the same Idempotency-Key and canonical payload returns the stable issuance receipt without plaintext; a different payload with the same key returns 409. If the first response was lost, revoke and reissue the key.",
+        "summary": "Rotate a key; the new secret is shown once and the old verifier expires after bounded overlap",
+        "description": "The optional overlap_seconds request field defaults to 86400 and may be reduced to 1..86400 seconds. Only active, unexpired keys may rotate. The new key inherits the old key's organization, subject, capabilities, model aliases, quota_policy_id, label, and exact expires_at; rotation never extends expiry or grants. The old verifier stops working at the earlier of its original expires_at and rotation time plus overlap_seconds; when expires_at is null, the overlap deadline applies. Use revoke for immediate terminal invalidation. A replay with the same Idempotency-Key and canonical payload returns the original stable issuance receipt without plaintext before rechecking If-Match or current-key eligibility; it never resurrects the old key, recreates a revoked new key, or restarts/extends overlap. A different canonical payload with that key, including a changed overlap_seconds, returns 409 IDEMPOTENCY_CONFLICT. If the first response was lost, replay still cannot recover the secret; revoke and reissue the key.",
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -445,6 +445,16 @@
             "description": "Current resource version; a stale version is rejected with 409 VERSION_CONFLICT"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyRotationRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "First response contains the secret; an idempotent replay returns a stable receipt without plaintext.",
@@ -519,7 +529,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -640,7 +650,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -772,7 +782,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -904,7 +914,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1025,7 +1035,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1147,7 +1157,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1296,7 +1306,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1456,7 +1466,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1585,7 +1595,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1714,7 +1724,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -1844,7 +1854,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2003,7 +2013,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2038,10 +2048,273 @@
           }
         }
       ],
+      "get": {
+        "operationId": "getPolicy",
+        "summary": "Read a quota or retention policy by canonical scope",
+        "description": "Exactly one resource exists for each policy_kind and canonical scope. Omit both subject query fields for an organization policy; supply both to read a principal/application policy. The returned version is the current value for If-Match.",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "subject_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "principal",
+                "application"
+              ]
+            }
+          },
+          {
+            "name": "subject_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policy resource and current version",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND; missing or unauthorized object, no existence leak",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPolicy",
+        "summary": "Create a quota or retention policy for a canonical scope",
+        "description": "Creates the unique resource for policy_kind and scope. Creation is idempotent by operator, route, and canonical payload. A different resource already occupying the scope returns 409 POLICY_EXISTS. The 201 MutationReceipt supplies the stable resource_id and initial opaque version; use the returned version in If-Match for later updates. A quota policy at principal/application scope must be created before issuing keys for that exact organization and subject; the key's quota_policy_id is this resource_id.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Policy created; version is initialized and returned in the receipt",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MutationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST / UNSUPPORTED_PARAMETER",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_KEY / EXPIRED_KEY / invalid session",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SCOPE_DENIED / POLICY_DENIED; no privilege escalation",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-assigned correlation identifier",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
       "patch": {
         "operationId": "updatePolicy",
-        "summary": "Update quota or retention policy",
+        "summary": "Replace quota or retention policy settings",
+        "description": "Updates the existing resource identified by policy_kind and the canonical scope in the body; this operation never creates a resource. Settings are replaced in full. If-Match must contain the current opaque version returned by createPolicy, getPolicy, or the preceding update receipt.",
         "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            },
+            "description": "Scoped to operator + route + canonical payload; the same payload returns the same result"
+          },
           {
             "name": "If-Match",
             "in": "header",
@@ -2057,7 +2330,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PolicyUpdate"
+                "$ref": "#/components/schemas/PolicyWrite"
               }
             }
           }
@@ -2136,7 +2409,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2258,7 +2531,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2442,7 +2715,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2564,7 +2837,7 @@
             }
           },
           "409": {
-            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / QUALIFICATION_REQUIRED; state is not mutated",
+            "description": "IDEMPOTENCY_CONFLICT / VERSION_CONFLICT / POLICY_EXISTS / QUALIFICATION_REQUIRED; state is not mutated",
             "headers": {
               "X-Request-ID": {
                 "description": "Server-assigned correlation identifier",
@@ -2682,12 +2955,12 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "prp_session",
-        "description": "Console session with CSRF protection and secure cookie policy (API-PRP §2). No master or service key is ever exposed to browser JavaScript."
+        "description": "Interactive console authentication with CSRF protection and secure cookie policy (API-PRP §2). It identifies the actor; role and object scope are resolved separately under the approved role/action matrix. No master or service key is ever exposed to browser JavaScript."
       },
       "OperatorKey": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Administrative-scope key for operator automation. Distinct from inference client keys, which never authorize management routes."
+        "description": "Automation authentication only. The resolved actor record supplies explicit non-escalating role and scope under the approved role/action matrix; possession of this key does not itself grant a role. Distinct from inference client keys, which never authorize management routes."
       }
     },
     "schemas": {
@@ -2723,6 +2996,7 @@
               "EXPIRED_KEY",
               "SCOPE_DENIED",
               "POLICY_DENIED",
+              "POLICY_EXISTS",
               "NOT_FOUND",
               "IDEMPOTENCY_CONFLICT",
               "VERSION_CONFLICT",
@@ -2755,11 +3029,12 @@
         "description": "Uniform response for management mutations",
         "properties": {
           "resource_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Stable policy identifier for createPolicy; other operations return their target resource identifier."
           },
           "version": {
             "type": "string",
-            "description": "New resource version to send as If-Match on the next mutation"
+            "description": "Opaque resource version to send unchanged as If-Match on the next mutation; on creation this is the initial version."
           },
           "audit_event_id": {
             "type": "string",
@@ -2873,7 +3148,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Reference to the PRP quota policy bound to this key."
+            "description": "Stable resource_id of the quota policy for this key's exact organization and owning subject. All keys for that subject share subject-scope quota counters; the organization policy is also enforced when present."
           },
           "expires_at": {
             "type": [
@@ -2896,6 +3171,20 @@
           "quota_policy_id",
           "expires_at"
         ],
+        "additionalProperties": false
+      },
+      "KeyRotationRequest": {
+        "type": "object",
+        "description": "Optional overlap for the old verifier during rotation. Omitted body or field uses the 24-hour default; immediate invalidation uses the separate revoke operation.",
+        "properties": {
+          "overlap_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400,
+            "default": 86400,
+            "description": "Seconds the old verifier remains valid after rotation; callers may shorten but never exceed the 24-hour default maximum."
+          }
+        },
         "additionalProperties": false
       },
       "KeyIssued": {
@@ -2955,7 +3244,8 @@
           "quota_policy_id": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "Stable resource_id of this key's exact subject quota policy; all keys for that subject share its counters."
           },
           "expires_at": {
             "type": [
@@ -3260,32 +3550,235 @@
         ],
         "additionalProperties": false
       },
-      "PolicyUpdate": {
+      "PolicyWrite": {
         "type": "object",
-        "description": "Policy field schemas are frozen at G0; until then settings is an opaque object validated server-side against the frozen schema.",
+        "description": "Complete policy creation or replacement body. The settings variant must match the policy_kind path parameter. Scope is mandatory and must be within the authenticated actor's grant. Resources are unique by policy_kind and canonical scope: organization_id alone identifies an organization policy; organization_id plus subject_type and subject_id identifies a principal/application policy. Policy resources have no delete operation in this contract.",
         "properties": {
           "scope": {
             "$ref": "#/components/schemas/PolicyScope"
           },
           "settings": {
-            "type": "object"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/QuotaPolicySettings"
+              },
+              {
+                "$ref": "#/components/schemas/RetentionPolicySettings"
+              }
+            ]
           }
         },
         "required": [
+          "scope",
           "settings"
+        ],
+        "additionalProperties": false
+      },
+      "PolicyResource": {
+        "type": "object",
+        "description": "Current policy representation. resource_id is stable for the lifetime of the canonical scope; version is an opaque token to send unchanged in If-Match. Policy resources are not deleted through this contract.",
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "policy_kind": {
+            "type": "string",
+            "enum": [
+              "quota",
+              "retention"
+            ]
+          },
+          "scope": {
+            "$ref": "#/components/schemas/PolicyScope"
+          },
+          "settings": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/QuotaPolicySettings"
+              },
+              {
+                "$ref": "#/components/schemas/RetentionPolicySettings"
+              }
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "resource_id",
+          "policy_kind",
+          "scope",
+          "settings",
+          "version"
         ],
         "additionalProperties": false
       },
       "PolicyScope": {
         "type": "object",
+        "description": "Canonical identity is policy_kind plus organization_id and optional subject. Subject absence means one organization-wide policy; a subject means one principal/application policy within the organization.",
         "properties": {
           "organization_id": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
           },
-          "application_id": {
-            "type": "string"
+          "subject": {
+            "$ref": "#/components/schemas/PolicySubjectScope"
           }
         },
+        "required": [
+          "organization_id"
+        ],
+        "additionalProperties": false
+      },
+      "PolicySubjectScope": {
+        "type": "object",
+        "properties": {
+          "subject_type": {
+            "type": "string",
+            "enum": [
+              "principal",
+              "application"
+            ]
+          },
+          "subject_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "subject_type",
+          "subject_id"
+        ],
+        "additionalProperties": false
+      },
+      "QuotaPolicySettings": {
+        "type": "object",
+        "description": "Complete quota policy. Each limit is enforced atomically; zero denies new use for that dimension. Organization and subject policies are both enforced when present; all keys for a subject share the subject policy counters. quota_policy_id binds a key to its exact subject policy and does not create a separate per-key counter. Deployment ceilings are enforced from operator-only deployment configuration outside this API.",
+        "properties": {
+          "requests": {
+            "$ref": "#/components/schemas/WindowBudget"
+          },
+          "tokens": {
+            "$ref": "#/components/schemas/WindowBudget"
+          },
+          "audio_seconds": {
+            "$ref": "#/components/schemas/WindowBudget"
+          },
+          "active_jobs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Maximum simultaneously active jobs."
+          },
+          "queued_jobs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Maximum simultaneously queued jobs."
+          },
+          "storage_bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Maximum retained storage allowance in bytes."
+          }
+        },
+        "required": [
+          "requests",
+          "tokens",
+          "audio_seconds",
+          "active_jobs",
+          "queued_jobs",
+          "storage_bytes"
+        ],
+        "additionalProperties": false
+      },
+      "WindowBudget": {
+        "type": "object",
+        "description": "Maximum admitted units within any trailing rolling interval of window_seconds, using the admission authority's timestamp; the interval is (now - window_seconds, now], excluding events exactly at its lower boundary. Reservations count immediately; settlement replaces the reservation with actual usage at the original admission time. If actual usage exceeds its reservation, record the actual amount and deny later admissions until the interval permits them; unavailable actual usage retains the conservative reservation until it ages out. Admission and settlement are atomic across organization and subject policy counters.",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Maximum units admitted in any trailing interval of this duration; events exactly at the interval's lower boundary are excluded."
+          },
+          "window_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Length of the rolling interval in seconds."
+          }
+        },
+        "required": [
+          "limit",
+          "window_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "RetentionPolicySettings": {
+        "type": "object",
+        "description": "The fields below are the complete configurable retention policy. Defaults are descriptive unless a field explicitly states an upper bound; authorized deletion may shorten retention. This policy does not configure dedupe-record retention: dedupe records MUST remain available for at least the job horizon plus 24 hours (SRS PRP-FR-037 and §10).",
+        "properties": {
+          "async_payload_terminal_ttl_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 86400,
+            "default": 86400,
+            "description": "Retention after terminal state, at most 24 hours."
+          },
+          "async_payload_max_age_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 172800,
+            "default": 172800,
+            "description": "Absolute payload age, at most 48 hours from creation."
+          },
+          "raw_audio_max_age_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400,
+            "default": 86400,
+            "description": "Absolute raw/orphan audio age, at most 24 hours from upload."
+          },
+          "generated_audio_retention_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 604800,
+            "description": "Default seven-day retention; authorized deletion may shorten it."
+          },
+          "job_usage_audit_metadata_retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 90,
+            "default": 90,
+            "description": "Metadata retention in days; policy may shorten the 90-day default."
+          },
+          "operational_log_retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 30,
+            "description": "Default 30-day retention for redacted operational logs."
+          },
+          "share_grant_max_ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400,
+            "default": 86400,
+            "description": "Maximum share-grant TTL; actual expiry must also be no later than artifact expiry."
+          }
+        },
+        "required": [
+          "async_payload_terminal_ttl_seconds",
+          "async_payload_max_age_seconds",
+          "raw_audio_max_age_seconds",
+          "generated_audio_retention_seconds",
+          "job_usage_audit_metadata_retention_days",
+          "operational_log_retention_days",
+          "share_grant_max_ttl_seconds"
+        ],
         "additionalProperties": false
       },
       "ExportRequest": {

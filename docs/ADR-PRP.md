@@ -333,7 +333,7 @@ Differences that matter: the generated version rejects a naive `observed_at` and
 
 ## ADR-PRP-014 — Runtime epoch is an opaque token, not a monotonic integer
 
-**Status:** ACCEPTED — approved by the repository owner on 2026-09-24, taking all three open questions as recommended: the opaque string rather than an additive sibling field, the 128-character bound matching `fence_token` in the same contract, and the synthesis rule kept in this ADR. **Applied at the WP03 freeze** of `contracts/openapi/prp-worker.yaml`; after that freeze any further change to the field is breaking.
+**Status:** ACCEPTED — approved by the repository owner on 2026-09-24, taking all three open questions as recommended: the opaque string rather than an additive sibling field, the 128-character bound matching `fence_token` in the same contract, and the synthesis rule kept in this ADR. **Applied in the WP03 contract draft under the 2026-09-29 D1–D5 approval; WP01 scope/ownership was approved on 2026-09-30, and formal WP03 freeze remains a separate pending decision.** After formal freeze, any further change to the field is breaking.
 **Date:** 2026-09-24
 **Deciders:** Repository owner (C-3 grantor per STD-Execution-Governance §3)
 **Related:** ADR-PRP-011 (thin API, isolated model lifecycles) · ADR-PRP-013 (contract models are generated) · PRP-FR-011 / FR-012 / FR-015 · PRP-NFR-023 · `contracts/openapi/prp-worker.yaml` (`x-prp-status: DRAFT`) · WP24 evidence `docs/evidence/wp24/WP24-2026-09-20-run1.json`

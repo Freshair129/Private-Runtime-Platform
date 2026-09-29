@@ -3,7 +3,7 @@ document_id: PRD-PRP
 title: "PRD | PRP Product Requirements"
 product: PRP - Private Runtime Platform
 version: 0.3.0
-status: draft-for-review
+status: approved
 created_at: 2026-09-20
 language: th-TH
 source_authority: authored-proposal
@@ -14,7 +14,7 @@ repository_integration: NOT_PERFORMED
 
 # PRD | PRP Product Requirements
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.3.0 | 2026-09-30 | Approved baseline**
 
 เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [Roadmap](ROADMAP-PRP.md) · [Architecture](ARCH-PRP.md) · [Diagrams](DIAGRAMS-PRP.md)
 
@@ -119,7 +119,7 @@ Core P1 release ไม่ต้องรอ LINE account authorization แต่
 ## 10. Acceptance ownership
 Product owner ยืนยัน scope และ proposed SLO; technical owner รับรอง contracts/profile; security owner รับรอง isolation/egress/rights; operator รับรอง deploy/restore; QA บันทึก evidence ตาม TEST-PRP; integration owner รับรอง external app/channel
 
-ทุก requirement ในร่างเริ่ม PROPOSED ทุก runtime test เริ่ม NOT_RUN คำขอให้เขียนเอกสารและการเลือกชื่อ PRP ไม่ถือเป็นการอนุมัติ production หรือการผ่านเกณฑ์เหล่านี้
+ข้อกำหนดใน PRD/SRS เป็น baseline ที่อนุมัติแล้ว; ทุก runtime test ยังคง NOT_RUN จนกว่าจะมีหลักฐานการรัน การอนุมัติเอกสารไม่ใช่การอนุมัติ production หรือการผ่านเกณฑ์ runtime
 
 ## 11. Python-first และ reuse-before-build
 ทิศทางแก้ไขที่ผู้ใช้ร้องขอ: ใช้ Python เป็นภาษาหลักของ PRP control/API/adapters และใช้ runtime/serving libraries ที่มีอยู่ก่อนเขียน infrastructure ใหม่ Frontend ใช้ React/TypeScript ได้; Rust/Tauri ไม่เป็น runtime หรือ build requirement ของ PRP core การใช้ C++/CUDA/Rust ภายใน dependency ไม่ขัดกับทิศทางนี้

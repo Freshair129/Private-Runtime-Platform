@@ -3,7 +3,7 @@ document_id: SRS-PRP
 title: "SRS | PRP Software Requirements"
 product: PRP - Private Runtime Platform
 version: 0.3.0
-status: draft-for-review
+status: approved
 created_at: 2026-09-20
 language: th-TH
 source_authority: authored-proposal
@@ -14,12 +14,12 @@ repository_integration: NOT_PERFORMED
 
 # SRS | PRP Software Requirements
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.3.0 | 2026-09-30 | Approved baseline**
 
 เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [API](API-PRP.md) · [Tests](TEST-PRP.md) · [Roadmap](ROADMAP-PRP.md) · [Sources](SOURCES-PRP.md)
 
 ## 1. Scope, authority และ normative language
-SRS นี้เป็น requirement authority ของ PRP v0.3.0 draft และแยก core platform ออกจาก integration adapters คำว่า ต้อง/ห้าม คือ proposed MUST เมื่อ baseline ถูกอนุมัติ คำว่า candidate/target/default ต้องยืนยันก่อน formal qualification ไม่ใช่ผล benchmark
+SRS นี้เป็น requirement authority ของ PRP v0.3.0 approved baseline และแยก core platform ออกจาก integration adapters คำว่า ต้อง/ห้าม คือ normative MUST ของ baseline; คำว่า candidate/target/default ต้องยืนยันก่อน formal qualification ไม่ใช่ผล benchmark
 
 เอกสาร SRS-Self-Hosted-Inference-Pool-Chat-Voice-v0.1.0 เป็น historical input [SRC-B01] ส่วนที่เคยให้ Zuri Identity/Integration/Agent ถือสิทธิ์หรือ GPU lease ถูกแทนด้วย PRP-owned contracts ในร่างนี้ การเปลี่ยนนี้ไม่แก้ย้อนหลังหรือถอนการอนุมัติของเอกสาร Zuri เก่า และไม่จองเลขใน Zuri registry
 

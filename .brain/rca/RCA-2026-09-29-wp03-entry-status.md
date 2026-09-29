@@ -1,7 +1,7 @@
 # RCA: WP03 entry status and WP24 evidence reconciliation
 
 **Date:** 2026-09-29  
-**Status:** Resolved; WP01 formal-entry gate remains open  
+**Status:** Resolved; WP01 formal-entry decision approved 2026-09-30
 **Scope:** Documentation and gate-status interpretation only
 
 ## Symptom
@@ -12,7 +12,7 @@ The execution DAG describes WP24 run 2 as having an open reviewer disposition th
 
 - `docs/evidence/wp24/WP24-2026-09-20-run1.json`: decision receipt approved 2026-09-24; selects candidate A; `approval_note` explicitly says the WP24 gate for WP03 is satisfied.
 - `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md` and `docs/CHANGELOG-PRP.md`: run 2 records measurements only and does not change run 1 verdicts, status, or disposition. It narrows DEV-07 to DEV-09; cache-derived figures are not like-for-like.
-- `docs/ROADMAP-PRP.md` §3: WP01 and WP24 remain `NOT_STARTED`; WP03 depends on WP01 and WP24.
+- At the time of the original review on 2026-09-29, `docs/ROADMAP-PRP.md` §3 listed WP01 and WP24 as `NOT_STARTED`; WP03 depended on both.
 - `docs/EXECUTION-DAG-PRP.md` §2 now records run 1 as satisfying the WP24 decision prerequisite; run 2/DEV-09 is a separate measurement limitation.
 
 ## Root Cause
@@ -32,4 +32,6 @@ The review pass summarized run 2 findings and roadmap status without checking th
 
 ## Resolution
 
-Candidate A's run 1 approval remains in force and satisfies the WP24 decision prerequisite for WP03. The roadmap and DAG now separate that decision from implementation status and DEV-09 measurement limitations. WP01 remains `NOT_STARTED` and formal WP03 readiness remains pending its separate scope/ownership receipt. Prevention follow-up: include receipt-to-roadmap/DAG reconciliation in future gate reviews; no automated join validator was added in this scoped correction.
+Candidate A's run 1 approval remains in force and satisfies the WP24 decision prerequisite for WP03. The roadmap and DAG now separate that decision from implementation status and DEV-09 measurement limitations. At the time of this correction on 2026-09-29, WP01 still awaited a separate scope/ownership receipt. Prevention follow-up: include receipt-to-roadmap/DAG reconciliation in future gate reviews; no automated join validator was added in this scoped correction.
+
+The D6 final review found two residual stale notes that still treated WP24's `NOT_STARTED` implementation status as an open decision gate: the WP03 freeze proposal's entry-evidence section and §7 of the execution DAG. Both were corrected on 2026-09-29. The repository owner approved the WP01 scope/ownership baseline on 2026-09-30; the decision receipt is recorded in [PROP-2026-09-30-wp01-scope-ownership-closure](../proposals/PROP-2026-09-30-wp01-scope-ownership-closure.md). WP24 implementation remains `NOT_STARTED`; its approved decision receipt satisfies the WP03 prerequisite. Formal WP03 freeze remains a separate pending decision.

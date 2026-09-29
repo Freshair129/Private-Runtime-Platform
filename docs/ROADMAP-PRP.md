@@ -46,7 +46,7 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 
 **ส่งมอบ:** PRD/SRS boundaries, requirement IDs, job dimensions
 
-**Trace:** G01/G02/G05 | Diagram D01,D03,D12 | สถานะ NOT_STARTED
+**Trace:** G01/G02/G05 | Diagram D01,D03,D12 | scope/ownership decision: [APPROVED 2026-09-30](../.brain/proposals/PROP-2026-09-30-wp01-scope-ownership-closure.md); implementation: NOT_STARTED
 
 ### WP02 — Hardware & runtime discovery
 **Stage:** G0 | **Owner:** Operations | **Depends on:** None
@@ -67,7 +67,7 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 
 **ส่งมอบ:** freeze public/management contracts, selected A/B binding, single key/admission authority, approved gaps and secret design
 
-**Trace:** E01/E03/E05; NFR-020/023 | Diagram D08,D17,D31,D33 | implementation: NOT_STARTED; D1–D5 owner-approved 2026-09-29; formal WP03 entry/exit remains pending WP01 scope and ownership evidence
+**Trace:** E01/E03/E05; NFR-020/023 | Diagram D08,D17,D31,D33 | implementation: NOT_STARTED; D1–D6 decisions applied 2026-09-29; WP01 scope/ownership receipt approved 2026-09-30; explicit formal WP03 freeze decision remains pending
 
 ### WP25 — Python engineering and environment baseline
 **Stage:** P1-A | **Owner:** Build + Core + Operations | **Depends on:** WP03

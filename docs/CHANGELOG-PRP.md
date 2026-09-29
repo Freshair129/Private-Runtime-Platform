@@ -395,6 +395,33 @@ repository_integration: NOT_PERFORMED
 - updated the roadmap index to reflect M3 skeletons, M4 adapters/deploy pending, and existing WP24 run evidence; RCA recorded at `.brain/rca/RCA-2026-09-29-roadmap-dev-wp18-cycle.md`
 - no code, credentials, server access, deployment, acceptance-status change, or production activity; all 92 acceptance cases remain `NOT_RUN`
 
+### WP03 D1–D5 approved · draft contracts and generated models aligned (2026-09-29, C-3 / HIGH)
+- owner approved the D1–D5 decision set recorded in `.brain/proposals/PROP-2026-09-29-wp03-contract-authority-freeze.md`; ADR-PRP-002, ADR-PRP-004, ADR-PRP-014, ARCH-PRP, API-PRP and SECURITY-DATA-PRP now reflect the approved authority, candidate, secret-custody and worker-contract decisions
+- updated worker and management YAML contracts; regenerated their JSON twins and all four Pydantic model modules from canonical YAML; D4 requires the runtime-epoch response header and allows adapter-synthesized tokens under ADR-PRP-014; kept `prp-worker` and `prp-management` at `0.4.0-draft`, `DRAFT`, freeze gate `WP03`
+- D5 key-lifecycle fields and replay/suspend semantics pass the scoped review. Typed policy settings, the operator role/action matrix, and key-rotation overlap bounds remain open before formal management-contract freeze, along with the WP01 scope/ownership receipt
+- reconciled roadmap/DAG language to the approved WP24 run 1 receipt; run 2 remains measurement-only and DEV-09 remains a comparison limitation; WP01 and implementation-status fields remain `NOT_STARTED`
+- verification: JSON export check passed (3 contracts); generated model check passed (4 modules); example validation passed (3 examples); documentation validation passed (625 relative links, 306 OpenAPI refs, 0 errors); `git diff --check` passed
+- application tests, runtime acceptance (92 remain `NOT_RUN`), server deployment, and production activity were not run or performed
+
+### WP03 D6 complete · management lifecycle and quota semantics recorded (2026-09-29, C-3 / HIGH)
+- owner approved the scoped recommendations and delegated remaining design choices; both management authentication schemes resolve actor role/scope through the approved role/action matrix
+- added policy `POST` create, `GET` by canonical scope, and full-replacement `PATCH`; one stable resource exists per `(policy_kind, scope)`, create/read provide stable `resource_id` and opaque version, and keys bind to their exact subject quota policy
+- key rotation defaults to 86400 seconds, accepts `1..86400`; only active unexpired keys rotate, the new key inherits grants and exact expiry, overlap cannot pass old-key expiry, and changed-payload replay returns `409 IDEMPOTENCY_CONFLICT`
+- quota windows use trailing rolling intervals; reservation, settlement, unknown actual usage, and atomic organization/subject counters are defined. All keys for one subject share subject counters; no separate per-key counter was added
+- deployment quota ceilings are versioned operator configuration outside the management API; org admins may raise quota only within the ceiling. Retention settings use typed durations and caps; dedupe remains at least job horizon + 24 hours outside configurable settings; backup retention remains out of scope
+- D6 is complete as a documentation/contract slice. Formal WP03 freeze still waits for WP01 scope/ownership evidence; contracts remain `0.4.0-draft`, `DRAFT`, freeze gate `WP03`; all 92 runtime acceptance cases remain `NOT_RUN`
+- final review removed stale WP24 gate language from the freeze proposal and DAG: WP24 implementation remains `NOT_STARTED`, its approved run 1 receipt satisfies the WP03 decision prerequisite, and WP01 is the remaining formal entry gate; recorded in [RCA-2026-09-29-wp03-entry-status](../.brain/rca/RCA-2026-09-29-wp03-entry-status.md)
+- verification: JSON export check passed (3 contracts); generated-model check passed (4 modules); example validation passed (3 examples); documentation validation passed (626 relative links, 327 OpenAPI refs, 0 errors); `git diff --check` passed with Windows line-ending warnings only
+- SRS and SECURITY-DATA source documents remain `draft-for-review`; the scoped decisions do not change those source statuses
+- application tests, all 92 runtime acceptance cases, DEV deployment, and production activity were not run or performed
+
+### WP01 scope and ownership approved · formal WP03 freeze remains separate (2026-09-30, C-3 / HIGH)
+- repository owner approved the existing PRD/SRS scope and requirement baseline plus role-level Product/Architecture accountability; the approved receipt is `.brain/proposals/PROP-2026-09-30-wp01-scope-ownership-closure.md`
+- changed PRD/SRS status from `draft-for-review` to `approved`, keeping both at `0.3.0` and preserving requirement IDs, statements, boundaries, and acceptance criteria
+- reconciled roadmap, DAG, API status note, ADR, README, WP03 proposals, and RCA: WP01 decision gate is satisfied; implementation remains `NOT_STARTED`; contracts remain `0.4.0-draft` / `DRAFT` pending a separate formal WP03 freeze decision
+- all 92 runtime acceptance cases remain `NOT_RUN`; no application implementation, runtime qualification, DEV deployment, or production activity was performed
+- JSON export check passed (3 contracts); generated-model check passed (4 modules); example validation passed (3 examples); documentation validation passed (627 relative links, 327 OpenAPI refs, 0 errors); `git diff --check` passed
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

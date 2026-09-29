@@ -58,12 +58,14 @@ Labels identify analysis categories, not a certification. Exact tests use full P
 | Read/cancel own job | granted | granted | only delegated data grant | metadata by ops role; content explicit |
 | Read other's artifact | no default | no default | explicit grant only | explicit grant only |
 | Create member/app key | no | no | within org grant | bootstrap/platform policy |
-| Raise own org quota | no | no | within delegated ceiling | deployment ceiling control |
+| Raise own org quota | no | no | within delegated ceiling | versioned deployment configuration outside the management API |
 | Register/drain node | no | no | no default | yes |
 | Approve model/voice | no | no | request only | technical/license approval workflow |
 | Export usage/audit | own metadata | own metadata | scoped org | scoped operations |
 
 Service user tags do not grant membership. Team sharing needs explicit team grant and current membership on each read. Secret references must not be serialized into a public model listing.
+
+The platform operator's deployment quota ceiling is held in versioned operator configuration outside the management API. Changes require an audited operator configuration change. Organization administrators may adjust organization quotas only within that ceiling; subject quotas compose with organization quotas, and multiple keys for one subject share subject-level quota counters.
 
 ## 5. Data inventory and retention
 | Data class | Storage form | Default retention | Owner |

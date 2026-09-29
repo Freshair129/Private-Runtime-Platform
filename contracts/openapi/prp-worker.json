@@ -202,7 +202,8 @@
                 }
               },
               "X-PRP-Runtime-Epoch": {
-                "description": "MUST echo the actual opaque runtime_epoch for every successful response content type",
+                "required": true,
+                "description": "MUST echo the adapter-reported opaque runtime_epoch for every successful response content type",
                 "schema": {
                   "type": "string",
                   "minLength": 1,
@@ -384,7 +385,7 @@
               "minLength": 1,
               "maxLength": 128
             },
-            "description": "Opaque runtime epoch token; compare for equality only. If the observed token differs, report UNKNOWN with the actual token."
+            "description": "Expected adapter-reported runtime epoch token; it may be runtime-provided or adapter-synthesized per ADR-PRP-014. Compare for equality only. If the observed token differs, report UNKNOWN with the observed token."
           }
         ],
         "responses": {
@@ -715,13 +716,13 @@
           "profile_epoch": {
             "type": "integer",
             "minimum": 0,
-            "description": "PRP-minted profile-binding epoch; the runtime restart token is runtime_epoch."
+            "description": "PRP-minted profile-binding epoch; the adapter-reported runtime restart token is runtime_epoch."
           },
           "runtime_epoch": {
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Actual runtime epoch token. Opaque and compared for equality only; never parsed or ordered."
+            "description": "Adapter-reported opaque runtime epoch token. It may be runtime-provided or adapter-synthesized per ADR-PRP-014; compare for equality only, never parse or order."
           },
           "engine": {
             "type": "string",
@@ -879,7 +880,7 @@
           "profile_epoch": {
             "type": "integer",
             "minimum": 0,
-            "description": "Current PRP-minted profile-binding epoch; the actual runtime restart token is reported separately as runtime_epoch by describe."
+            "description": "Current PRP-minted profile-binding epoch; the adapter-reported runtime restart token is reported separately as runtime_epoch by describe."
           },
           "observed_at": {
             "type": "string",
@@ -1200,7 +1201,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Expected actual runtime epoch token from the reserved target; opaque and compared for equality only."
+            "description": "Expected adapter-reported runtime epoch token from the reserved target; it may be runtime-provided or adapter-synthesized per ADR-PRP-014, and is compared for equality only."
           },
           "profile_epoch": {
             "type": "integer",
@@ -1445,7 +1446,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Actual runtime epoch token for this attempt; opaque and compared for equality only, never parsed or ordered."
+            "description": "Adapter-reported runtime epoch token for this attempt; it may be runtime-provided or adapter-synthesized per ADR-PRP-014, and is compared for equality only."
           },
           "profile_epoch": {
             "type": "integer",
@@ -1532,7 +1533,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Actual runtime epoch token at observation; opaque and compared for equality only, never parsed or ordered."
+            "description": "Adapter-reported runtime epoch token at observation; it may be runtime-provided or adapter-synthesized per ADR-PRP-014, and is compared for equality only."
           },
           "evidence": {
             "type": "string",

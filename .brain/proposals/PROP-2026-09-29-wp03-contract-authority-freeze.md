@@ -20,7 +20,7 @@ Record WP03's contract, authority, and secret-custody decisions approved by the 
 
 - WP24 run 1's decision receipt is approved on 2026-09-24, selects candidate A (Xinference-managed runtimes) on capability evidence, and explicitly states that its approval satisfies the WP24 gate for WP03. It records nine conditions and names PRP as the client-key authority. Source: `docs/evidence/wp24/WP24-2026-09-20-run1.json`.
 - WP24 run 2 was measurement-only under the owner's instruction. It did not alter run 1's selection or acceptance statuses. DEV-07 was narrowed to DEV-09; cache-derived capacity figures are not a like-for-like A/B comparison because the vLLM builds differ. Source: `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md` and `docs/CHANGELOG-PRP.md`.
-- The roadmap still records WP01 and WP24 as `NOT_STARTED`. WP03 depends on both. WP01's scope/ownership closure therefore needs an owner-backed receipt before WP03 can be recorded as formally ready.
+- The roadmap records WP24 implementation as `NOT_STARTED`, while its approved run 1 decision receipt explicitly satisfies the WP24 decision prerequisite for WP03. The WP01 scope/ownership decision was approved on 2026-09-30; WP03 contract freeze remains a separate pending owner decision.
 - All 92 acceptance tests remain `NOT_RUN`. Fit-gap dispositions and the WP24 decision receipt are not runtime acceptance evidence.
 
 ## 3. Approved decision set
@@ -49,6 +49,7 @@ Approve this logical design for contract freeze:
 Apply the already-approved ADR-PRP-014 at WP03:
 
 - `ExecutionEvidence.runtime_epoch` and the runtime-epoch query parameter become opaque strings with length 1–128 and equality-only comparison.
+- `runtime_epoch` is the adapter-reported token: runtime-provided when available, otherwise synthesized by the adapter per ADR-PRP-014 and recorded with its derivation.
 - `InvocationRequest.profile_epoch` remains the PRP-minted integer reservation epoch; do not describe it as the runtime's actual epoch.
 - Align API-PRP readiness prose with the machine contract: `READY`, `NOT_READY`, or `UNKNOWN`. `NOT_READY` means a known ineligible/loading/draining/mismatch state; `UNKNOWN` means the adapter cannot make a fresh, trustworthy observation. Only current `READY` observations may be dispatched.
 - Add an explicit expected target binding to invocation semantics (`runtime_uid`, `physical_resource_id`, and `runtime_epoch`). The adapter must validate the reserved target before dispatch and fail closed when the manager cannot enforce or prove that binding.
@@ -63,14 +64,14 @@ Align the management contract with SRS PRP-FR-003..009:
 - Preserve one-time plaintext issuance while defining idempotency replay: the first successful response contains the secret; a replay returns a stable issuance receipt without plaintext and explicitly reports that the secret is unavailable. The operator must revoke/reissue if the first response was lost. Do not cache or recover the plaintext to satisfy replay.
 - Keep key issuance and rotation responses separate from ordinary mutation receipts so the one-time-secret rule is machine-checkable.
 
-## 4. Required document and generated-artifact updates after approval
+## 4. Applied document and generated-artifact updates
 
-1. Reconcile ADR-PRP-004 and ARCH-PRP §3/§11 with the conditional candidate-A binding and run 1 receipt; preserve the remaining candidate/DEV limitations.
-2. Close ADR-PRP-002's authority decision for one PRP Admission authority, keeping implementation qualification separate.
-3. Update `contracts/openapi/prp-worker.yaml`, `contracts/openapi/prp-management.yaml`, and API-PRP prose to the approved decisions above. Keep the client contract vendor-neutral unless a reviewed requirement proves otherwise.
-4. Regenerate contract JSON twins and generated models from canonical YAML per ADR-PRP-013; do not hand-edit generated outputs.
-5. Update contract/ADR versions and freeze metadata only after approval. Any breaking contract-version choice must follow API-PRP §10 and include a migration note.
-6. Reconcile WP24's roadmap status to its approved receipt. Keep WP01 open until its scope/ownership receipt is approved; only then may WP03 be marked formally ready or completed.
+1. Reconciled ADR-PRP-004 and ARCH-PRP §3/§11 with the conditional candidate-A binding and run 1 receipt; retained DEV-09 and exact runtime-profile qualification as open limitations.
+2. Recorded ADR-PRP-002's approved single PRP Admission authority boundary; implementation and PostgreSQL/fault qualification remain `NOT_RUN`.
+3. Updated worker and management YAML and matching API-PRP prose to D1–D5; D6 later completed the approved and owner-delegated management policy lifecycle, quota, and rotation decisions. The public client contract remains unchanged.
+4. Regenerated JSON twins and all four generated model modules from canonical YAML per ADR-PRP-013.
+5. Kept worker and management contracts at `0.4.0-draft`, `x-prp-status: DRAFT`, `x-prp-freeze-gate: WP03` pending a separate formal WP03 freeze decision. WP01's scope/ownership receipt was approved on 2026-09-30. Select any breaking route/version and migration note at formal freeze per API-PRP §10.
+6. Reconciled the roadmap and DAG to the approved WP24 receipt and later WP01 scope/ownership receipt. WP01's decision gate is satisfied; WP03 is not formally frozen pending the separate freeze decision.
 
 ## 5. Parent and peer impact
 
@@ -81,22 +82,20 @@ Align the management contract with SRS PRP-FR-003..009:
 
 ## 6. WP03 acceptance and exit evidence
 
-- WP01 scope/ownership receipt and WP24 run 1 selection receipt are linked and reconciled.
-- Owner and Security approve D1–D5 or record explicit replacements.
-- ADR-PRP-004/002, ARCH-PRP, API-PRP, canonical YAML, generated models/JSON, and traceability agree on the same decisions.
-- Contract generation and schema validation pass; no runtime acceptance claim is made.
-- WP03 status changes only with the approved decision record. WP25/WP04 remain gated by WP03/RG0.
+- **Satisfied:** WP24 run 1 selection receipt is linked and reconciled; WP01 scope/ownership receipt was approved on 2026-09-30; owner approved D1–D6 and delegated the remaining management design choices; ADR-PRP-004/002/014, ARCH-PRP, API-PRP, SECURITY-DATA-PRP, canonical YAML, generated models/JSON, and roadmap/DAG agree on the recorded decisions; contract generation, example validation, documentation validation, and generated-artifact drift checks pass.
+- **Open before formal freeze:** the separate formal WP03 freeze decision has not been recorded. WP01 scope/ownership receipt was approved on 2026-09-30; WP25/WP04 entry remains gated on formal WP03 freeze; all 92 runtime acceptance cases remain `NOT_RUN`.
 
-## 7. Proposed version diff
+## 7. Version diff for this approved work
 
-| Artifact | Current | Proposed after approval |
+| Artifact | Before this work | After this work |
 |---|---|---|
-| WP03 proposal | — | `0.1.0-draft` |
-| `prp-worker.yaml` | `0.4.0-draft` | First frozen revision; select version under API-PRP §10 after reviewing the breaking runtime-epoch and target-binding changes |
-| `prp-management.yaml` | `0.4.0-draft` | First frozen revision; select version under API-PRP §10 after reviewing key-schema/idempotency changes |
-| `prp-client.yaml` | `0.3.0` | No change proposed |
-| ADR-PRP / ARCH-PRP / API-PRP | `0.4.0-draft` | Update only the affected decision and contract prose; preserve unrelated open decisions |
+| WP03 proposal | — | `0.1.0-draft`, owner decision `approved`; scoped documentation applied, formal freeze decision remains pending |
+| `prp-worker.yaml` + JSON | `0.4.0-draft`, DRAFT, WP03 | Schema updated; version and freeze metadata unchanged |
+| `prp-management.yaml` + JSON | `0.4.0-draft`, DRAFT, WP03 | Schema updated; version and freeze metadata unchanged |
+| `prp-client.yaml` + JSON | `0.3.0` | Unchanged |
+| ADR-PRP / ARCH-PRP / API-PRP | `0.4.0-draft` | Content updated; document versions unchanged |
+| Generated Pydantic modules | Prior generated contract shapes | Regenerated from the updated canonical YAML; derived files have no independent version |
 
 ## 8. Owner review
 
-The repository owner approved D1–D5 on 2026-09-29 in the task conversation. WP01 scope/ownership closure must also be recorded before WP03 is marked formally ready. Apply the approved documentation and contract changes, regenerate derived artifacts, and run the required documentation/schema checks. Runtime implementation remains a separate step.
+The repository owner approved D1–D5 and the scoped D6 decisions, then delegated the remaining D6 design choices on 2026-09-29. WP01 scope/ownership was approved on 2026-09-30. D6 and WP01 are complete as documentation/decision slices; WP03 remains DRAFT pending a separate formal freeze decision. Runtime implementation remains a separate step.

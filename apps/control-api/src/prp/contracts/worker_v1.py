@@ -67,14 +67,14 @@ class RuntimeIdentity(ContractModel):
     profile_epoch: Annotated[
         StrictInt,
         Field(
-            description="PRP-minted profile-binding epoch; the runtime restart token is runtime_epoch.",
+            description="PRP-minted profile-binding epoch; the adapter-reported runtime restart token is runtime_epoch.",
             ge=0,
         ),
     ]
     runtime_epoch: Annotated[
         str,
         Field(
-            description="Actual runtime epoch token. Opaque and compared for equality only; never parsed or ordered.",
+            description="Adapter-reported opaque runtime epoch token. It may be runtime-provided or adapter-synthesized per ADR-PRP-014; compare for equality only, never parse or order.",
             max_length=128,
             min_length=1,
         ),
@@ -146,7 +146,7 @@ class Readiness(ContractModel):
     profile_epoch: Annotated[
         StrictInt,
         Field(
-            description="Current PRP-minted profile-binding epoch; the actual runtime restart token is reported separately as runtime_epoch by describe.",
+            description="Current PRP-minted profile-binding epoch; the adapter-reported runtime restart token is reported separately as runtime_epoch by describe.",
             ge=0,
         ),
     ]
@@ -357,7 +357,7 @@ class ExecutionEvidence(ContractModel):
     runtime_epoch: Annotated[
         str,
         Field(
-            description="Actual runtime epoch token at observation; opaque and compared for equality only, never parsed or ordered.",
+            description="Adapter-reported runtime epoch token at observation; it may be runtime-provided or adapter-synthesized per ADR-PRP-014, and is compared for equality only.",
             max_length=128,
             min_length=1,
         ),
@@ -411,7 +411,7 @@ class InvocationRequest(ContractModel):
     runtime_epoch: Annotated[
         str,
         Field(
-            description="Expected actual runtime epoch token from the reserved target; opaque and compared for equality only.",
+            description="Expected adapter-reported runtime epoch token from the reserved target; it may be runtime-provided or adapter-synthesized per ADR-PRP-014, and is compared for equality only.",
             max_length=128,
             min_length=1,
         ),
@@ -460,7 +460,7 @@ class InvocationResult(ContractModel):
     runtime_epoch: Annotated[
         str,
         Field(
-            description="Actual runtime epoch token for this attempt; opaque and compared for equality only, never parsed or ordered.",
+            description="Adapter-reported runtime epoch token for this attempt; it may be runtime-provided or adapter-synthesized per ADR-PRP-014, and is compared for equality only.",
             max_length=128,
             min_length=1,
         ),
