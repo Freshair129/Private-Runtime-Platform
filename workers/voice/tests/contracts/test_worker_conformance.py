@@ -253,6 +253,9 @@ def invocation(**overrides: Any) -> dict[str, Any]:
     body: dict[str, Any] = {
         "invocation_id": INVOCATION,
         "attempt_id": ATTEMPT,
+        "runtime_uid": "runtime-test",
+        "physical_resource_id": "cpu-pool-test",
+        "runtime_epoch": "runtime-epoch-test",
         "profile_epoch": 3,
         "fence_token": "fence-0123456789abcdef",
         "deadline_at": "2026-09-20T12:03:00Z",

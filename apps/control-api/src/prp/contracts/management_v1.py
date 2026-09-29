@@ -48,48 +48,26 @@ class MutationReceipt(ContractModel):
     request_id: str
 
 
-class AccessGrantRequest(ContractModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    subject_type: Literal["organization", "principal", "application"]
-    subject_id: str
-    pool_id: UUID
-    scopes: Annotated[list[str], Field(min_length=1)]
-    expires_at: AwareDatetime | None = None
+class ModelAliase(RootModel[str]):
+    root: Annotated[str, Field(max_length=128, min_length=1)]
 
 
-class KeyRequest(ContractModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    subject_type: Literal["principal", "application"]
-    subject_id: str
-    scopes: Annotated[list[str], Field(min_length=1)]
-    pool_ids: Annotated[list[UUID], Field(min_length=1)]
-    expires_at: AwareDatetime | None = None
-    label: Annotated[str | None, Field(max_length=128)] = None
-
-
-class KeyIssued(ContractModel):
+class KeyIssuanceReplayReceipt(ContractModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     key_id: UUID
-    secret: Annotated[
-        str,
-        Field(
-            description="Shown once; never retrievable, exportable or restorable afterwards (PRP-FR-005)"
-        ),
-    ]
     key_prefix: Annotated[
         str, Field(description="Non-secret prefix for identification in logs and UI")
     ]
-    scopes: list[str]
-    expires_at: AwareDatetime | None = None
+    secret_available: Annotated[
+        Literal[False],
+        Field(
+            description="The plaintext secret is never retained and cannot be recovered after the first response."
+        ),
+    ]
     version: str
     audit_event_id: UUID
-    request_id: str
 
 
 class PoolRequest(ContractModel):
@@ -232,6 +210,120 @@ class Error(ContractModel):
     error: ErrorBody
     request_id: str
     safe_to_retry: StrictBool
+
+
+class AccessGrantRequest(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    organization_id: Annotated[str, Field(max_length=128, min_length=1)]
+    subject_type: Literal["organization", "principal", "application"]
+    subject_id: Annotated[str, Field(max_length=128, min_length=1)]
+    pool_id: UUID
+    capabilities: Annotated[
+        list[
+            Literal[
+                "chat:invoke",
+                "asr:invoke",
+                "tts:invoke",
+                "jobs:read",
+                "jobs:cancel",
+                "artifacts:read",
+                "artifacts:delete",
+            ]
+        ],
+        Field(min_length=1),
+    ]
+    expires_at: AwareDatetime | None
+
+
+class KeyRequest(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    organization_id: Annotated[str, Field(max_length=128, min_length=1)]
+    subject_type: Literal["principal", "application"]
+    subject_id: Annotated[str, Field(max_length=128, min_length=1)]
+    capabilities: Annotated[
+        list[
+            Literal[
+                "chat:invoke",
+                "asr:invoke",
+                "tts:invoke",
+                "jobs:read",
+                "jobs:cancel",
+                "artifacts:read",
+                "artifacts:delete",
+            ]
+        ],
+        Field(min_length=1),
+    ]
+    model_aliases: Annotated[
+        list[ModelAliase],
+        Field(
+            description="Public PRP model aliases; vendor model IDs and physical pool IDs are not accepted.",
+            min_length=1,
+        ),
+    ]
+    quota_policy_id: Annotated[
+        str,
+        Field(
+            description="Reference to the PRP quota policy bound to this key.",
+            max_length=128,
+            min_length=1,
+        ),
+    ]
+    expires_at: AwareDatetime | None
+    label: Annotated[str | None, Field(max_length=128)] = None
+
+
+class KeyIssued(ContractModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    key_id: UUID
+    secret: Annotated[
+        str,
+        Field(
+            description="Shown once; never retrievable, exportable or restorable afterwards (PRP-FR-005)"
+        ),
+    ]
+    key_prefix: Annotated[
+        str, Field(description="Non-secret prefix for identification in logs and UI")
+    ]
+    secret_available: Literal[True]
+    organization_id: Annotated[str, Field(max_length=128, min_length=1)]
+    subject_type: Literal["principal", "application"]
+    subject_id: Annotated[str, Field(max_length=128, min_length=1)]
+    capabilities: Annotated[
+        list[
+            Literal[
+                "chat:invoke",
+                "asr:invoke",
+                "tts:invoke",
+                "jobs:read",
+                "jobs:cancel",
+                "artifacts:read",
+                "artifacts:delete",
+            ]
+        ],
+        Field(min_length=1),
+    ]
+    model_aliases: Annotated[list[ModelAliase], Field(min_length=1)]
+    quota_policy_id: Annotated[str, Field(max_length=128, min_length=1)]
+    expires_at: AwareDatetime | None
+    version: str
+    audit_event_id: UUID
+    request_id: str
+
+
+class KeyIssuanceResponse(RootModel[KeyIssued | KeyIssuanceReplayReceipt]):
+    root: Annotated[
+        KeyIssued | KeyIssuanceReplayReceipt,
+        Field(
+            description="The first successful response contains the plaintext secret; a replay contains only the stable receipt."
+        ),
+    ]
 
 
 class QualificationReceipt(ContractModel):

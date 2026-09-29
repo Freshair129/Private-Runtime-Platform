@@ -48,7 +48,8 @@ HTTP_STATUS: dict[str, int] = {
     "RUNTIME_UNAVAILABLE": 503,
     "DEADLINE_EXCEEDED": 504,
 }
-Epoch = Annotated[int, Query(ge=0)]
+ProfileEpoch = Annotated[int, Query(ge=0)]
+RuntimeEpoch = Annotated[str, Query(min_length=1, max_length=128)]
 
 
 class WorkerError(Exception):
@@ -137,7 +138,7 @@ def create_app(lifecycle: Lifecycle, *, service_token: str | None) -> FastAPI:
         raise WorkerError("RUNTIME_UNAVAILABLE", "no engine configured; nothing to describe")
 
     @app.get("/prp/worker/v1/readiness", operation_id="getReadiness", response_model=Readiness)
-    def readiness(profile_epoch: Epoch) -> Readiness:
+    def readiness(profile_epoch: ProfileEpoch) -> Readiness:
         return lifecycle.readiness(profile_epoch)
 
     @app.post("/prp/worker/v1/invocations", operation_id="invoke", response_model=InvocationResult)
@@ -149,7 +150,7 @@ def create_app(lifecycle: Lifecycle, *, service_token: str | None) -> FastAPI:
         operation_id="getExecutionEvidence",
         response_model=ExecutionEvidence,
     )
-    def execution_evidence(attempt_id: UUID, runtime_epoch: Epoch) -> ExecutionEvidence:
+    def execution_evidence(attempt_id: UUID, runtime_epoch: RuntimeEpoch) -> ExecutionEvidence:
         raise WorkerError("UNSUPPORTED", "this adapter cannot report termination evidence yet")
 
     @app.post(
