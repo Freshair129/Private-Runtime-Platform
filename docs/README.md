@@ -1,6 +1,6 @@
 # PRP — Private Runtime Platform · Living documentation
 
-**v0.4.0-draft · 2026-09-20 · Python-first / Reuse-before-build · Runtime tests: NOT_RUN · Implementation: NOT_STARTED**
+**v0.4.0-draft · 2026-09-29 · Python-first / Reuse-before-build · WP24 candidate A decision approved · WP03 D1–D5 approved; formal entry pending WP01 · Runtime acceptance: NOT_RUN · Implementation: M3 skeleton present; M4 adapters/deploy pending**
 
 โฟลเดอร์นี้คือเอกสาร **ที่มีชีวิต** ของ PRP แก้ไขได้ทุกวันโดยไม่ต้องออก package ใหม่ ส่วน package ที่ส่งมอบแล้วอยู่ใต้ [`releases/`](releases/) และห้ามแก้ โครงสร้างนี้กำหนดโดย [ADR-PRP-012](ADR-PRP.md#ADR-PRP-012) และ [SDD-PRP-REPO](SDD-PRP-REPO.md)
 
@@ -8,7 +8,7 @@
 
 | ประเภท | ไฟล์ | กติกา |
 |---|---|---|
-| **Canonical** | [SRS-PRP.md](SRS-PRP.md) (requirements), [ROADMAP-PRP.md](ROADMAP-PRP.md) (work packages), [ADR-PRP.md](ADR-PRP.md) (decisions), [TEST-PRP.md](TEST-PRP.md) (acceptance status), [`../contracts/openapi/*.yaml`](../contracts/) (protocol) | แก้ที่นี่ที่เดียว |
+| **Canonical** | [SRS-PRP.md](SRS-PRP.md) (requirements), [ROADMAP-PRP.md](ROADMAP-PRP.md) (work packages/gates), [EXECUTION-DAG-PRP.md](EXECUTION-DAG-PRP.md) (dependency sequence/review gates), [ADR-PRP.md](ADR-PRP.md) (decisions), [TEST-PRP.md](TEST-PRP.md) (acceptance status), [`../contracts/openapi/*.yaml`](../contracts/) (protocol) | แก้ที่นี่ที่เดียว |
 | **Derived** | [`registry/`](registry/) (requirements/roadmap JSON, validation output, templates), HTML reading views | ห้ามแก้ด้วยมือ; regenerate ด้วย `tools/docs/` แล้วตรวจว่าไม่มี diff (gen_registry ยังไม่มี: ระหว่างนี้ validator ตรวจว่า JSON ตรงกับ Markdown แบบคำต่อคำ) |
 | **Frozen** | [`releases/PRP-Documentation-v0.3.0/`](releases/PRP-Documentation-v0.3.0/README.md) | ตรวจด้วย `sha256sum -c MANIFEST.sha256`; มี Word/HTML/PDF ของ v0.3.0 อยู่ที่นั่น |
 
@@ -21,15 +21,16 @@ Requirement IDs (PRP-FR/NFR/SEC/P2), acceptance IDs (PRP-AT-nnn), work packages 
 | [PRD-PRP](PRD-PRP.md) | Product goals, users, journeys, scope และ reuse objective |
 | [SRS-PRP](SRS-PRP.md) | 56 FR + 24 NFR + 12 SEC = 92 P1 requirements; 8 P2 envelopes |
 | [ROADMAP-PRP](ROADMAP-PRP.md) | 25 work packages, dependencies, gates และ A/B evaluation |
+| [EXECUTION-DAG-PRP](EXECUTION-DAG-PRP.md) | parallel work lanes, dependencies, review gates และเส้นทาง DEV → G3 → PROD |
 | [ARCH-PRP](ARCH-PRP.md) | Python-first composition, framework bindings, resource/state boundaries |
 | [SDD-PRP-REPO](SDD-PRP-REPO.md) | โครงสร้าง repository, เอกสาร และ code; migration plan M1–M4 |
 | [API-PRP](API-PRP.md) | Client subset, worker adapter และ private management contract boundaries |
 | [STACK-EVALUATION-PRP](STACK-EVALUATION-PRP.md) | A/B/C candidates, fit-gap, experiments และ decision receipt |
-| [WP24-EXPERIMENT-PROCEDURE](WP24-EXPERIMENT-PROCEDURE.md) | ขั้นตอนทดลอง EV01–EV08 ต่อ candidate, เกณฑ์ PASS/FAIL/BLOCKED และ run-record template; ยังไม่มีผลการรัน |
+| [WP24-EXPERIMENT-PROCEDURE](WP24-EXPERIMENT-PROCEDURE.md) | ขั้นตอนทดลอง EV01–EV08 ต่อ candidate, เกณฑ์ PASS/FAIL/BLOCKED และ run-record template; run evidence อยู่ใน `evidence/wp24/` |
 | [Coding Standards](standards/Coding-Standards.md) | Python/typing/async/process/dependency/test/TS frontend standards |
 | [SECURITY-DATA-PRP](SECURITY-DATA-PRP.md) | Keys, roles, threats, framework-private routes, retention/erasure |
 | [OPS-PRP](OPS-PRP.md) | Qualification, drain, restart, recovery, isolated environments และ migration |
-| [ADR-PRP](ADR-PRP.md) | 12 decisions; Python direction revised, framework choice remains open, monorepo layout accepted |
+| [ADR-PRP](ADR-PRP.md) | 14 decisions; candidate A selected conditionally under WP24 evidence, WP03 authority and contract decisions approved; implementation/fault qualification remain open |
 | [TEST-PRP](TEST-PRP.md) | 92 acceptance specifications; ทุกกรณี NOT_RUN |
 | [TRACEABILITY-PRP](TRACEABILITY-PRP.md) | Requirement → epic/owner/phase/test/diagram |
 | [BASELINE-CHANGES-PRP](BASELINE-CHANGES-PRP.md) | Historical Zuri-owned → independent PRP ownership migration |

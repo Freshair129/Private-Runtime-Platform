@@ -2,11 +2,12 @@
 document_id: ROADMAP-PRP
 title: "Roadmap | PRP Delivery & Release Gates"
 product: PRP - Private Runtime Platform
-version: 0.3.0
-status: draft-for-review
+version: 0.4.0-draft
+status: approved
 created_at: 2026-09-20
 language: th-TH
 source_authority: authored-proposal
+decision: APPROVED 2026-09-29 by the repository owner
 implementation_status: NOT_IMPLEMENTED_IN_THIS_DELIVERY
 runtime_verification: NOT_RUN
 repository_integration: NOT_PERFORMED
@@ -14,14 +15,14 @@ repository_integration: NOT_PERFORMED
 
 # Roadmap | PRP Delivery & Release Gates
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.4.0-draft | 2026-09-29 | APPROVED by the repository owner**
 
 เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [SRS](SRS-PRP.md) · [Tests](TEST-PRP.md) · [Operations](OPS-PRP.md)
 
 ## 1. Planning model
-Roadmap นี้เป็น dependency/gate-based plan ไม่ใช่คำมั่นกำหนดวันส่งมอบ เพราะยังไม่ทราบจำนวนผู้พัฒนาและ configuration จริง ไม่มี estimate จากจำนวน GB ของ GPU และไม่มีวันเริ่มผลิตที่สมมติขึ้น ผู้รับผิดชอบเป็น role ไม่ใช่การมอบหมายคนที่ยังไม่ยืนยัน
+Roadmap นี้เป็น dependency/gate-based plan ไม่ใช่คำมั่นกำหนดวันส่งมอบ เพราะยังไม่ทราบจำนวนผู้พัฒนาและ configuration จริง ไม่มี estimate จากจำนวน GB ของ GPU และไม่มีวันเริ่มผลิตที่สมมติขึ้น ผู้รับผิดชอบเป็น role ไม่ใช่การมอบหมายคนที่ยังไม่ยืนยัน เส้นทางส่งมอบครอบคลุมการ deploy และตรวจบน development server ก่อนผ่าน core qualification และ production release
 
-สถานะทุก work package เริ่ม NOT_STARTED เฉพาะ documentation package ชุดนี้เป็น DELIVERED_DRAFT ไม่ใช่ application implementation การอนุมัติ scope/model/license/quotas/SLO เป็น deliverable ของ G0/G2 ไม่ใช่สิ่งที่ทำเสร็จแล้ว
+สถานะ work package ใช้ติดตาม implementation แยกจากการอนุมัติ roadmap; การอนุมัติเอกสารนี้ไม่ถือว่า application implementation หรือ scope/model/license/quotas/SLO เสร็จแล้ว ซึ่งยังเป็น deliverable ของ G0/G2
 
 ## 2. Milestones และ exit gates
 | Milestone | Outcome | Entry | Exit evidence |
@@ -29,12 +30,14 @@ Roadmap นี้เป็น dependency/gate-based plan ไม่ใช่ค�
 | G0 Design & qualification plan | independent platform baseline | request/old SRS reviewed | approved ownership, A/B fit-gap evidence (WP24), selected authority binding, API/state, threat model, inventory, candidate licenses |
 | P1-A / G1 Chat foundation | keys + Router + two vLLM replicas + console | G0 frozen | clean install, compatible JSON/SSE, isolated principals, atomic admission/fault basics |
 | P1-B / G2 Voice foundation | ASR/TTS + native jobs + artifact lifecycle | G1 core seams; speech spike may parallel | quality corpora, preset rights, headless worker, safe resident placement, client fallback |
-| P1-C / G3 Core pilot | production-qualified core under approved load | G1/G2 evidence | W0-W4, restore/erasure/rollback, two-client isolation, operator signoff |
+| DEV Development-server validation | reproducible P1 deployment verified before production qualification | G1/G2 implementation evidence; pinned deployment artifacts from WP04/WP25; smoke and negative checks from WP09; bounded deploy/revert instruction in the DEV gate packet | clean deploy receipt with exact commit/image/profile; health/readiness and contract/integration/security smoke evidence; known blockers recorded; approval to proceed |
+| P1-C / G3 Core pilot | core qualified under approved load | G1/G2 evidence; DEV passed; qualification work in WP17-WP19 | W0-W4, restore/erasure/rollback, two-client isolation, operator signoff |
+| PROD Production release | controlled release of the approved core scope | G3 passed; production decisions in SRS §14 resolved; WP18 release/rollback evidence; production config and release packet approved | pinned production release receipt; canary and monitoring evidence; rollback evidence; release owner/operator signoff |
 | LINE integration gate | selected OA adapter works safely | contracts + channel permission | separate authorized live canary; not needed to install/use core |
 | P2-A Image | allowlisted image generation/edit | G3 + P2 SRS/quality freeze | media budgets/provenance/P1 regression + model qualification |
 | P2-B Video | async video under measured envelope | image foundation + resource decision | actual duration/resolution/latency tests + chat reservation protection |
 
-G1 ไม่เท่ากับจบ P1 ทั้งหมด G3 ไม่เท่ากับ LINE delivery ผ่านแล้ว ต้องรายงานสองสถานะแยกกัน Full-duplex, cloud provider fallback, customer-isolated multi-tenancy และ cluster HA เป็น future proposals ไม่แอบรวมไว้ P2
+DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐาน qualification ของ core ไม่ใช่การอนุมัติ deploy production โดยอัตโนมัติ การขึ้น production ต้องผ่าน PROD แยกต่างหากและปิด open decisions ตาม SRS §14 ก่อน G1 ไม่เท่ากับจบ P1 ทั้งหมด และ core ที่ผ่าน PROD ไม่ได้แปลว่า LINE delivery ผ่านแล้ว ต้องรายงานสถานะ LINE แยกกัน Full-duplex, cloud provider fallback, customer-isolated multi-tenancy และ cluster HA เป็น future proposals ไม่แอบรวมไว้ P2
 
 ## 3. Work breakdown และ dependencies
 
@@ -57,14 +60,14 @@ G1 ไม่เท่ากับจบ P1 ทั้งหมด G3 ไม่เ
 
 **ส่งมอบ:** A-Xinference vs B-independent services evidence; conditional C-Ray; full requirement mapping; key-recovery gap; target-binding/retry/cancel tests; decision recommendation without fabricated benchmarks
 
-**Trace:** NFR-020/023/024; FR-005/017/018/042 | Diagram D31,D33,D34 | สถานะ NOT_STARTED
+**Trace:** NFR-020/023/024; FR-005/017/018/042 | Diagram D31,D33,D34 | implementation: NOT_STARTED; decision receipt: APPROVED 2026-09-24 (Candidate A, WP24 gate to WP03 satisfied); run 2 is measurement-only and DEV-09 remains a comparison limitation
 
 ### WP03 — Contracts & authority decision
 **Stage:** G0 | **Owner:** API + Security | **Depends on:** WP01,WP24
 
 **ส่งมอบ:** freeze public/management contracts, selected A/B binding, single key/admission authority, approved gaps and secret design
 
-**Trace:** E01/E03/E05; NFR-020/023 | Diagram D08,D17,D31,D33 | สถานะ NOT_STARTED
+**Trace:** E01/E03/E05; NFR-020/023 | Diagram D08,D17,D31,D33 | implementation: NOT_STARTED; D1–D5 owner-approved 2026-09-29; formal WP03 entry/exit remains pending WP01 scope and ownership evidence
 
 ### WP25 — Python engineering and environment baseline
 **Stage:** P1-A | **Owner:** Build + Core + Operations | **Depends on:** WP03
@@ -214,7 +217,7 @@ G1 ไม่เท่ากับจบ P1 ทั้งหมด G3 ไม่เ
 **Trace:** P2-001..008 | Diagram D24 | สถานะ NOT_STARTED
 
 ## 4. Parallel work และ critical path
-Critical path: ownership/contracts -> access/registry -> admission/fencing -> chat -> speech jobs/placement/quality -> mixed load -> restore/rollback -> core pilot
+Critical path: ownership/contracts -> access/registry -> admission/fencing -> chat -> speech jobs/placement/quality -> clean deploy and smoke on development server (DEV) -> mixed load -> restore/rollback -> core qualification (G3) -> production release (PROD)
 
 ทำขนานได้: hardware/license discovery กับ API drafting; speech-runtime extraction กับ chat integration หลัง contract freeze; voice UI กับ artifact/worker contract mocks; LINE adapter development กับ core hardening โดยไม่ถือว่า mock/live result เท่ากัน
 
@@ -224,7 +227,9 @@ Critical path: ownership/contracts -> access/registry -> admission/fencing -> ch
 G0: ยืนยัน independent ownership, no Zuri dependency, one admission authority, P1 voice semantics, supported interfaces, error/state model, threat/retention assumptions, host inventory, stack choices
 G1: real two-node qualification, wrong/missing auth refusal, physical ID dedupe, resource race, bounded queue, streaming interruption, no cloud egress, operator can revoke key
 G2: approved ASR/TTS/preset manifests, corpus gates, upload/decode limits, async durable state, delete/late-result fencing, CPU/GPU resident placement, independent client voice cycle
+DEV: clean deploy from pinned artifacts; health/readiness and contract/integration/security smoke evidence; exact commit/image/profile recorded; known blockers reviewed before G3
 G3: mixed chat protection, no admitted OOM, simulated host/coordinator failure, tested restore with erasure, release rollback, limited-content observability, two apps quota isolation, docs/config handoff
+PROD: SRS §14 production decisions closed; production configuration and release packet approved; canary, monitoring, backup/restore and rollback evidence recorded; release owner/operator signoff
 LINE: verified webhook/dedup, channel permission, ACK budget, reply token policy, push idempotency and quota, signed audio URL lifecycle, mobile/desktop playback
 
 ไม่มี security waiver แบบเงียบ ๆ; scope/secret/uncertain resource/egress defect เป็น BLOCKED และห้ามรวมเป็น passed percentage หาก target performance ไม่ผ่าน ให้ปรับ profile/limits ด้วย change record และทดสอบใหม่ ไม่แก้เกณฑ์ย้อนหลังแล้วอ้างผลเก่าผ่าน
@@ -238,6 +243,7 @@ LINE: verified webhook/dedup, channel permission, ACK budget, reply token policy
 | Runtime/model/voice | Technical owner | Speech/LLM engineer | Product/license reviewer |
 | Hardware qualification | Operations owner | QA + Runtime engineer | Admission engineer |
 | Acceptance evidence | QA owner | Test maintainers | Security/Product |
+| Development-server deployment | Technical owner | Runtime + Operations | QA/Security |
 | Production/rollback | Release owner | Operator | QA/Integration |
 | LINE channel rollout | Integration owner | LINE adapter maintainer | Channel owner |
 
@@ -263,7 +269,7 @@ Documentation-only task done ไม่เปลี่ยน runtime test เป�
 ## 9. Handoff package และ next execution order
 Integrator เริ่ม WP01/WP02 -> WP24 -> WP03 ก่อน แล้ว WP25 -> WP04 ไม่สร้าง repository หรือส่ง credential จริงจากไฟล์นี้ เปิด implementation issue ต่อ work package โดย link PRP IDs และ evidence placeholder ใช้ branch/PR ตาม workflow ของ repository PRP ที่เลือก ไม่ยืม registry หรือ requirement number ของ Zuri
 
-Deliverables ก่อน core pilot: pinned deployment manifests, model/voice rights receipts, executable contract tests, benchmark fixtures/results, admin/bootstrap/key/runbook, backup/restore receipts, API schema export และ known-limitations sheet
+ก่อน G3 ต้องมี development-server clean-deploy receipt, pinned commit/image/profile, health/readiness และ smoke evidence พร้อม known-limitations sheet; ก่อน PROD ต้องมี production manifests, model/voice rights receipts, executable contract tests, benchmark fixtures/results, admin/bootstrap/key/runbook, backup/restore receipts, API schema export, canary/rollback evidence และ owner/operator signoff
 
 ## 10. Reuse-first gate refinement — v0.3.0
 G0 ไม่ผ่านเพียงเพราะมี diagram: ต้องมี WP24 fit-gap ครบ 92 P1 requirements, source/experiment evidence แยกกัน, actual target/epoch binding, key-verifier conformance, cancellation และ framework retry policy ก่อน WP03 เลือก stack

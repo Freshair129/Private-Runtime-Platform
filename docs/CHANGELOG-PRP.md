@@ -384,6 +384,17 @@ repository_integration: NOT_PERFORMED
 - operator finding: paging file ของ Windows โตจาก 43.58 GiB เป็น **71 266 MiB (69.6 GiB)** ระหว่างการรัน ขณะที่ peak usage สูงสุดตลอดอายุเครื่องเพียง **8 978 MiB (8.8 GiB)** ทำให้ C: เหลือ 2.3 GB; นี่คือสาเหตุจริงของ container **exit 255** (`OOMKilled=false` ไม่มี traceback) ไม่ใช่ OOM — เป็น feedback loop ที่ต้องกำหนดขอบเขต paging file ถ้าจะ deploy candidate A บน Windows host
 - artifacts: `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md` พร้อม run JSON สองรอบ, trace ของรอบติดตั้ง, log เต็มของ engine และ harness ทั้งสองตัว; validator `errors: []`
 
+### Roadmap approved · development-server validation before production (2026-09-29, C-2 / MEDIUM)
+- owner approved `ROADMAP-PRP.md`; metadata status เปลี่ยนจาก `draft-for-review` เป็น `approved` และ version ของ living document เปลี่ยนจาก `0.3.0` เป็น `0.4.0-draft`
+- เพิ่ม DEV gate สำหรับ clean deploy และ smoke evidence บน development server ก่อน G3; เพิ่ม PROD gate แยกสำหรับ production decisions, pinned release, canary, monitoring, rollback และ owner/operator signoff
+- คง WP IDs, SRS requirements, acceptance status และ runtime status เดิม; ไม่มี code หรือ deployment จริงใน change นี้
+
+### Execution DAG approved · DEV/WP18 dependency cycle removed (2026-09-29, C-3 / HIGH)
+- owner approved the execution DAG; canonicalized as `docs/EXECUTION-DAG-PRP.md` and indexed in `docs/README.md`
+- DEV now requires a bounded deploy/revert instruction in its own gate packet; WP18 remains after WP17 for full restore/recovery/rollback evidence, removing the cycle while retaining WP IDs
+- updated the roadmap index to reflect M3 skeletons, M4 adapters/deploy pending, and existing WP24 run evidence; RCA recorded at `.brain/rca/RCA-2026-09-29-roadmap-dev-wp18-cycle.md`
+- no code, credentials, server access, deployment, acceptance-status change, or production activity; all 92 acceptance cases remain `NOT_RUN`
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

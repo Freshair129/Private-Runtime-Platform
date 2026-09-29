@@ -23,7 +23,7 @@ Status: PROPOSED implementation decision; name and independent direction were se
 Alternatives: Zuri module (simpler reuse, unacceptable mandatory product dependency); generic third-party proxy alone (does not cover shared custom speech resources). Consequence: PRP needs its own control state and migration mapping; reuse code only behind neutral adapters. Verification: FR-001/002/053/054 and D01/D03/D26.
 
 ## ADR-PRP-002 — One physical admission authority, Router is not engine
-Status: PROPOSED. Decision: Router filters/ranks; Admission atomically reserves quota/queue/physical budgets; dispatcher sends only reserved attempts. Engine retains local batching. Resident model budget separate from invocation lease. No hedging or KV migration in P1.
+Status: APPROVED by the repository owner on 2026-09-29 under the approved WP03 D1–D5 decision set. Decision: Router filters/ranks; Admission atomically reserves quota/queue/physical budgets; dispatcher sends only reserved attempts. Engine retains local batching. Resident model budget separate from invocation lease. No hedging or KV migration in P1. This approves the single-authority boundary; durable admission implementation and PostgreSQL/fault qualification remain NOT_RUN.
 Alternatives: direct round-robin, independent app schedulers, free-VRAM-only selection. Rejected because they cannot account for shared resources/failure ambiguity. Consequence: central state availability matters; fail closed during DB/observer failure. Verification: FR-013/016..022/044.
 
 ## ADR-PRP-003 — Atomic speech services, client owns voice turn
@@ -31,13 +31,13 @@ Status: PROPOSED. Decision: PRP exposes ASR and preset TTS as independent sync/n
 Alternatives: Zuri agent in pool; central ASR/LLM/TTS orchestrator. Deferred to avoid business ownership/agent lock-in. Consequence: reference client demonstrates workflow and preserves answer before TTS; job IDs connect stages without shared business DB. Verification: FR-028/031..038/049/055.
 
 ## ADR-PRP-004 — Modular control plane and replaceable implementations
-Status: OPEN_FOR_G0_SELECTION (revised in v0.3.0). Direction: Python-first is fixed for this documentation revision via ADR-PRP-009; framework/product selection is not fixed. Compare A Xinference-managed runtimes with B independent vLLM/speech services; C Ray Serve only when its trigger is documented. LiteLLM may implement gateway/keys/routing, not an obligatory additional scheduler.
+Status: CANDIDATE A SELECTED CONDITIONALLY — the repository owner approved the WP24 run 1 decision receipt on 2026-09-24. Selection is based on capability evidence, not an A/B throughput comparison. Run 2 was measurement-only; DEV-09 remains and cache-derived figures are not like-for-like. Python-first remains fixed via ADR-PRP-009. Candidate B was rejected on capability gaps; C Ray Serve remains out of scope unless its trigger is separately approved. LiteLLM is not the client-key authority.
 
-Selection input: WP24 fit-gap, conformance spikes, current feature-tier/license evidence, key storage/reveal semantics, worker binding, retry/cancel/restart evidence, operator cost, export/exit. No candidate passes on README claims alone. Use supported extension/config interfaces before custom services; BUILD-GAP needs a named requirement and approved owner.
+The selected A binding is subject to the nine conditions in `docs/evidence/wp24/WP24-2026-09-20-run1.json`, including PRP-owned client-key verification, PRP-owned admission/lifecycle policy, one replica per model UID, explicit placement, relocation reconciliation, cancellation/UNKNOWN handling, private metrics, rebuild-based upgrade, and error redaction. Exact OS/backend/image digest and deployment profile remain open for WP02/WP25/DEV; this ADR does not qualify a runtime for production.
 
-One client-key authority and one physical admission contract; vendor runtime/key state is not duplicated in a competing PRP store. Client key verifier-only constraint FR-005 remains: documented Xinference recoverable/reveal-able keys are a gap for direct client-key delegation [SRC-10].
+The client-key authority is PRP and stores verifier-only material. Xinference's reversible administrative credentials are a separate service-credential class; the vendor is never delegated client keys. One PRP physical-admission contract remains authoritative; vendor runtime/key state is not duplicated in a competing PRP store. FR-005 remains a PRP BUILD-GAP, not a completed implementation [SRC-10].
 
-Consequence: extra G0 evaluation work, but lower risk of implementing already-solved infrastructure. Existing FRs remain normative; framework selection cannot waive resource fencing or privacy. Verification: FR-005/017/018/042/043/050/053 and NFR-019..024. Decision receipt must name selected build/profile and unresolved blockers before production.
+Consequence: implementation must preserve the selected boundary and record approved gaps; candidate selection cannot waive resource fencing, privacy, licensing, or host qualification. Verification: FR-005/017/018/042/043/050/053 and NFR-019..024. The WP24 receipt records the conditional selection and limitations; a production decision receipt must still name the exact qualified build/profile and unresolved blockers.
 
 ## ADR-PRP-005 — Unknown execution is a first-class state
 Status: PROPOSED. Decision: user outcome, execution and capacity dimensions separate. Timeout/cancel/lease expiry never prove compute stopped. Unknown attempt quarantines resource until evidence/supervisor recovery; late result cannot reopen terminal outcome/deleted content.
@@ -61,7 +61,7 @@ Status: DIRECTION_SELECTED_FOR_DOCUMENT_REVISION by the user request to revise; 
 Native dependency kernels are allowed. A first-party Rust/C++ module needs evidence of a measured bottleneck or unavoidable integration boundary plus an ADR; a general claim that Python is slow is insufficient. Verification: NFR-019/021/022 and coding standards. Consequence: separate model processes/environments are mandatory; no single giant Python environment.
 
 ## ADR-PRP-010 — Reuse evidence before custom infrastructure
-Status: DIRECTION_SELECTED_FOR_DOCUMENT_REVISION; candidate selection OPEN. Requirements describe outcomes; logical module ownership does not require first-party code. Evaluate existing runtime manager, gateway, scheduler and process-supervisor capabilities before building equivalents.
+Status: DIRECTION_SELECTED_FOR_DOCUMENT_REVISION; candidate A selected conditionally by the WP24 run 1 receipt. Requirements describe outcomes; logical module ownership does not require first-party code. Evaluate existing runtime manager, gateway, scheduler and process-supervisor capabilities before building equivalents.
 
 A/B are alternative evaluated compositions, not cumulative dependencies. Candidate C Ray Serve is conditional. Fit-gap rows retain source evidence separate from runtime evidence and track REUSE/CONFIGURE/ADAPT/BUILD-GAP/DEFER. A critical gap blocks G0 exit or produces a reviewed narrower design; never redefine security to declare a candidate passed. Verification: NFR-020/023/024; WP24.
 

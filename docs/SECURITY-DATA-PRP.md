@@ -75,7 +75,7 @@ Service user tags do not grant membership. Team sharing needs explicit team gran
 | Job/usage/audit metadata | DB, no raw content | 90d | PRP |
 | Operational logs | redacted bounded logs | 30d | PRP Ops |
 | Client key | verifier + prefix | grant lifecycle; revoke tombstone | Identity |
-| Worker secret | encrypted secret store reference | explicit rotate/revoke | Operator |
+| Worker / manager service credential | opaque reference to encrypted secret-store material | explicit rotate/revoke; never a client key | Operator |
 | Share grant | hashed token/grant metadata | <=24h and artifact expiry | Artifact service |
 | Backup | encrypted policy-selected snapshot | proposed 30d rotation; review before production | Operations |
 
@@ -97,7 +97,7 @@ Review code license, model weights, tokenizer/vocoder, voice asset and intended 
 Download/install can have approved egress in provisioning; inference should use staged pinned assets without implicit model downloads or telemetry. Signature/checksum mismatch blocks readiness.
 
 ## 9. Framework delegation and Python isolation
-Keep FR-005 verifier-only user keys unchanged. Xinference authentication documentation checked for this revision describes encrypted stored keys and reveal operations; this is not equivalent to a non-recoverable key verifier. Use a conforming client-key authority or record a blocker; Xinference may still be evaluated for internal lifecycle under separately protected service credentials [SRC-10]. Do not duplicate every user's key into another service.
+WP24 selected Candidate A conditionally, but this does not waive FR-005: PRP is the sole client-key authority and stores verifier-only material. Xinference's administrative keys are recoverable and remain a separate, least-privilege service-credential class; management contracts carry only an opaque `credential_ref`. Treat `XINFERENCE_HOME` as sensitive because its credential store is reversible. Use an encrypted secret-store reference, keep encryption and backup-recovery keys in separate custody boundaries, and exclude credentials from source, images, browsers, logs, exports, and ordinary backups. The secret-store product, deployment topology, provisioning egress, and recovery procedure remain open for their applicable operations/release gates [SRC-10]. Do not duplicate users' keys into another service.
 
 Vendor bootstrap/admin/model-install/debug/RPC routes stay private, distinct from inference API. Complete first-admin setup on an operator-only network before wider access. A framework exposing encrypted/reveal-able internal credentials does not authorize those routes or credentials to inference clients. External identity headers are stripped and reconstructed from trusted verification.
 

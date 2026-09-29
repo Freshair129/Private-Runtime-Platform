@@ -91,11 +91,13 @@ Artifact deletion cannot pull back copies already downloaded by LINE/clients. AP
 ## 7. Worker contract (internal design)
 | Port/method | Input | Output | Safety |
 |---|---|---|---|
-| describe | runtime identity, version request | profile hash, capabilities, language/formats, cancellation support | redacted/no secrets |
-| readiness | current epoch | READY/UNKNOWN + observed_at + limits | health alone not qualification |
-| invoke | invocation/attempt ID, profile epoch, bounded payload/artifact grant, absolute deadline | result/stream + measured metadata | already reserved by PRP |
+| describe | runtime identity, version request | runtime UID, physical resource ID, PRP `profile_epoch`, opaque runtime `runtime_epoch`, profile hash, capabilities, language/formats, cancellation support | redacted/no secrets |
+| readiness | PRP-minted `profile_epoch` | READY/NOT_READY/UNKNOWN + observed_at + limits | only a fresh READY observation for the current qualified binding is eligible; health alone is not qualification |
+| invoke | invocation/attempt ID, PRP `profile_epoch`, expected `runtime_uid` + `physical_resource_id` + opaque `runtime_epoch`, bounded payload/artifact grant, absolute deadline | result/stream + measured metadata; JSON echoes `runtime_epoch` in `InvocationResult`, SSE/audio echo it in `X-PRP-Runtime-Epoch` | already reserved by PRP; adapter validates the expected target before dispatch |
 | cancel | attempt + fence token | ACK / UNSUPPORTED / ALREADY_FINISHED | ACK not proof CUDA stopped |
-| status/termination evidence | attempt + current runtime epoch | running/finished/unknown evidence | unsupported -> quarantine/operator recovery |
+| status/termination evidence | attempt + expected opaque `runtime_epoch` | running/finished/unknown evidence + actual `runtime_epoch` | compare epoch for equality only; unsupported -> quarantine/operator recovery |
+
+`profile_epoch` is an integer minted by PRP for the reservation/profile binding; it is not a runtime restart token. `runtime_epoch` is the actual runtime's opaque token (1–128 characters), compared for equality only and never parsed or ordered. Successful JSON invocation responses echo it as the required `InvocationResult.runtime_epoch`; successful stream and binary responses echo it in `X-PRP-Runtime-Epoch` (the header is present on all successful response content types). `READY` means a fresh, trustworthy observation matches the requested PRP profile epoch and current qualified binding; `NOT_READY` means a known ineligible, loading, draining or epoch-mismatch state; `UNKNOWN` means the adapter cannot make a fresh, trustworthy observation. Only a current `READY` observation may be dispatched. Before compute, the adapter must verify exact equality of the reserved runtime UID, physical resource ID and runtime epoch. A target mismatch is rejected with `EPOCH_MISMATCH` before execution; if a manager cannot enforce or prove the binding, the adapter fails closed and does not dispatch or permit a hidden reroute/retry.
 
 An adapter/supervisor implements these ports around vLLM or speech engine; native vLLM does not have to expose custom PRP handshake endpoints. Worker never receives client-key database, LINE credential, customer database token or arbitrary shell command.
 

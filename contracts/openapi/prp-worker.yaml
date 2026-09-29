@@ -57,8 +57,15 @@ paths:
   /prp/worker/v1/readiness:
     get:
       operationId: getReadiness
-      summary: Readiness for the epoch PRP believes is current
-      description: Health alone is not qualification. Limits are measured or advertised values; a field that cannot be measured is omitted rather than reported as zero or as free capacity (Coding-Standards §5, §8).
+      summary: Readiness for the PRP profile epoch
+      description: >-
+        READY means the observation is fresh and the requested PRP profile_epoch matches the
+        current qualified binding. NOT_READY means the adapter knows the target is ineligible,
+        loading, draining, or on a different profile_epoch. UNKNOWN means the adapter cannot make
+        a fresh, trustworthy observation. Only a current READY observation may be dispatched;
+        health alone is not qualification. Limits are measured or advertised values; a field that
+        cannot be measured is omitted rather than reported as zero or as free capacity
+        (Coding-Standards §5, §8).
       parameters:
         - name: profile_epoch
           in: query
@@ -66,7 +73,7 @@ paths:
           schema:
             type: integer
             minimum: 0
-          description: Epoch the caller currently holds for this runtime. A mismatch yields NOT_READY with the worker's actual epoch.
+          description: PRP-minted profile epoch the caller currently holds for this binding. A mismatch yields NOT_READY with the worker's current PRP profile_epoch.
       responses:
         '200':
           description: Readiness observation
@@ -82,12 +89,18 @@ paths:
       operationId: invoke
       summary: Execute one reserved attempt
       description: >-
-        Input is already admitted and bounded by PRP: invocation/attempt IDs, profile epoch, fence token,
-        absolute deadline and a bounded payload or artifact grant. Response content type depends on kind:
+        Input is already admitted and bounded by PRP: invocation/attempt IDs, PRP profile epoch,
+        expected runtime_uid, physical_resource_id and opaque runtime_epoch, fence token, absolute
+        deadline and a bounded payload or artifact grant. Before dispatch, the adapter must validate
+        exact equality with the reserved target. If the manager cannot enforce or prove that binding,
+        the adapter fails closed and does not dispatch or permit hidden reroute/retry. Response content type depends on kind:
         chat -> application/json or text/event-stream when stream=true; asr -> application/json;
         tts -> audio/wav or audio/mpeg with X-PRP-* metadata headers. SSE: data chunks with stable id,
         optional usage chunk, then data: [DONE]; on failure event: error with an Error envelope and no [DONE].
         The result must echo invocation, attempt and runtime epoch so PRP can fence settlement (ARCH-PRP §6).
+        For application/json, InvocationResult.runtime_epoch carries the echo in the body. For
+        text/event-stream and audio responses, X-PRP-Runtime-Epoch carries the echo in the response
+        header; this header is also present for all other successful response content types.
       requestBody:
         required: true
         content:
@@ -108,9 +121,15 @@ paths:
                 type: string
                 format: uuid
             X-PRP-Profile-Epoch:
-              description: Runtime profile epoch that executed the attempt
+              description: PRP-minted profile-binding epoch reserved for the attempt
               schema:
                 type: integer
+            X-PRP-Runtime-Epoch:
+              description: MUST echo the actual opaque runtime_epoch for every successful response content type
+              schema:
+                type: string
+                minLength: 1
+                maxLength: 128
             X-PRP-Usage-Provenance:
               description: actual | estimated | unavailable (binary content types)
               schema:
@@ -141,7 +160,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '401': *e401
         '409': &e409
-          description: EPOCH_MISMATCH or FENCE_REJECTED; nothing was executed
+          description: EPOCH_MISMATCH (profile epoch or expected runtime target mismatch) or FENCE_REJECTED; nothing was executed
           headers: *hdr
           content:
             application/json:
@@ -180,9 +199,10 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
-            minimum: 0
-          description: Runtime epoch the caller believes is current; evidence from another epoch is reported as UNKNOWN with the actual epoch.
+            type: string
+            minLength: 1
+            maxLength: 128
+          description: Opaque runtime epoch token; compare for equality only. If the observed token differs, report UNKNOWN with the actual token.
       responses:
         '200':
           description: Evidence observation
@@ -284,6 +304,12 @@ components:
         profile_epoch:
           type: integer
           minimum: 0
+          description: PRP-minted profile-binding epoch; the runtime restart token is runtime_epoch.
+        runtime_epoch:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Actual runtime epoch token. Opaque and compared for equality only; never parsed or ordered.
         engine:
           type: string
           description: Engine name and version as reported by the adapter; informational, not a qualification claim
@@ -292,7 +318,7 @@ components:
         evidence_revision:
           type: string
           description: Revision of the qualification evidence this identity was last bound to; empty when unqualified
-      required: [runtime_uid, physical_resource_id, profile_hash, profile_epoch, engine, adapter_version]
+      required: [runtime_uid, physical_resource_id, profile_hash, profile_epoch, runtime_epoch, engine, adapter_version]
       additionalProperties: false
     Limits:
       type: object
@@ -372,11 +398,11 @@ components:
         state:
           type: string
           enum: [READY, NOT_READY, UNKNOWN]
-          description: NOT_READY covers loading/draining (added in this draft for review at WP03; API-PRP §7 lists READY/UNKNOWN). UNKNOWN means the adapter cannot observe the engine.
+          description: READY is a fresh, qualified observation for the requested PRP profile epoch; NOT_READY is a known ineligible, loading, draining, or epoch-mismatch state; UNKNOWN means no fresh, trustworthy observation is available.
         profile_epoch:
           type: integer
           minimum: 0
-          description: Actual epoch of the runtime
+          description: Current PRP-minted profile-binding epoch; the actual runtime restart token is reported separately as runtime_epoch by describe.
         observed_at:
           type: string
           format: date-time
@@ -550,10 +576,23 @@ components:
         attempt_id:
           type: string
           format: uuid
+        runtime_uid:
+          type: string
+          minLength: 1
+          description: Expected runtime UID reserved by PRP; the adapter must verify exact equality before dispatch.
+        physical_resource_id:
+          type: string
+          minLength: 1
+          description: Expected physical resource reserved by PRP; the adapter must verify exact equality before dispatch.
+        runtime_epoch:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Expected actual runtime epoch token from the reserved target; opaque and compared for equality only.
         profile_epoch:
           type: integer
           minimum: 0
-          description: Epoch the reservation was made against; the worker rejects a mismatch with 409 EPOCH_MISMATCH
+          description: PRP-minted profile epoch the reservation was made against, not the runtime restart epoch; a mismatch yields 409 EPOCH_MISMATCH before execution.
         fence_token:
           type: string
           minLength: 16
@@ -574,7 +613,7 @@ components:
               chat: '#/components/schemas/ChatPayload'
               asr: '#/components/schemas/AsrPayload'
               tts: '#/components/schemas/TtsPayload'
-      required: [invocation_id, attempt_id, profile_epoch, fence_token, deadline_at, payload]
+      required: [invocation_id, attempt_id, runtime_uid, physical_resource_id, runtime_epoch, profile_epoch, fence_token, deadline_at, payload]
       additionalProperties: false
     Usage:
       type: object
@@ -687,6 +726,11 @@ components:
           type: string
         physical_resource_id:
           type: string
+        runtime_epoch:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Actual runtime epoch token for this attempt; opaque and compared for equality only, never parsed or ordered.
         profile_epoch:
           type: integer
           minimum: 0
@@ -710,7 +754,7 @@ components:
         observed_at:
           type: string
           format: date-time
-      required: [invocation_id, attempt_id, runtime_uid, physical_resource_id, profile_epoch, kind, result, usage_provenance, observed_at]
+      required: [invocation_id, attempt_id, runtime_uid, physical_resource_id, runtime_epoch, profile_epoch, kind, result, usage_provenance, observed_at]
       additionalProperties: false
     ChatResult:
       type: object
@@ -730,9 +774,10 @@ components:
           type: string
           format: uuid
         runtime_epoch:
-          type: integer
-          minimum: 0
-          description: Actual runtime epoch at observation
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Actual runtime epoch token at observation; opaque and compared for equality only, never parsed or ordered.
         evidence:
           type: string
           enum: [RUNNING, FINISHED, UNKNOWN]

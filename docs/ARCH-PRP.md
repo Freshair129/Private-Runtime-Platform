@@ -45,15 +45,15 @@ Initial packaging proposal: one control-plane application with explicit modules 
 | Layer | First evaluation | Constraint |
 |---|---|---|
 | Thin control API | FastAPI + Pydantic candidate | validation/OpenAPI; no model loading in API processes [SRC-13] |
-| Runtime lifecycle | A: Xinference supervisor/workers; B: independent services with existing process supervisor | evaluate exact versions; no hand-built loader/scheduler by default [SRC-09] |
-| Initial LLM engine | vLLM independent A/B deployments | no cross-host tensor parallel / KV migration |
-| Gateway keys and routing | selected conforming framework; LiteLLM optional | exactly one client-key authority; retries cannot bypass admission [SRC-03] |
+| Runtime lifecycle | Candidate A: Xinference supervisor/workers, conditionally selected by the WP24 run 1 receipt | preserve its nine recorded conditions; exact OS/backend/image digest and profile remain open for WP02/WP25/DEV [SRC-09] |
+| Initial LLM engine | deployment backend selected per qualified profile | run 2's Linux vLLM measurement is supplementary; DEV-09 prevents like-for-like cache/concurrency claims |
+| Gateway keys and routing | PRP verifies client keys and owns Router/Admission; LiteLLM is not the client-key authority | exactly one client-key authority; retries cannot bypass admission [SRC-03] |
 | Speech runtime | faster-whisper / approved TTS; headless Lalin-derived adapter candidate | isolated environment, no full Studio/brain/fs/plugin routes |
 | Distributed-serving alternative | Ray Serve / Serve LLM, candidate C | conditional trigger, not stacked on Xinference by default [SRC-11] |
 | Persistence / artifacts | PostgreSQL proposed + storage port | logical ownership, not duplicate vendor key/model tables |
 | Build quality | uv lock, Ruff, type checker, pytest proposed baseline | pin exact toolchain and compatible Python per service at G0 [SRC-16][SRC-17] |
 
-การเลือก framework ยัง OPEN_FOR_G0_SELECTION; A/B spikes ใน WP24 ยัง NOT_RUN ชื่อ library ไม่ใช่ certificate ว่ารองรับ model/driver/voice ของเราแล้ว อ่าน [Stack Evaluation](STACK-EVALUATION-PRP.md) และ [Coding Standards](standards/Coding-Standards.md)
+WP24 run 1 ปิดและอนุมัติการเลือก Candidate A บน capability evidence; run 2 เป็นการวัดเพิ่ม ไม่ได้เปลี่ยนมติและยังเหลือ DEV-09. นี่เป็นการเลือก binding แบบมีเงื่อนไข ไม่ใช่การรับรอง runtime, performance, model/license หรือ deployment profile. Acceptance ทั้ง 92 รายการยัง `NOT_RUN`; อ่าน [WP24 evidence](evidence/wp24/WP24-2026-09-20-run1.json), [run 2 findings](evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md), [Stack Evaluation](STACK-EVALUATION-PRP.md) และ [Coding Standards](standards/Coding-Standards.md)
 
 Xinference auth ที่อ่านมี encrypted/reveal-able API keys จึงไม่ถือว่าตรง FR-005 (non-recoverable client keys) โดยอัตโนมัติ ใช้เฉพาะ internal service credentials ได้เมื่อจำกัดสิทธิ์ หรือเลือก key authority ที่ผ่านข้อกำหนด; ห้ามลดเกณฑ์เพราะอยาก reuse [SRC-10]
 
@@ -99,16 +99,16 @@ Describe advertises model/profile/languages/formats/limits/cancel capability and
 Two GPU endpoints improve placement choices, not control-plane/database/network/power redundancy. Control/database loss fails admission closed. DR backups cover declared RPO/RTO, not zero downtime or zero host-disaster data loss. HA upgrade requires separate quorum/storage/network design and updated tests.
 
 ## 11. Runtime manager A/B topology and route binding
-**A — Managed lifecycle:** PRP control delegates launch/list/drain/terminate to a selected Xinference adapter. Runtime A/B still load complete independent models. The runtime manager is not silently authorized to relocate replicas or unload chat for speech. Describe/observation binds manager UID + runtime UID + physical GPU + profile + epoch. Xinference lifecycle/cluster primitives are documented; exact PRP-safe targeting is a spike requirement, not a supported-feature claim [SRC-09].
+**A — Managed lifecycle (selected conditionally):** PRP control delegates launch/list/drain/terminate to a Xinference adapter subject to the WP24 run 1 receipt. PRP remains the client-key and physical-admission authority. Run one replica per model UID, pin placement at launch, bound unrequested replica recreation, reconcile every relocation, reap orphaned workers, cancel through the measured abort path, and map an unterminated stream to UNKNOWN. Describe/observation binds manager UID + runtime UID + physical GPU + profile + runtime epoch. The receipt's selected build is not the final deployment pin; exact OS/backend/image/profile remain open [SRC-09].
 
-**B — Independent services:** vLLM A/B and speech services have explicit service bindings managed through reviewed container/system-service tooling. Thin Python adapters reconcile state and policy; do not rebuild an OS process supervisor or model engine. This is a valid selection when it has fewer unresolved gaps and lower operator burden.
+**B — Independent services:** vLLM A/B and speech services were the rejected WP24 alternative on capability gaps, not comparative speed. Keep the adapter seam vendor-neutral for exit; selecting B later requires a new reviewed decision. Thin Python adapters reconcile state and policy; do not rebuild an OS process supervisor or model engine.
 
 **Route-binding gate:** ก่อน network dispatch ต้องรู้ actual eligible resource ที่จอง หาก manager endpoint เลือก worker ข้างในโดยบังคับ binding ไม่ได้ ห้ามเอา lease ของ A ไปครอบงานที่อาจไปรัน B ต้องใช้ supported bound endpoint/manager reservation contract ที่ตรวจได้ มิฉะนั้น A-profile นี้ไม่ผ่าน; optional conservative whole-pool reservation ต้องมี ADR และวัดว่าไม่ deadlock/เกิน budget ก่อนใช้
 
 Automatic provider retry/fallback and manager auto-replication are disabled by default until their attempts, resources, epochs and deadlines can be accounted for. Native engine batching is allowed within its assigned resident envelope and invocation budget. Ray logical fractions are scheduling tokens, not VRAM caps [SRC-12].
 
 ## 12. Authority chain without duplicate stores
-Client-key authority เลือกหนึ่งตัว; PRP policy/identity contract อาจ delegate verifier ให้ framework ผ่าน supported interface ข้อมูล job/artifact เพิ่มเฉพาะ domain ที่ framework ไม่มี การมี internal service key อีกชั้นเป็น service-to-service authentication ไม่ใช่ duplicate user-key database
+WP03 selects PRP as the sole verifier-only client-key authority; client keys are never sent to Xinference or LiteLLM. Candidate A administrative keys are a separate service credential and use an opaque secret reference. Job/artifact data is added only for domains the framework lacks; an internal service key is service-to-service authentication, not a duplicate user-key database.
 
 PRP Admission เป็น contract authority ของ global holds; implement ด้วย primitive ที่พิสูจน์ atomicity ได้ ไม่ mirror authoritative balances/queues แล้วมีผู้เขียนสองชุด Logical ERDs D16/D17 ไม่สั่งสร้าง table ซ้ำกับ framework ถ้ามอบหมาย entity ไปให้ framework ต้องบันทึก mapping, transaction/failure boundary และ tests
 
