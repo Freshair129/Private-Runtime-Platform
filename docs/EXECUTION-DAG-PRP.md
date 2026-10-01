@@ -29,7 +29,7 @@ LINE canary and P2 image/video remain separate follow-on tracks. They do not blo
 
 - M1–M3 and the Python skeletons exist. `apps/control-api` has contract-bound routes but no adapters; requests fail closed with `503 STATE_STORE_UNAVAILABLE`. `workers/voice` has the worker contract and lifecycle skeleton but no speech engine. Preserve these seams; do not regenerate the skeleton from scratch.
 - WP24 run 1's approved receipt selects candidate A and satisfies the WP24 decision prerequisite for WP03. Run 2 is supplemental measurement only and does not reopen that decision; DEV-09 remains a limitation on cross-candidate cache/concurrency comparison. The WP01 scope/ownership decision receipt was approved 2026-09-30; WP01 implementation remains `NOT_STARTED`.
-- Worker and management contracts remain DRAFT pending a separate formal WP03 freeze decision. The D6 management lifecycle, quota, deployment-ceiling, and key-rotation semantics are recorded. All 92 acceptance cases remain `NOT_RUN`; WP01/WP03 approval does not constitute runtime implementation or acceptance evidence.
+- The owner approved the WP03 contract freeze on 2026-09-30; worker and management contracts are `0.4.0` / `FROZEN` under [the freeze receipt](../.brain/proposals/PROP-2026-09-30-wp03-formal-contract-freeze.md). The public client contract remains proposed at `0.3.0` / `DRAFT` and outside this freeze; its approval or freeze needs a separate owner decision. RG0 is still pending WP02 hardware/runtime inventory and remaining entry evidence; no WP25/WP04 implementation may start before RG0. All 92 acceptance cases remain `NOT_RUN`; WP01/WP03 approval does not constitute runtime implementation or acceptance evidence.
 - The roadmap now records the approved WP24 decision receipt separately from implementation status. Keep work-package implementation statuses `NOT_STARTED` until implementation evidence exists; do not infer PASS from files existing.
 
 Sources: `apps/control-api/README.md`; `workers/voice/README.md`; `docs/CHANGELOG-PRP.md` (M3 and WP24 entries); `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md`; `docs/TEST-PRP.md` §1.
@@ -42,8 +42,8 @@ flowchart TD
   WP01["WP01 Scope/ownership decision approved; implementation pending"]
   WP02["WP02 Hardware/runtime inventory"]
   WP24["WP24 Approved candidate binding; track DEV-09 measurement limitation"]
-  WP03["WP03 Freeze contracts, authority, and secret design"]
-  RG0["RG0 Owner + Security approval"]
+  WP03["WP03 contract freeze approved; implementation pending"]
+  RG0["RG0 owner/security + WP02 inventory gate"]
   WP25["WP25 Complete pinned environments and CI gates"]
   WP04["WP04 Control-plane adapters and service wiring"]
   WP05["WP05 Identity, keys, quotas"]
@@ -146,7 +146,8 @@ No model may select a production runtime, approve license rights, authorize acce
 
 ## 6. Gate exit evidence
 
-- **RG0 / WP03:** approved ownership and scope; WP24 disposition; hardware/runtime inventory; single admission/key-authority chain; frozen API/state/error/retry/cancel contracts; approved secret and rights design. No adapter implementation before this gate.
+- **WP03 contract decision:** owner-approved scope/authority, WP24 disposition, and frozen worker/management API/state/error/retry/cancel contracts are recorded in the WP03 freeze receipt. This closes the contract decision only.
+- **RG0 implementation entry:** WP03 freezes the approved contract-level admission/key-authority chain and secret/rights design; RG0 still requires hardware/runtime inventory from WP02 and evidence that the approved design is ready for the selected environment. WP02 remains `NOT_STARTED`; planning hardware is not qualification evidence. Secret-store topology and model/voice license receipts remain their later gates. No adapter implementation, WP25, or WP04 work starts until RG0 is satisfied.
 - **WP25:** exact Python/toolchain and separate control/LLM/speech locks or image boundaries; clean install; CPU-only control import/health proof; CI gates and generated-contract consistency.
 - **G1:** two qualified replicas; clean install; JSON/SSE compatibility; identity and key isolation; wrong/missing-auth refusal; atomic admission/race and resource dedupe; bounded queue; stream interruption; no unapproved egress; revoke evidence.
 - **G2:** licensed model/voice receipts; approved preset; bounded upload/decode and artifact ACL/erasure; durable job/idempotency/cancel/recovery evidence; safe placement; independent client cycle; SRS/TEST speech corpus thresholds and scorer receipts.

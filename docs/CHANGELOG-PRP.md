@@ -422,6 +422,15 @@ repository_integration: NOT_PERFORMED
 - all 92 runtime acceptance cases remain `NOT_RUN`; no application implementation, runtime qualification, DEV deployment, or production activity was performed
 - JSON export check passed (3 contracts); generated-model check passed (4 modules); example validation passed (3 examples); documentation validation passed (627 relative links, 327 OpenAPI refs, 0 errors); `git diff --check` passed
 
+### WP03 formal contract freeze approved (2026-09-30, C-3 / HIGH)
+- repository owner approved the first frozen worker and management contract baseline; both canonical YAML files move from `0.4.0-draft` / `DRAFT` / gate `WP03` to `0.4.0` / `FROZEN`; `/prp/worker/v1` and `/prp/admin/v1` paths and schema shapes are unchanged by the freeze
+- added [formal freeze receipt](../.brain/proposals/PROP-2026-09-30-wp03-formal-contract-freeze.md) and RCA for stale WP01 gate text; regenerated JSON exports and checked generated models from canonical YAML
+- the public client contract stays proposed at `0.3.0` / `DRAFT`, outside this WP03 freeze and pending a separate owner decision; no prior frozen worker/management baseline or in-repository implementation is recorded. External consumer inventory remains unverified, so no external migration is claimed; compatibility must be reconciled before DEV
+- WP03 decision is complete, but RG0 remains pending WP02 hardware/runtime inventory and remaining owner/security evidence; WP25/WP04 implementation does not start before RG0
+- API-PRP and SECURITY-DATA-PRP overall status remain `draft-for-review`; this approval freezes only the WP03 contract decision scope
+- all 92 runtime acceptance cases remain `NOT_RUN`; no application implementation, runtime qualification, DEV deployment, or production activity was performed
+- verification: JSON export check passed (3 contracts); generated-model check passed (4 modules); example validation passed (3 examples); documentation validation passed (630 relative links, 327 OpenAPI refs, 0 errors); `git diff --check` passed with Windows line-ending warnings only
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

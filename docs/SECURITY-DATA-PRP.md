@@ -21,6 +21,8 @@ repository_integration: NOT_PERFORMED
 ## 1. Security posture
 Private means controlled identity/network/data boundary, not automatic confidentiality merely from self-hosting. P1 prohibits third-party inference fallback. LINE is outside the private compute boundary and can receive content by caller policy. Host/root operators remain trusted; no hardware attestation or hostile co-tenant isolation claim.
 
+WP03 froze the role/action and secret-custody contract boundaries on 2026-09-30. This decision does not change this document's overall `draft-for-review` status or establish a deployed secret-store topology, hardware qualification, or model/voice license receipt; those remain separate gates.
+
 Threat model assets: client keys/upstream credentials, prompts/transcripts/audio, job state, result grants, GPU capacity, model profiles and audit/erasure evidence. Actors: legitimate members/apps, compromised low-scope app, unauthenticated LAN caller, malicious payload, stale worker, mistaken operator, external content provider.
 
 ## 2. Trust boundary table

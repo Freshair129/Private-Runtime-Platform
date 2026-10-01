@@ -1,6 +1,6 @@
 # PRP — Private Runtime Platform · Living documentation
 
-**v0.4.0-draft · 2026-09-30 · Python-first / Reuse-before-build · WP24 candidate A decision approved · WP01 scope/ownership approved · WP03 D1–D6 decisions applied; formal freeze pending · Runtime acceptance: NOT_RUN · Implementation: M3 skeleton present; M4 adapters/deploy pending**
+**v0.4.0-draft · 2026-09-30 · Python-first / Reuse-before-build · WP24 candidate A decision approved · WP01 scope/ownership approved · WP03 worker/management contracts frozen at 0.4.0; RG0 inventory pending · Runtime acceptance: NOT_RUN · Implementation: M3 skeleton present; M4 adapters/deploy pending**
 
 โฟลเดอร์นี้คือเอกสาร **ที่มีชีวิต** ของ PRP แก้ไขได้ทุกวันโดยไม่ต้องออก package ใหม่ ส่วน package ที่ส่งมอบแล้วอยู่ใต้ [`releases/`](releases/) และห้ามแก้ โครงสร้างนี้กำหนดโดย [ADR-PRP-012](ADR-PRP.md#ADR-PRP-012) และ [SDD-PRP-REPO](SDD-PRP-REPO.md)
 

@@ -14,7 +14,7 @@ owner_decision: APPROVED_WITH_REMAINING_CHOICES_DELEGATED_ON_2026-09-29
 
 ## 1. Purpose and boundary
 
-Record the D6 management-contract decisions approved by the repository owner on 2026-09-29, plus the owner's later instruction to decide the remaining contract details. D6 closes the management policy lifecycle, quota composition/window behavior, deployment-ceiling boundary, and key-rotation semantics in documentation and the DRAFT contract. WP01 scope/ownership was approved on 2026-09-30; formal WP03 freeze remains a separate decision.
+Record the D6 management-contract decisions approved by the repository owner on 2026-09-29, plus the owner's later instruction to decide the remaining contract details. D6 closed the management policy lifecycle, quota composition/window behavior, deployment-ceiling boundary, and key-rotation semantics while the contract was DRAFT. WP01 scope/ownership and the separate WP03 formal freeze were approved on 2026-09-30; see [the formal freeze receipt](PROP-2026-09-30-wp03-formal-contract-freeze.md).
 
 The repository owner approved the scoped D6 recommendations and later delegated the remaining design choices on 2026-09-29. The selected decisions, application, and verification are recorded below.
 
@@ -120,7 +120,7 @@ Define separate `QuotaPolicySettings` and `RetentionPolicySettings` schemas and 
 - Owner approved the retention fields, explicit maxima, and default-only values as written in §5.2 on 2026-09-29.
 - Canonical YAML, API-PRP prose, JSON twin, and generated Pydantic models agree; contract/schema/example/documentation checks pass.
 - **D6 complete:** policy identity/provision/read/version semantics and `quota_policy_id` binding; deployment-wide quota-ceiling disposition; key-rotation grant/expiry/eligibility semantics; quota-window rolling/accounting behavior.
-- **Still open before formal WP03 freeze:** the separate formal WP03 freeze decision. The WP01 scope/ownership receipt was approved on 2026-09-30. D6 does not authorize application implementation, DEV deployment, or production release.
+- **WP03 freeze:** approved on 2026-09-30; see the formal freeze receipt. **Still open before RG0 implementation entry:** WP02 hardware/runtime inventory and remaining owner/security evidence. D6 does not authorize application implementation, DEV deployment, or production release.
 
 ## 8. Applied changes and verification
 
@@ -128,7 +128,7 @@ Define separate `QuotaPolicySettings` and `RetentionPolicySettings` schemas and 
 2. Replaced opaque policy settings with closed quota and retention schemas; added policy create/read/update semantics, unique `(kind, scope)` identity, stable IDs and opaque versions; bound each key to its exact subject quota policy and shared subject counters.
 3. Clarified that both management authentication schemes resolve an actor and then apply the same role/action matrix; neither credential alone grants a role.
 4. Updated API-PRP prose and regenerated the management JSON and derived Pydantic modules. The public client contract and worker contract did not change in D6.
-5. Kept management contract metadata at `0.4.0-draft`, `DRAFT`, freeze gate `WP03` pending a separate formal WP03 freeze decision.
+5. Kept management contract metadata at `0.4.0-draft`, `DRAFT`, freeze gate `WP03` while D6 was applied; the later formal WP03 freeze approved version `0.4.0` / `FROZEN` with route and schema shapes unchanged.
 6. Verification passed: JSON export check (3 contracts); generated-model check (4 modules); example validation (3 examples); documentation validation (626 relative links, 327 OpenAPI references, 0 errors). All 92 runtime acceptance cases remain `NOT_RUN`; no application tests, runtime exercise, DEV deployment, or production activity was performed.
 
 ## 9. Version diff
@@ -155,4 +155,4 @@ The repository owner explicitly delegated the remaining choices on 2026-09-29. T
 
 ## 11. Owner review
 
-The owner approved the scoped D6 recommendations and delegated the remaining design choices on 2026-09-29. D6 is complete as a documentation/contract slice. WP01 scope/ownership was approved on 2026-09-30; WP03 remains DRAFT pending a separate formal freeze decision. No production or runtime acceptance claim follows from the D6 contract changes.
+The owner approved the scoped D6 recommendations and delegated the remaining design choices on 2026-09-29. D6 is complete as a documentation/contract slice. WP01 scope/ownership and the WP03 formal contract freeze were approved on 2026-09-30. RG0, application implementation, runtime acceptance, DEV, and PROD remain separate gates.

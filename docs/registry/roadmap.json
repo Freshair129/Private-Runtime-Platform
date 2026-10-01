@@ -28,7 +28,7 @@
       "phase": "G0",
       "title": "Contracts & authority decision",
       "owner": "API + Security",
-      "deliverable": "freeze public/management contracts, selected A/B binding, single key/admission authority, approved gaps and secret design",
+      "deliverable": "freeze worker and management contracts; public client contract remains proposed (0.3.0 / DRAFT) and outside WP03 freeze; selected A/B binding, single key/admission authority, approved gaps and secret design",
       "dependencies": "WP01,WP24",
       "trace": "E01/E03/E05; NFR-020/023",
       "diagrams": "D08,D17,D31,D33",

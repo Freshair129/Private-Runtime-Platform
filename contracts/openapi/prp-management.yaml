@@ -1,19 +1,18 @@
 openapi: 3.1.0
 info:
   title: PRP - Private Management Contract
-  version: 0.4.0-draft
+  version: 0.4.0
   description: >-
-    DRAFT machine-readable form of the management operation inventory in API-PRP §8. Management
+    Frozen v0.4.0 machine-readable form of the management operation inventory in API-PRP §8. Management
     policies have one stable resource per kind and canonical scope, with create/read/update semantics.
     Deployment quota ceilings are operator configuration outside this API. Key rotation preserves
-    grants and expiry, and quota windows use trailing rolling intervals. Formal WP03 freeze remains
-    gated by WP01 evidence. Every mutation requires the approved role/action matrix and explicit scope,
+    grants and expiry, and quota windows use trailing rolling intervals. WP03 formal contract freeze
+    approved 2026-09-30. Every mutation requires the approved role/action matrix and explicit scope,
     a current version (If-Match), an idempotent operation identity where retryable (Idempotency-Key),
     and produces a redacted audit event. Inference client keys never authorize these routes. No
     operation here may run a host reboot, kill or model load in response to a user inference request.
-    Not implemented or tested.
-x-prp-status: DRAFT
-x-prp-freeze-gate: WP03
+    Not implemented or tested; RG0 remains pending WP02 hardware/runtime inventory and remaining owner/security evidence.
+x-prp-status: FROZEN
 x-prp-consumers:
   - apps/console (operator UX over these routes only)
   - apps/control-api api/ (implements)

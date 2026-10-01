@@ -65,9 +65,9 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 ### WP03 — Contracts & authority decision
 **Stage:** G0 | **Owner:** API + Security | **Depends on:** WP01,WP24
 
-**ส่งมอบ:** freeze public/management contracts, selected A/B binding, single key/admission authority, approved gaps and secret design
+**ส่งมอบ:** freeze worker and management contracts; public client contract remains proposed (0.3.0 / DRAFT) and outside WP03 freeze; selected A/B binding, single key/admission authority, approved gaps and secret design
 
-**Trace:** E01/E03/E05; NFR-020/023 | Diagram D08,D17,D31,D33 | implementation: NOT_STARTED; D1–D6 decisions applied 2026-09-29; WP01 scope/ownership receipt approved 2026-09-30; explicit formal WP03 freeze decision remains pending
+**Trace:** E01/E03/E05; NFR-020/023 | Diagram D08,D17,D31,D33 | decision: WP03 formal contract freeze approved 2026-09-30 ([receipt](../.brain/proposals/PROP-2026-09-30-wp03-formal-contract-freeze.md)); contracts `0.4.0` / `FROZEN`; implementation: NOT_STARTED; RG0 remains pending WP02 hardware/runtime inventory and remaining entry evidence
 
 ### WP25 — Python engineering and environment baseline
 **Stage:** P1-A | **Owner:** Build + Core + Operations | **Depends on:** WP03

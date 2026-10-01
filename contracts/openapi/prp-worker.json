@@ -2,11 +2,10 @@
   "openapi": "3.1.0",
   "info": {
     "title": "PRP - Worker Adapter Contract",
-    "version": "0.4.0-draft",
-    "description": "DRAFT internal contract between the PRP control plane (dispatcher / observer processes) and a worker adapter or supervisor that wraps vLLM or a speech engine (API-PRP §7, ARCH-PRP §9, §11). Status DRAFT until the WP03 contract freeze; not implemented or tested by this document. Every invocation reaching a worker has already been admitted and reserved by PRP; the worker never receives the client-key database, LINE credentials, customer database tokens or shell commands. Native engines do not have to expose these routes; an external adapter/supervisor provides them. Cancellation ACK, client timeout and lease expiry are never proof that compute stopped (ADR-PRP-005)."
+    "version": "0.4.0",
+    "description": "Frozen v0.4.0 internal contract between the PRP control plane (dispatcher / observer processes) and a worker adapter or supervisor that wraps vLLM or a speech engine (API-PRP §7, ARCH-PRP §9, §11). WP03 formal contract freeze approved 2026-09-30; the contract is not implemented or tested. Every invocation reaching a worker has already been admitted and reserved by PRP; the worker never receives the client-key database, LINE credentials, customer database tokens or shell commands. Native engines do not have to expose these routes; an external adapter/supervisor provides them. Cancellation ACK, client timeout and lease expiry are never proof that compute stopped (ADR-PRP-005). RG0 remains pending WP02 hardware/runtime inventory and remaining owner/security evidence."
   },
-  "x-prp-status": "DRAFT",
-  "x-prp-freeze-gate": "WP03",
+  "x-prp-status": "FROZEN",
   "x-prp-consumers": [
     "apps/control-api entrypoints/dispatcher.py (invoke, cancel)",
     "apps/control-api entrypoints/observer.py (describe, readiness, execution evidence)",
