@@ -19,7 +19,7 @@ repository_integration: NOT_PERFORMED
 เอกสารที่เกี่ยวข้อง: [Roadmap](ROADMAP-PRP.md) · [SRS](SRS-PRP.md) · [Tests](TEST-PRP.md)
 
 ## 1. Operational prerequisites
-Confirm exact host/GPU/CPU/RAM/OS/driver, private network reachability, available disk, time synchronization and recovery access. Record runtime image/model/profile/voice revisions and license receipts. No production command or credential is provided in this draft; version-pinned manifests are implementation deliverables.
+Confirm exact host/GPU/CPU/RAM/OS/driver, private network reachability, available disk, time synchronization and recovery access using the [WP02 read-only inventory procedure](WP02-HARDWARE-RUNTIME-INVENTORY.md). Record runtime image/model/profile/voice revisions and license receipts. No production command or credential is provided in this draft; version-pinned manifests are implementation deliverables.
 
 P1-A deploy control application + PostgreSQL + private worker adapters and two independent vLLM nodes. Console and reference client use public contracts only. Speech worker joins only after model/rights/placement qualification. Do not install full Lalin Studio or expose its broad route set as PRP voice API.
 

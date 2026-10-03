@@ -27,6 +27,7 @@ Requirement IDs (PRP-FR/NFR/SEC/P2), acceptance IDs (PRP-AT-nnn), work packages 
 | [API-PRP](API-PRP.md) | Client subset, worker adapter และ private management contract boundaries |
 | [STACK-EVALUATION-PRP](STACK-EVALUATION-PRP.md) | A/B/C candidates, fit-gap, experiments และ decision receipt |
 | [WP24-EXPERIMENT-PROCEDURE](WP24-EXPERIMENT-PROCEDURE.md) | ขั้นตอนทดลอง EV01–EV08 ต่อ candidate, เกณฑ์ PASS/FAIL/BLOCKED และ run-record template; run evidence อยู่ใน `evidence/wp24/` |
+| [WP02-HARDWARE-RUNTIME-INVENTORY](WP02-HARDWARE-RUNTIME-INVENTORY.md) | read-only host/runtime inventory procedure and RG0 evidence boundary; does not qualify runtime or change acceptance status |
 | [Coding Standards](standards/Coding-Standards.md) | Python/typing/async/process/dependency/test/TS frontend standards |
 | [SECURITY-DATA-PRP](SECURITY-DATA-PRP.md) | Keys, roles, threats, framework-private routes, retention/erasure |
 | [SEC-007 model license review](SEC-007-MODEL-LICENSE-REVIEW.md) | Owner-approved provenance assessment for the selected Typhoon model; final receipt and activation remain blocked |

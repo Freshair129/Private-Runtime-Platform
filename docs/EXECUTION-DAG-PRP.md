@@ -32,7 +32,7 @@ LINE canary and P2 image/video remain separate follow-on tracks. They do not blo
 - The owner approved the WP03 contract freeze on 2026-09-30; worker and management contracts are `0.4.0` / `FROZEN` under [the freeze receipt](../.brain/proposals/PROP-2026-09-30-wp03-formal-contract-freeze.md). The public client contract remains proposed at `0.3.0` / `DRAFT` and outside this freeze; its approval or freeze needs a separate owner decision. WP02 has a current Host B snapshot but remains open pending Host A inventory and current A/B topology; RG0 also needs the remaining entry evidence. No WP25/WP04 implementation may start before RG0. All 92 acceptance cases remain `NOT_RUN`; WP01/WP03 approval does not constitute runtime implementation or acceptance evidence.
 - The roadmap now records the approved WP24 decision receipt separately from implementation status. Keep work-package implementation statuses `NOT_STARTED` until implementation evidence exists; do not infer PASS from files existing.
 
-Sources: `apps/control-api/README.md`; `workers/voice/README.md`; `docs/CHANGELOG-PRP.md` (M3 and WP24 entries); `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md`; `docs/TEST-PRP.md` §1.
+Sources: `apps/control-api/README.md`; `workers/voice/README.md`; `docs/WP02-HARDWARE-RUNTIME-INVENTORY.md`; `docs/CHANGELOG-PRP.md` (M3 and WP24 entries); `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md`; `docs/TEST-PRP.md` §1.
 
 ## 3. Proposed execution DAG
 
@@ -73,6 +73,7 @@ flowchart TD
   WP02 --> WP24
   WP24 --> WP03
   WP03 --> RG0
+  WP02 --> RG0
   RG0 --> WP25
   WP25 --> WP04
   WP01 --> WP04
@@ -157,7 +158,7 @@ No model may select a production runtime, approve license rights, authorize acce
 
 Test status changes require evidence receipts through `tools/trace/collect_trace.py`; otherwise cases remain `NOT_RUN` or `BLOCKED`. A passing document validator, local unit test, or model review is not runtime qualification.
 
-## 7. Roadmap consistency correction applied
+## 7. Roadmap consistency corrections applied
 
 The approved roadmap initially required deployment/rollback runbooks from WP18 at DEV, while WP18 depends on WP17 and the roadmap places DEV before WP17/G3. That edge created a dependency cycle.
 
@@ -166,6 +167,8 @@ The approved roadmap initially required deployment/rollback runbooks from WP18 a
 **Correction applied:** the DEV gate owns a short deploy/revert instruction based on WP04/WP25 artifacts; WP18 remains after WP17 for full restore, recovery, and release evidence. WP IDs are unchanged. The root cause and prevention are recorded in [RCA-2026-09-29-roadmap-dev-wp18-cycle](../.brain/rca/RCA-2026-09-29-roadmap-dev-wp18-cycle.md).
 
 WP24 implementation may remain `NOT_STARTED`: the approved run 1 decision receipt satisfies its WP03 decision prerequisite, while run 2 is measurement-only. No WP24 status discrepancy remains to reconcile at preflight. Do not infer implementation PASS or change any acceptance case from this receipt.
+
+The 2026-10-03 WP02 review found that RG0's prose prerequisite was not encoded as a graph edge and that the roadmap/registry listed WP25 as depending on WP03 alone. The correction adds `WP02 --> RG0`, changes WP25 to depend on `WP03, RG0`, and adds the [WP02 inventory procedure](WP02-HARDWARE-RUNTIME-INVENTORY.md). The documentation RCA is recorded at [RCA-2026-10-03-wp02-rg0-dag-prerequisite](../.brain/rca/RCA-2026-10-03-wp02-rg0-dag-prerequisite.md).
 
 ## 8. Definition of done for this plan
 
