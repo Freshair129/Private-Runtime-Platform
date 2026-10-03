@@ -18,8 +18,8 @@ repository_integration: NOT_PERFORMED
 
 ## Unreleased — v0.4.0-draft
 
-### WP02 Host B inventory refresh (2026-10-03, C-2 / MEDIUM)
-- Added current read-only Windows and runtime receipts for Host B; current Host A lookup did not resolve and the historical PC-2 address was not contacted, so WP02 remains open.
+### WP02 Host B inventory refresh (2026-10-03–04, C-2 / MEDIUM)
+- Added current read-only Windows and runtime receipts for Host B; bounded Host A DNS/ICMP checks on 2026-10-03 and 2026-10-04 did not resolve or reach the peer, and the historical PC-2 address was not contacted, so WP02 remains open.
 - Recorded the currently listed local `qwen3:4b` model as an unreviewed installed artifact, separate from the WP24-selected Typhoon candidate.
 - Corrected the prior `F:\models` narrative against the receipt and collector semantics; see [RCA](../.brain/rca/RCA-2026-10-03-wp02-disk-path-summary.md).
 - No network, service, container, model, or application code was changed; runtime qualification and all acceptance tests remain `NOT_RUN`.

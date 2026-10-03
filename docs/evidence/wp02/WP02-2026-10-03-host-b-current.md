@@ -12,7 +12,7 @@
 
 The existing [WP24 run 1 record](../wp24/WP24-2026-09-20-run1.json) identifies `DESKTOP-VETATMQ` as Host B and the control/main host by the owner's 2026-09-21 decision. This snapshot was collected on that hostname. It is a new dated observation; it does not replace the historical WP24 record or establish runtime qualification. The current Windows host measurements are in [the structured Windows receipt](host_inventory_B_windows_20261003T092030Z.json); GPU, CUDA, Python, Docker, and model-runtime observations are in [the latest structured host-tool receipt](host_inventory_B_20261003T091741Z.json).
 
-Host A was not reachable in the 2026-09-20 run. That record separately names `DESKTOP-8UR61U8` as the second machine intended to receive jobs first; the current Host A-to-PC-2 mapping and hardware have not been freshly verified. The earlier PC-2 report is user-reported and gave it `192.168.1.33/24`. This Host B snapshot now reports `192.168.88.225/24`; on 2026-10-03 at `09:21:59Z`, the peer hostname returned no DNS records and one ICMP echo received no reply. The old address was not contacted, so current same-LAN reachability and topology remain unknown.
+Host A was not reachable in the 2026-09-20 run. That record separately names `DESKTOP-8UR61U8` as the second machine intended to receive jobs first; the current Host A-to-PC-2 mapping and hardware have not been freshly verified. The earlier PC-2 report is user-reported and gave it `192.168.1.33/24`. Host B is currently `192.168.88.225/24`. Bounded DNS/ICMP checks at `2026-10-03T09:21:59Z` and `2026-10-03T18:18:03Z` returned no DNS records and no echo reply for the peer hostname. The old address was not contacted, so current same-LAN reachability and topology remain unknown.
 
 ## Host B snapshot
 
