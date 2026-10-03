@@ -18,6 +18,12 @@ repository_integration: NOT_PERFORMED
 
 ## Unreleased — v0.4.0-draft
 
+### WP02 Host A inventory summary (2026-10-04, C-2 / MEDIUM)
+- Recorded the owner-provided local inventory for `DESKTOP-8UR61U8`; its hostname matches the previously expected Host A worker name. The underlying files remain on Host A and were not available for independent JSON/hash verification in this checkout.
+- Captured the reported Windows, CPU/RAM, GPU/driver/CUDA, network, and local-tooling observations; recorded model path, F: capacity, Docker versions, and installed Ollama models as unresolved.
+- Kept A/B topology and reachability unverified: Host A's reported `.172/24` and Host B's `.88.225/24` observations were collected at different times and do not establish a network path or topology.
+- WP02 discovery remains partial, implementation status remains `NOT_STARTED`, RG0 remains gated, and all 92 acceptance cases remain `NOT_RUN`.
+
 ### WP02 Host B inventory refresh (2026-10-03–04, C-2 / MEDIUM)
 - Added current read-only Windows and runtime receipts for Host B; bounded Host A DNS/ICMP checks on 2026-10-03 and 2026-10-04 did not resolve or reach the peer, and the historical PC-2 address was not contacted, so WP02 remains open.
 - Recorded the currently listed local `qwen3:4b` model as an unreviewed installed artifact, separate from the WP24-selected Typhoon candidate.
