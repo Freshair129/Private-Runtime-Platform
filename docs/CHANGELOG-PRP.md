@@ -431,6 +431,12 @@ repository_integration: NOT_PERFORMED
 - all 92 runtime acceptance cases remain `NOT_RUN`; no application implementation, runtime qualification, DEV deployment, or production activity was performed
 - verification: JSON export check passed (3 contracts); generated-model check passed (4 modules); example validation passed (3 examples); documentation validation passed (630 relative links, 327 OpenAPI refs, 0 errors); `git diff --check` passed with Windows line-ending warnings only
 
+### WP02 inventory procedure and RG0 prerequisite reconciliation (2026-10-03, C-3 / HIGH)
+- added `docs/WP02-HARDWARE-RUNTIME-INVENTORY.md` with a read-only host/runtime collection procedure, redacted evidence boundary and explicit non-qualification/non-deployment rules
+- corrected the execution graph with `WP02 → RG0` and reconciled WP25's dependency to `WP03, RG0` in `ROADMAP-PRP.md` and `docs/registry/roadmap.json`
+- recorded the documentation RCA at `.brain/rca/RCA-2026-10-03-wp02-rg0-dag-prerequisite.md`; WP02 remains `NOT_STARTED`, RG0 remains open, and all 92 acceptance cases remain `NOT_RUN`
+- no application code, contract shape, credentials, server access, deployment or production activity was performed
+
 ## Revision intent
 ปรับชุด PRP ตามคำขอให้ใช้ Python ecosystem และประเมินของสำเร็จรูปก่อนเขียนเอง ไม่เปลี่ยนชื่อผลิตภัณฑ์ ไม่ย้าย PRP กลับเข้า Zuri ไม่เพิ่ม scope Phase 1 และไม่เลือก production framework แบบไม่มีหลักฐาน
 

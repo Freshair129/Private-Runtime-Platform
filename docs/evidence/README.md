@@ -24,3 +24,7 @@
 ## WP24 run records (`wp24/`)
 
 `wp24/<record_id>.json` และโฟลเดอร์ artifact `wp24/<record_id>/<candidate>/<EVnn>/` เก็บผลของ WP24 fit-gap และ A/B spikes ตาม [`../WP24-EXPERIMENT-PROCEDURE.md`](../WP24-EXPERIMENT-PROCEDURE.md) และ template [`../registry/wp24-run-record-template.json`](../registry/wp24-run-record-template.json) ไฟล์เหล่านี้เป็นหลักฐานระดับ candidate ไม่ใช่ acceptance receipt validator ไม่นับเป็น receipt และไม่เปลี่ยนสถานะ AT ใด ห้ามใส่ secret, เสียง / ข้อความลูกค้า หรือ model weights
+
+## WP02 inventory dossiers
+
+`wp02/<record_id>/` เก็บ redacted host/runtime inventory artifacts ตาม [`../WP02-HARDWARE-RUNTIME-INVENTORY.md`](../WP02-HARDWARE-RUNTIME-INVENTORY.md) สำหรับ RG0 review เท่านั้น ไม่ใช่ acceptance receipt และไม่เปลี่ยนสถานะ `PRP-AT-nnn` จาก `NOT_RUN` โดยอัตโนมัติ

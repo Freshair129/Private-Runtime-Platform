@@ -51,7 +51,7 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 ### WP02 — Hardware & runtime discovery
 **Stage:** G0 | **Owner:** Operations | **Depends on:** None
 
-**ส่งมอบ:** GPU/CPU/RAM/OS/network inventory; model/license candidates
+**ส่งมอบ:** GPU/CPU/RAM/OS/network inventory; model/license candidates; [read-only inventory procedure](WP02-HARDWARE-RUNTIME-INVENTORY.md)
 
 **Trace:** E02/E04 | Diagram D04,D18 | สถานะ NOT_STARTED
 
@@ -70,7 +70,7 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 **Trace:** E01/E03/E05; NFR-020/023 | Diagram D08,D17,D31,D33 | decision: WP03 formal contract freeze approved 2026-09-30 ([receipt](../.brain/proposals/PROP-2026-09-30-wp03-formal-contract-freeze.md)); contracts `0.4.0` / `FROZEN`; implementation: NOT_STARTED; RG0 remains pending WP02 hardware/runtime inventory and remaining entry evidence
 
 ### WP25 — Python engineering and environment baseline
-**Stage:** P1-A | **Owner:** Build + Core + Operations | **Depends on:** WP03
+**Stage:** P1-A | **Owner:** Build + Core + Operations | **Depends on:** WP03, RG0
 
 **ส่งมอบ:** compatible pinned Python/toolchain and separate control/LLM/speech locks/images, typed ports, no-model-import tests and CI gates per Coding Standards
 

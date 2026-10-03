@@ -271,7 +271,7 @@
       "title": "Python engineering and environment baseline",
       "owner": "Build + Core + Operations",
       "deliverable": "compatible pinned Python/toolchain and separate control/LLM/speech locks/images, typed ports, no-model-import tests and CI gates per Coding Standards",
-      "dependencies": "WP03",
+      "dependencies": "WP03, RG0",
       "trace": "NFR-019/021/022",
       "diagrams": "D23,D30,D32",
       "status": "NOT_STARTED"
