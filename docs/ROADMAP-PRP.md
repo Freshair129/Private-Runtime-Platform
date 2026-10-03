@@ -53,7 +53,7 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 
 **ส่งมอบ:** GPU/CPU/RAM/OS/network inventory; model/license candidates
 
-**Trace:** E02/E04 | Diagram D04,D18 | สถานะ NOT_STARTED
+**Trace:** E02/E04 | Diagram D04,D18 | implementation: NOT_STARTED; discovery evidence: PARTIAL ([Host B snapshot ปัจจุบัน](evidence/wp02/WP02-2026-10-03-host-b-current.md)); Host A และ topology A/B ปัจจุบันยังยืนยันไม่ได้; model/license candidates บันทึกใน [SEC-007 assessment](SEC-007-MODEL-LICENSE-REVIEW.md); formal SEC-007 receipt เป็น gate แยกก่อน activation
 
 ### WP24 — Runtime reuse fit-gap and A/B spikes
 **Stage:** G0 | **Owner:** Architecture + Runtime + Security + QA | **Depends on:** WP01,WP02

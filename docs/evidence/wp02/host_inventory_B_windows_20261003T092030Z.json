@@ -1,0 +1,58 @@
+{
+  "kind": "WP02_WINDOWS_HOST_INVENTORY",
+  "captured_at_utc": "2026-10-03T09:20:30.6900957Z",
+  "hostname": "DESKTOP-VETATMQ",
+  "os": {
+    "caption": "Microsoft Windows 11 Pro",
+    "version": "10.0.26300",
+    "build": "26300",
+    "architecture": "64-bit"
+  },
+  "cpu": [
+    {
+      "name": "Intel(R) Core(TM) i7-14700KF",
+      "physical_cores": 20,
+      "logical_processors": 28
+    }
+  ],
+  "memory": {
+    "total_bytes": 34104127488,
+    "free_bytes": 15047757824
+  },
+  "storage": [
+    {
+      "device": "C:",
+      "size_bytes": 1023202553856,
+      "free_bytes": 277429780480
+    },
+    {
+      "device": "F:",
+      "size_bytes": 512108785664,
+      "free_bytes": 188061954048
+    }
+  ],
+  "network": {
+    "adapter": "Ethernet",
+    "description": "Realtek Gaming 2.5GbE Family Controller",
+    "interface_index": 7,
+    "status": "Up",
+    "link_speed": "1 Gbps",
+    "ipv4": [
+      {
+        "address": "192.168.88.225",
+        "prefix_length": 24
+      }
+    ],
+    "dhcp": "Enabled",
+    "profile": "Public",
+    "gateway": "192.168.88.1",
+    "dns_servers": [
+      "192.168.88.1"
+    ]
+  },
+  "collection": "Read-only PowerShell CIM, NetAdapter, NetIPConfiguration, NetIPInterface, Get-NetConnectionProfile, Get-DnsClientServerAddress",
+  "limitations": [
+    "Host B local Windows measurements only; no runtime/production qualification.",
+    "No peer host or routed network was contacted by this collection."
+  ]
+}

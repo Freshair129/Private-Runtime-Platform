@@ -29,6 +29,7 @@ Requirement IDs (PRP-FR/NFR/SEC/P2), acceptance IDs (PRP-AT-nnn), work packages 
 | [WP24-EXPERIMENT-PROCEDURE](WP24-EXPERIMENT-PROCEDURE.md) | ขั้นตอนทดลอง EV01–EV08 ต่อ candidate, เกณฑ์ PASS/FAIL/BLOCKED และ run-record template; run evidence อยู่ใน `evidence/wp24/` |
 | [Coding Standards](standards/Coding-Standards.md) | Python/typing/async/process/dependency/test/TS frontend standards |
 | [SECURITY-DATA-PRP](SECURITY-DATA-PRP.md) | Keys, roles, threats, framework-private routes, retention/erasure |
+| [SEC-007 model license review](SEC-007-MODEL-LICENSE-REVIEW.md) | Owner-approved provenance assessment for the selected Typhoon model; final receipt and activation remain blocked |
 | [OPS-PRP](OPS-PRP.md) | Qualification, drain, restart, recovery, isolated environments และ migration |
 | [ADR-PRP](ADR-PRP.md) | 14 decisions; candidate A selected conditionally under WP24 evidence, WP03 authority and contract decisions approved; implementation/fault qualification remain open |
 | [TEST-PRP](TEST-PRP.md) | 92 acceptance specifications; ทุกกรณี NOT_RUN |

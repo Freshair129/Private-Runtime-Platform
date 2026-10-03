@@ -18,6 +18,17 @@ repository_integration: NOT_PERFORMED
 
 ## Unreleased — v0.4.0-draft
 
+### WP02 Host B inventory refresh (2026-10-03, C-2 / MEDIUM)
+- Added current read-only Windows and runtime receipts for Host B; current Host A lookup did not resolve and the historical PC-2 address was not contacted, so WP02 remains open.
+- Recorded the currently listed local `qwen3:4b` model as an unreviewed installed artifact, separate from the WP24-selected Typhoon candidate.
+- Corrected the prior `F:\models` narrative against the receipt and collector semantics; see [RCA](../.brain/rca/RCA-2026-10-03-wp02-disk-path-summary.md).
+- No network, service, container, model, or application code was changed; runtime qualification and all acceptance tests remain `NOT_RUN`.
+
+### SEC-007 selected model license assessment (2026-10-03, C-2 / HIGH)
+- Promoted the owner-approved proposal to `docs/SEC-007-MODEL-LICENSE-REVIEW.md` v0.1.0 and indexed it in `docs/README.md`; v0.2.0 adds candidate A upstream license observations, v0.3.0 records a current 99-distribution environment snapshot, v0.4.0 lists package-license review leads, and v0.5.0 records pinned PyPI declarations for six distributions with no installed license file.
+- Records the selected model's pinned provenance and license-source observations; owner intended-use and rights decisions remain open, so SEC-007 and activation remain `BLOCKED`.
+- No application code, model download, runtime activity, or legal-rights determination was performed.
+
 ### M1 · Monorepo layout (2026-09-20, ADR-PRP-012 ACCEPTED)
 - ย้าย package `PRP-Documentation-v0.3.0/` ไป `docs/releases/` ทั้งก้อนโดยไม่แก้ไข; `MANIFEST.sha256` ยัง verify ได้ 150 ไฟล์
 - สร้าง living docs ที่ `docs/` (Markdown 16 ฉบับ, `standards/`, `diagrams/`, `registry/`) แก้ relative link จาก `../x/` เป็น `x/` และใน `standards/` จาก `../docs/` เป็น `../`
