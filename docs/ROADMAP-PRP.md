@@ -53,7 +53,7 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 
 **ส่งมอบ:** GPU/CPU/RAM/OS/network inventory; model/license candidates
 
-**Trace:** E02/E04 | Diagram D04,D18 | implementation: NOT_STARTED; discovery evidence: PARTIAL ([Host B snapshot ปัจจุบัน](evidence/wp02/WP02-2026-10-03-host-b-current.md)); Host A และ topology A/B ปัจจุบันยังยืนยันไม่ได้; model/license candidates บันทึกใน [SEC-007 assessment](SEC-007-MODEL-LICENSE-REVIEW.md); formal SEC-007 receipt เป็น gate แยกก่อน activation
+**Trace:** E02/E04 | Diagram D04,D18 | implementation: NOT_STARTED; discovery evidence: PARTIAL ([Host B snapshot ปัจจุบัน](evidence/wp02/WP02-2026-10-03-host-b-current.md); [Host A owner-provided inventory](evidence/wp02/WP02-2026-10-04-host-a-reported-inventory.md)); owner confirms both hosts are at separate physical locations and on separate networks. Host A raw receipts and some inventory fields remain unavailable in this checkout; route/tunnel, approved network boundary, and endpoint reachability remain unverified. The described arrangement does not meet the same-LAN precondition in the WP24 experiment procedure. Model/license candidates are recorded in [SEC-007 assessment](SEC-007-MODEL-LICENSE-REVIEW.md); formal SEC-007 receipt is a separate gate before activation.
 
 ### WP24 — Runtime reuse fit-gap and A/B spikes
 **Stage:** G0 | **Owner:** Architecture + Runtime + Security + QA | **Depends on:** WP01,WP02

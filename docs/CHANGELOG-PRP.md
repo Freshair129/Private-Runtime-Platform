@@ -22,7 +22,8 @@ repository_integration: NOT_PERFORMED
 - Recorded the owner-provided local inventory for `DESKTOP-8UR61U8`; its hostname matches the previously expected Host A worker name. The underlying files remain on Host A and were not available for independent JSON/hash verification in this checkout.
 - Captured the reported Windows, CPU/RAM, GPU/driver/CUDA, network, and local-tooling observations; recorded model path, F: capacity, Docker versions, and installed Ollama models as unresolved.
 - A one-shot Host B→Host A ICMP attempt timed out and TCP/445 did not connect; local route selection used Host B's default gateway. These one-way failures do not distinguish host availability from routing or filtering. No SMB authentication was attempted.
-- Kept A/B topology unverified: Host A's reported `.172/24` and Host B's `.88.225/24` observations were collected at different times and do not establish a network path or topology.
+- The owner confirmed the hosts are at different physical locations and on different networks. The exact route/boundary remains unknown; the current arrangement does not meet the WP24 procedure's same-LAN precondition.
+- Updated the roadmap and DAG with the owner-confirmed separation while keeping WP02 discovery `PARTIAL`, implementation `NOT_STARTED`, and RG0 gated.
 - WP02 discovery remains partial, implementation status remains `NOT_STARTED`, RG0 remains gated, and all 92 acceptance cases remain `NOT_RUN`.
 
 ### WP02 Host B inventory refresh (2026-10-03–04, C-2 / MEDIUM)

@@ -8,6 +8,8 @@
 
 The reported hostname, `DESKTOP-8UR61U8`, matches the expected Host A worker name recorded in the WP24 run 1 owner decision. This local inventory alone does not confirm the current physical host-to-role assignment or A/B network topology.
 
+The owner separately confirmed on 2026-10-04 that Host A and Host B are at different physical locations and on different networks. This is an owner-reported high-level topology fact. It does not establish whether a routed path or tunnel exists, what network boundary is approved, or whether runtime/control endpoints are reachable. The [WP24 experiment procedure](../../WP24-EXPERIMENT-PROCEDURE.md) requires both GPU hosts on one LAN with a LAN-only boundary; that precondition is not met by the currently described arrangement unless the hosts are brought onto the required LAN or the procedure is formally reviewed and revised.
+
 ## Reported measurements
 
 | Area | Reported observation |
@@ -28,7 +30,7 @@ The reported hostname, `DESKTOP-8UR61U8`, matches the expected Host A worker nam
 - Docker client/server versions were unavailable.
 - `ollama list` through loopback returned exit code `1`; installed model names remain unknown. The CLI version alone does not establish a usable model runtime.
 - From Host B (`192.168.88.225`, Public, gateway `192.168.88.1`), `Find-NetRoute` at `2026-10-03T21:53:22Z` selected source `.88.225`, interface index `7`, and default gateway `192.168.88.1` for the reported Host A address. One ICMP echo to that address timed out at `2026-10-03T21:48:51Z`; a TCP connection attempt to `192.168.1.172:445` at `2026-10-03T21:49:35Z` returned `TcpTestSucceeded: false`. No SMB authentication was attempted and the historical `.33` address was not contacted. These negative one-way probes do not distinguish host unavailability from routing or filtering and do not establish physical/network topology.
-- Current A/B reachability and physical/network topology remain unverified. Host B's snapshot reports `192.168.88.225/24`, collected at a different time; the separate-subnet observations do not establish routing or VLANs.
+- The owner-confirmed separation of locations/networks does not determine current A/B reachability. Host B's snapshot reports `192.168.88.225/24`, collected at a different time; the separate-subnet observations and failed one-way probes do not establish an approved route, tunnel, or VLAN configuration.
 - The raw inventory files and their reported validation/hashes must be made available in this repository before they can serve as locally verified structured evidence.
 
-This report records the owner-provided summary, not a runtime qualification. WP02 remains open and RG0 remains gated on the other required entry evidence.
+This report records owner-provided inventory and topology statements, not runtime qualification. WP02 remains open pending locally reviewable Host A receipts and the unresolved inventory fields. RG0 remains gated on evidence that the selected environment satisfies its approved network boundary and the other entry requirements.
