@@ -17,7 +17,7 @@ requirements=read_json('registry/requirements.json')['requirements']
 ids=[r['id'] for r in requirements]
 check(len(ids)==len(set(ids)),'Duplicate requirement ID')
 counts=Counter(re.match(r'PRP-([A-Z0-9]+)-',i).group(1) for i in ids)
-check(counts=={'FR':56,'NFR':24,'SEC':12},f'Unexpected requirement counts: {counts}')
+check(counts=={'FR':56,'NFR':25,'SEC':13},f'Unexpected requirement counts: {counts}')
 phase2=read_json('registry/requirements.json')['phase2_envelope']
 check(len(phase2)==8 and len({r['id'] for r in phase2})==8,'Expected 8 Phase2 envelopes')
 srs=(ROOT/'SRS-PRP.md').read_text(encoding='utf-8')
@@ -29,7 +29,7 @@ for r in requirements:
     check(r['diagram'] in diagramids,f'Unknown primary diagram for {r["id"]}')
     if r.get('test'):
         check(f'id="{r["test"]}"' in tests,f'Missing test {r["test"]}')
-check(len(set(re.findall(r'<a id="(PRP-AT-\d+)"',tests)))==92,'Expected 92 acceptance anchors')
+check(len(set(re.findall(r'<a id="(PRP-AT-\d+)"',tests)))==94,'Expected 94 acceptance anchors')
 check(len(cat)==34 and len(diagramids)==34,'Expected 34 unique diagrams')
 for d in cat:
     check((ROOT/d['source']).exists(),f'Missing source {d["id"]}')
@@ -90,13 +90,13 @@ ops=[o for item in spec['paths'].values() for method,o in item.items() if method
 check(len(spec['paths'])==12 and len(ops)==14,'Unexpected client contract inventory')
 # Verify one test per requirement and no reused acceptance anchors.
 test_anchors=re.findall(r'<a id="(PRP-AT-\d+)"',tests)
-check(len(test_anchors)==len(set(test_anchors))==92,'Repeated or missing test anchors')
+check(len(test_anchors)==len(set(test_anchors))==94,'Repeated or missing test anchors')
 check(set(test_anchors)=={r['test'] for r in requirements},'Requirement/test mapping mismatch')
 trace=(ROOT/'TRACEABILITY-PRP.md').read_text(encoding='utf-8')
 for r in requirements:
     check(r['id'] in trace and r['test'] in trace,f'Missing trace row {r["id"]}')
 fitgap=read_json('registry/reuse-fit-gap-template.json')['rows']
-check({r['requirement_id'] for r in fitgap}==set(ids) and len(fitgap)==92,'Fit-gap template coverage mismatch')
+check({r['requirement_id'] for r in fitgap}==set(ids) and len(fitgap)==94,'Fit-gap template coverage mismatch')
 check(all(r['runtime_test_status']=='NOT_RUN' and r['disposition']=='UNASSESSED' for r in fitgap),'Template contains invented evidence')
 # WP24 preparation columns must stay derived (SDD-PRP-REPO 4: derived files never drift from their canonical source).
 fgdoc=read_json('registry/reuse-fit-gap-template.json');experiments=fgdoc.get('experiments',{});byid={r['id']:r for r in requirements}
@@ -123,7 +123,7 @@ for p in sorted((ROOT/'evidence').glob('*.json')):
     check(isinstance(r.get('test_id'),str) and r.get('status') in {'PASS','FAIL','BLOCKED'},f'Evidence {p.name}: test_id/status invalid (a NOT_RUN receipt is not evidence)')
     receipts.setdefault(r.get('test_id'),[]).append(r)
 statuses=dict(re.findall(r'<a id="(PRP-AT-\d+)"></a>.*?\*\*Status:\*\* ([A-Z_]+)',tests,flags=re.S))
-check(len(statuses)==92,'Could not parse the status of every acceptance case')
+check(len(statuses)==94,'Could not parse the status of every acceptance case')
 proof_by_test={r['test']:str(r.get('proof','')) for r in requirements}
 MOCK_OK={'contract','packaging','portability','design evidence','operations review','load mock'}
 status_counts=Counter(statuses.values())
@@ -144,10 +144,10 @@ check('WP24' in adjacency['WP03'],'Selection does not depend on reuse evaluation
 check('WP25' in adjacency['WP04'],'Control implementation does not depend on Python baseline')
 check(all(w.get('status','NOT_STARTED')=='NOT_STARTED' for w in roadmap),'Unverified implementation completion')
 trace_diagram=(ROOT/'diagrams/source/D26.dot').read_text(encoding='utf-8')
-check('WP01-WP25' in trace_diagram and 'AT001-AT092' in trace_diagram,'Trace diagram cardinality drift')
+check('WP01-WP25' in trace_diagram and 'AT001-AT094' in trace_diagram,'Trace diagram cardinality drift')
 for p in ROOT.rglob('*'):
     if 'releases' in p.relative_to(ROOT).parts:continue
     if p.is_file():
         check(p.suffix.lower() not in {'.ttf','.otf','.woff','.woff2'},'Font file must not be distributed: '+str(p))
-result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':92,'acceptance_status':dict(status_counts),'evidence_receipts':sum(len(v) for v in receipts.values()),'fitgap_source_findings':sum(len(r.get('source_review',[])) for r in fitgap),'code_trace_tests':sum(int(p.get('tests_collected',0)) for p in trace.get('projects',{}).values()),'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_documents':len(specs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN' if status_counts.get('NOT_RUN')==92 else 'PARTIAL'}
+result={'kind':'DOCUMENT_STRUCTURE_ONLY','requirements':dict(counts),'phase2_envelopes':len(phase2),'acceptance_cases':94,'acceptance_status':dict(status_counts),'evidence_receipts':sum(len(v) for v in receipts.values()),'fitgap_source_findings':sum(len(r.get('source_review',[])) for r in fitgap),'code_trace_tests':sum(int(p.get('tests_collected',0)) for p in trace.get('projects',{}).values()),'diagram_views':len(cat),'work_packages':len(roadmap),'relative_links_checked':links,'openapi_local_refs_checked':len(refs),'openapi_documents':len(specs),'openapi_paths':len(spec['paths']),'openapi_operations':len(ops),'errors':errors,'runtime_test_status':'NOT_RUN' if status_counts.get('NOT_RUN')==94 else 'PARTIAL'}
 print(json.dumps(result,ensure_ascii=False,indent=2));sys.exit(1 if errors else 0)

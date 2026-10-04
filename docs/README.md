@@ -1,6 +1,6 @@
 # PRP — Private Runtime Platform · Living documentation
 
-**v0.4.0-draft · 2026-09-30 · Python-first / Reuse-before-build · WP24 candidate A decision approved · WP01 scope/ownership approved · WP03 worker/management contracts frozen at 0.4.0; RG0 inventory pending · Runtime acceptance: NOT_RUN · Implementation: M3 skeleton present; M4 adapters/deploy pending**
+**v0.5.0-draft · 2026-10-04 · Python-first / Reuse-before-build · WP24 candidate A decision approved · WP01 scope/ownership approved · WP03 worker/management contracts frozen at 0.4.0; cross-site N0-NET design approved, route unverified; RG0 inventory pending · Runtime acceptance: NOT_RUN · Implementation: M3 skeleton present; M4 adapters/deploy pending**
 
 โฟลเดอร์นี้คือเอกสาร **ที่มีชีวิต** ของ PRP แก้ไขได้ทุกวันโดยไม่ต้องออก package ใหม่ ส่วน package ที่ส่งมอบแล้วอยู่ใต้ [`releases/`](releases/) และห้ามแก้ โครงสร้างนี้กำหนดโดย [ADR-PRP-012](ADR-PRP.md#ADR-PRP-012) และ [SDD-PRP-REPO](SDD-PRP-REPO.md)
 
@@ -19,7 +19,7 @@ Requirement IDs (PRP-FR/NFR/SEC/P2), acceptance IDs (PRP-AT-nnn), work packages 
 | เอกสาร | หน้าที่ |
 |---|---|
 | [PRD-PRP](PRD-PRP.md) | Product goals, users, journeys, scope และ reuse objective |
-| [SRS-PRP](SRS-PRP.md) | 56 FR + 24 NFR + 12 SEC = 92 P1 requirements; 8 P2 envelopes |
+| [SRS-PRP](SRS-PRP.md) | 56 FR + 25 NFR + 13 SEC = 94 P1 requirements; 8 P2 envelopes |
 | [ROADMAP-PRP](ROADMAP-PRP.md) | 25 work packages, dependencies, gates และ A/B evaluation |
 | [EXECUTION-DAG-PRP](EXECUTION-DAG-PRP.md) | parallel work lanes, dependencies, review gates และเส้นทาง DEV → G3 → PROD |
 | [ARCH-PRP](ARCH-PRP.md) | Python-first composition, framework bindings, resource/state boundaries |
@@ -27,12 +27,13 @@ Requirement IDs (PRP-FR/NFR/SEC/P2), acceptance IDs (PRP-AT-nnn), work packages 
 | [API-PRP](API-PRP.md) | Client subset, worker adapter และ private management contract boundaries |
 | [STACK-EVALUATION-PRP](STACK-EVALUATION-PRP.md) | A/B/C candidates, fit-gap, experiments และ decision receipt |
 | [WP24-EXPERIMENT-PROCEDURE](WP24-EXPERIMENT-PROCEDURE.md) | ขั้นตอนทดลอง EV01–EV08 ต่อ candidate, เกณฑ์ PASS/FAIL/BLOCKED และ run-record template; run evidence อยู่ใน `evidence/wp24/` |
+| [NETWORK-BOUNDARY-PRP](NETWORK-BOUNDARY-PRP.md) | Cross-site trust boundaries, N0-NET route review, evidence and fail-closed qualification |
 | [Coding Standards](standards/Coding-Standards.md) | Python/typing/async/process/dependency/test/TS frontend standards |
 | [SECURITY-DATA-PRP](SECURITY-DATA-PRP.md) | Keys, roles, threats, framework-private routes, retention/erasure |
 | [SEC-007 model license review](SEC-007-MODEL-LICENSE-REVIEW.md) | Owner-approved provenance assessment for the selected Typhoon model; final receipt and activation remain blocked |
 | [OPS-PRP](OPS-PRP.md) | Qualification, drain, restart, recovery, isolated environments และ migration |
 | [ADR-PRP](ADR-PRP.md) | 14 decisions; candidate A selected conditionally under WP24 evidence, WP03 authority and contract decisions approved; implementation/fault qualification remain open |
-| [TEST-PRP](TEST-PRP.md) | 92 acceptance specifications; ทุกกรณี NOT_RUN |
+| [TEST-PRP](TEST-PRP.md) | 94 acceptance specifications; ทุกกรณี NOT_RUN |
 | [TRACEABILITY-PRP](TRACEABILITY-PRP.md) | Requirement → epic/owner/phase/test/diagram |
 | [BASELINE-CHANGES-PRP](BASELINE-CHANGES-PRP.md) | Historical Zuri-owned → independent PRP ownership migration |
 | [CHANGELOG-PRP](CHANGELOG-PRP.md) | Change register (v0.2.0 → v0.3.0 และ unreleased) |
@@ -47,7 +48,7 @@ Requirement IDs (PRP-FR/NFR/SEC/P2), acceptance IDs (PRP-AT-nnn), work packages 
 python tools/docs/validate_docs.py
 ```
 
-ตรวจโครงสร้าง (stdlib เท่านั้น): SRS anchors ↔ registry, 92 acceptance anchors, roadmap dependencies, diagram sources/exports, relative links, OpenAPI local refs ผลอยู่ใน [registry/document-validation.json](registry/document-validation.json) การตรวจนี้เป็น DOCUMENT_STRUCTURE_ONLY ไม่ใช่ runtime PASS
+ตรวจโครงสร้าง (stdlib เท่านั้น): SRS anchors ↔ registry, acceptance anchors ↔ requirement count, roadmap dependencies, diagram sources/exports, relative links, OpenAPI local refs ผลอยู่ใน [registry/document-validation.json](registry/document-validation.json) การตรวจนี้เป็น DOCUMENT_STRUCTURE_ONLY ไม่ใช่ runtime PASS
 
 ```sh
 python tools/docs/build_html_views.py
@@ -66,3 +67,4 @@ snapshot ทุกอย่างในโฟลเดอร์นี้ยก�
 - v0.2.0: แยก PRP ออกจาก Zuri-owned design
 - v0.3.0: Python-first / reuse-first revision; frozen ที่ `releases/PRP-Documentation-v0.3.0/`
 - v0.4.0-draft: monorepo layout (ADR-PRP-012, M1) — เอกสารย้ายมาที่นี่, contracts และ tools ขึ้น repo root
+- v0.5.0-draft: approved conditional cross-site topology, N0-NET gate, and two new route acceptance specifications; implementation and route evidence remain pending.

@@ -2,7 +2,7 @@
 document_id: ARCH-PRP
 title: "Architecture | PRP Boundaries & Runtime Design"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -14,12 +14,12 @@ repository_integration: NOT_PERFORMED
 
 # Architecture | PRP Boundaries & Runtime Design
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.4.0 | 2026-10-04 | Draft for review**
 
-เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [API](API-PRP.md) · [ADR](ADR-PRP.md) · [Data & Security](SECURITY-DATA-PRP.md)
+เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [API](API-PRP.md) · [ADR](ADR-PRP.md) · [Data & Security](SECURITY-DATA-PRP.md) · [Network Boundary](NETWORK-BOUNDARY-PRP.md)
 
 ## 1. Architecture drivers
-Independent install/runtime/release; one authority for physical resource admission; two heterogeneous LAN hosts; clip-based voice; explicit uncertainty; minimal disclosure; no automatic public-cloud inference; adapters replaceable without forcing client schema changes
+Independent install/runtime/release; one authority for physical resource admission; two heterogeneous hosts that may be on one LAN or on separate sites after route review; clip-based voice; explicit uncertainty; minimal disclosure; no automatic public-cloud inference; adapters replaceable without forcing client schema changes
 
 ดู D01 context, D02 containers, D03 components/dependencies และ D04 deployment ภาพเป็น target design ไม่ใช่การค้นพบ service ที่ deploy แล้ว
 
@@ -53,14 +53,14 @@ Initial packaging proposal: one control-plane application with explicit modules 
 | Persistence / artifacts | PostgreSQL proposed + storage port | logical ownership, not duplicate vendor key/model tables |
 | Build quality | uv lock, Ruff, type checker, pytest proposed baseline | pin exact toolchain and compatible Python per service at G0 [SRC-16][SRC-17] |
 
-WP24 run 1 ปิดและอนุมัติการเลือก Candidate A บน capability evidence; run 2 เป็นการวัดเพิ่ม ไม่ได้เปลี่ยนมติและยังเหลือ DEV-09. นี่เป็นการเลือก binding แบบมีเงื่อนไข ไม่ใช่การรับรอง runtime, performance, model/license หรือ deployment profile. Acceptance ทั้ง 92 รายการยัง `NOT_RUN`; อ่าน [WP24 evidence](evidence/wp24/WP24-2026-09-20-run1.json), [run 2 findings](evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md), [Stack Evaluation](STACK-EVALUATION-PRP.md) และ [Coding Standards](standards/Coding-Standards.md)
+WP24 run 1 ปิดและอนุมัติการเลือก Candidate A บน capability evidence; run 2 เป็นการวัดเพิ่ม ไม่ได้เปลี่ยนมติและยังเหลือ DEV-09. นี่เป็นการเลือก binding แบบมีเงื่อนไข ไม่ใช่การรับรอง runtime, performance, model/license หรือ deployment profile. Acceptance ทั้ง 94 รายการยัง `NOT_RUN`; อ่าน [WP24 evidence](evidence/wp24/WP24-2026-09-20-run1.json), [run 2 findings](evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md), [Stack Evaluation](STACK-EVALUATION-PRP.md) และ [Coding Standards](standards/Coding-Standards.md)
 
 Xinference auth ที่อ่านมี encrypted/reveal-able API keys จึงไม่ถือว่าตรง FR-005 (non-recoverable client keys) โดยอัตโนมัติ ใช้เฉพาะ internal service credentials ได้เมื่อจำกัดสิทธิ์ หรือเลือก key authority ที่ผ่านข้อกำหนด; ห้ามลดเกณฑ์เพราะอยาก reuse [SRC-10]
 
 ## 4. Deployment on two computers
 Control plane/database may co-locate on CPU of A with an independent service lifecycle. A and B each run a full compatible chat model instance. Speech is CPU-first qualification candidate or measured resident headroom on B; if neither meets targets, revise placement/model or explicitly change replica baseline. Do not silently turn B into speech-only and still claim two chat replicas.
 
-Each host uses private management/worker ports; user clients only reach gateway. Remote teams use approved VPN/private TLS. LINE adapter has its own public webhook; optional artifact share ingress is separate and deliberately enabled. A public inbound tunnel does not establish route from a cloud app to LAN GPU by itself.
+Each host uses private management/worker ports; user clients only reach gateway. Client ingress, control-to-worker traffic and operator management are separate flows. Remote teams use an approved private access path. A cross-site A/B worker route is allowed only after the `N0-NET` boundary review and renewed WP24 qualification in [Network Boundary](NETWORK-BOUNDARY-PRP.md); do not infer a route from the words VPN/private TLS or from a successful ping. LINE adapter has its own public webhook; optional artifact share ingress is separate and deliberately enabled. A public inbound tunnel does not establish route from a cloud app to LAN GPU by itself.
 
 No public worker/admin/metrics, cross-host tensor parallelism, arbitrary dynamic model loader or Internet-exposed filesystem route in P1. Ray is not a baseline dependency; candidate C requires a separate G0 decision and private control/RPC network qualification. Exact ports are configuration values, not client-visible identities.
 
@@ -103,7 +103,7 @@ Two GPU endpoints improve placement choices, not control-plane/database/network/
 
 **B — Independent services:** vLLM A/B and speech services were the rejected WP24 alternative on capability gaps, not comparative speed. Keep the adapter seam vendor-neutral for exit; selecting B later requires a new reviewed decision. Thin Python adapters reconcile state and policy; do not rebuild an OS process supervisor or model engine.
 
-**Route-binding gate:** ก่อน network dispatch ต้องรู้ actual eligible resource ที่จอง หาก manager endpoint เลือก worker ข้างในโดยบังคับ binding ไม่ได้ ห้ามเอา lease ของ A ไปครอบงานที่อาจไปรัน B ต้องใช้ supported bound endpoint/manager reservation contract ที่ตรวจได้ มิฉะนั้น A-profile นี้ไม่ผ่าน; optional conservative whole-pool reservation ต้องมี ADR และวัดว่าไม่ deadlock/เกิน budget ก่อนใช้
+**Route-binding gate:** ก่อน network dispatch ต้องรู้ actual eligible resource ที่จอง หาก manager endpoint เลือก worker ข้างในโดยบังคับ binding ไม่ได้ ห้ามเอา lease ของ A ไปครอบงานที่อาจไปรัน B ต้องใช้ supported bound endpoint/manager reservation contract ที่ตรวจได้ มิฉะนั้น A-profile นี้ไม่ผ่าน; optional conservative whole-pool reservation ต้องมี ADR และวัดว่าไม่ deadlock/เกิน budget ก่อนใช้ สำหรับเส้นทางข้ามไซต์ต้องผ่าน `N0-NET` ก่อนตั้งค่า/ทดสอบ; route, DNS binding, peer identity หรือ boundary-record change ทำให้ route qualification หมดอายุและต้องปิด dispatch จนกว่าจะทบทวนใหม่
 
 Automatic provider retry/fallback and manager auto-replication are disabled by default until their attempts, resources, epochs and deadlines can be accounted for. Native engine batching is allowed within its assigned resident envelope and invocation budget. Ray logical fractions are scheduling tokens, not VRAM caps [SRC-12].
 

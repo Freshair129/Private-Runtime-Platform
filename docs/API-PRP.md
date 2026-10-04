@@ -2,7 +2,7 @@
 document_id: API-PRP
 title: "API | Public, Worker & Integration Contracts"
 product: PRP - Private Runtime Platform
-version: 0.4.0-draft
+version: 0.5.0-draft
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -14,7 +14,7 @@ repository_integration: NOT_PERFORMED
 
 # API | Public, Worker & Integration Contracts
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.5.0-draft | 2026-10-04 | Draft for review**
 
 เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [Architecture](ARCH-PRP.md) · [Tests](TEST-PRP.md) · [Sources](SOURCES-PRP.md)
 
@@ -120,7 +120,7 @@ For `requests`, `tokens`, and `audio_seconds`, `window_seconds` defines a traili
 
 Retention policy settings use named integer durations. Async payloads expire no later than 24 hours after terminal state and 48 hours after creation; raw/orphan audio is capped at 24 hours; share grants are capped at 24 hours and artifact expiry. Generated audio defaults to seven days, job/usage/audit metadata to 90 days, and redacted operational logs to 30 days. Dedupe records remain available for at least the job horizon plus 24 hours as a fixed invariant outside the configurable policy. Explicit deletion may shorten retention where permitted. The backup-retention proposal remains outside this contract pending production review.
 
-The approved and delegated D6 management decisions are in the frozen `0.4.0` contract. The WP01 scope/ownership receipt and WP03 formal freeze were approved on 2026-09-30. RG0 and WP25/WP04 implementation entry remain pending WP02 hardware/runtime inventory and remaining owner/security evidence. All 92 runtime acceptance cases remain `NOT_RUN`.
+The approved and delegated D6 management decisions are in the frozen `0.4.0` contract. The WP01 scope/ownership receipt and WP03 formal freeze were approved on 2026-09-30. RG0 and WP25/WP04 implementation entry remain pending WP02 hardware/runtime inventory and remaining owner/security evidence. All 94 runtime acceptance cases remain `NOT_RUN`.
 
 ## 9. Integration-specific contract: LINE outside PRP
 External adapter owns raw-body signature verification, event dedupe by account+webhookEventId, durable ingress before HTTP200, content retrieval with its own channel credential, conversation policy/context and final delivery [SRC-04].

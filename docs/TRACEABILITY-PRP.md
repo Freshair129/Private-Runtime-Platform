@@ -2,7 +2,7 @@
 document_id: TRACEABILITY-PRP
 title: "Traceability | Requirements to Evidence"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -14,7 +14,7 @@ repository_integration: NOT_PERFORMED
 
 # Traceability | Requirements to Evidence
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.4.0 | 2026-10-04 | Draft for review**
 
 เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [SRS](SRS-PRP.md) · [Roadmap](ROADMAP-PRP.md)
 
@@ -109,12 +109,14 @@ Derived from the SRS requirement records. Requirement statements remain authorit
 | [PRP-SEC-010](SRS-PRP.md#PRP-SEC-010) | E01 | P1-A | Security | [D23](DIAGRAMS-PRP.md#D23) | [PRP-AT-084](TEST-PRP.md#PRP-AT-084) | NOT_RUN |
 | [PRP-SEC-011](SRS-PRP.md#PRP-SEC-011) | E01 | P1-A | Security | [D20](DIAGRAMS-PRP.md#D20) | [PRP-AT-085](TEST-PRP.md#PRP-AT-085) | NOT_RUN |
 | [PRP-SEC-012](SRS-PRP.md#PRP-SEC-012) | E01 | P1-A | Security | [D03](DIAGRAMS-PRP.md#D03) | [PRP-AT-086](TEST-PRP.md#PRP-AT-086) | NOT_RUN |
+| [PRP-SEC-013](SRS-PRP.md#PRP-SEC-013) | E01 | G0 | Security | [D04](DIAGRAMS-PRP.md#D04) | [PRP-AT-094](TEST-PRP.md#PRP-AT-094) | NOT_RUN |
 | [PRP-NFR-019](SRS-PRP.md#PRP-NFR-019) | E01 | P1-A | Core | [D32](DIAGRAMS-PRP.md#D32) | [PRP-AT-087](TEST-PRP.md#PRP-AT-087) | NOT_RUN |
 | [PRP-NFR-020](SRS-PRP.md#PRP-NFR-020) | E02 | G0 | Architecture + QA | [D31](DIAGRAMS-PRP.md#D31) | [PRP-AT-088](TEST-PRP.md#PRP-AT-088) | NOT_RUN |
 | [PRP-NFR-021](SRS-PRP.md#PRP-NFR-021) | E02 | P1-A | Core + Runtime | [D32](DIAGRAMS-PRP.md#D32) | [PRP-AT-089](TEST-PRP.md#PRP-AT-089) | NOT_RUN |
 | [PRP-NFR-022](SRS-PRP.md#PRP-NFR-022) | E06 | P1-A | Build + Operations | [D23](DIAGRAMS-PRP.md#D23) | [PRP-AT-090](TEST-PRP.md#PRP-AT-090) | NOT_RUN |
 | [PRP-NFR-023](SRS-PRP.md#PRP-NFR-023) | E03 | P1-A | Security + Admission | [D33](DIAGRAMS-PRP.md#D33) | [PRP-AT-091](TEST-PRP.md#PRP-AT-091) | NOT_RUN |
 | [PRP-NFR-024](SRS-PRP.md#PRP-NFR-024) | E08 | P1-C | API + Operations | [D34](DIAGRAMS-PRP.md#D34) | [PRP-AT-092](TEST-PRP.md#PRP-AT-092) | NOT_RUN |
+| [PRP-NFR-025](SRS-PRP.md#PRP-NFR-025) | E02 | G0 | Operations + Security | [D04](DIAGRAMS-PRP.md#D04) | [PRP-AT-093](TEST-PRP.md#PRP-AT-093) | NOT_RUN |
 
 ## 2. P2 trace
 P2 IDs link to E08 and P2-A/P2-B. They are envelopes; detailed acceptance tests are NOT_SPECIFIED until the P2 baseline is refined. They do not count as Phase1 test coverage.

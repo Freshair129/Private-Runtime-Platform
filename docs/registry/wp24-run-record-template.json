@@ -1,6 +1,6 @@
 {
   "kind": "WP24_RUN_RECORD_TEMPLATE_NOT_RESULTS",
-  "version": "0.4.0-draft",
+  "version": "0.5.0-draft",
   "template_note": "Copy to docs/evidence/wp24/<record_id>.json before the first command runs. Every null is filled from a measurement, a command log or an owner decision, never from documentation alone; source observations go in source_observations, not in measurements. Status vocabulary: NOT_RUN | PASS | FAIL | BLOCKED. A PASS without at least one artifact is invalid. Gate requirement IDs are copied from registry/reuse-fit-gap-template.json experiments (STACK-EVALUATION-PRP section 6) and must not be edited here.",
   "procedure": "docs/WP24-EXPERIMENT-PROCEDURE.md",
   "record_id": null,
@@ -77,7 +77,21 @@
         "container_runtime": null
       }
     ],
-    "network_boundary": null,
+    "network_boundary": {
+      "profile": null,
+      "n0_net_status": null,
+      "restricted_record_ref": null,
+      "restricted_record_sha256": null,
+      "site_ids": [],
+      "reviewer_roles": [],
+      "allowed_flow_checks": "NOT_RUN",
+      "denied_flow_checks": "NOT_RUN",
+      "peer_and_service_identity_checks": "NOT_RUN",
+      "public_exposure_checks": "NOT_RUN",
+      "egress_capture": "NOT_RUN",
+      "path_loss_or_revocation_checks": "NOT_RUN",
+      "notes": null
+    },
     "data_retention": null,
     "test_corpus": null,
     "weights_cache_kept_between_candidates": null

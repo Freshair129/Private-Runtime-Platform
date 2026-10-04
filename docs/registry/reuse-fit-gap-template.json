@@ -1,6 +1,6 @@
 {
   "kind": "TEMPLATE_NOT_RESULTS",
-  "version": "0.4.0-draft",
+  "version": "0.5.0-draft",
   "canonical_requirements": "docs/SRS-PRP.md",
   "prepared_for": "WP24",
   "prepared_on": "2026-09-20",
@@ -37,7 +37,9 @@
         "PRP-FR-012",
         "PRP-FR-013",
         "PRP-FR-014",
-        "PRP-FR-015"
+        "PRP-FR-015",
+        "PRP-NFR-025",
+        "PRP-SEC-013"
       ]
     },
     "EV03": {
@@ -2609,6 +2611,56 @@
       "stack_eval_reuse_rows": [],
       "evaluation_experiments": [
         "EV08"
+      ],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": null,
+      "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-NFR-025",
+      "title": "Cross-site route qualification",
+      "srs_section": "6.1 Python-first และ framework reuse constraints",
+      "phase": "G0",
+      "epic": "E02",
+      "owner": "Operations + Security",
+      "acceptance_test": "PRP-AT-093",
+      "proof": "cross-site boundary + route qualification",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV02"
+      ],
+      "source_review": [],
+      "upstream_source": null,
+      "pinned_version": null,
+      "observed_capability": null,
+      "evidence": null,
+      "runtime_test_status": "NOT_RUN",
+      "limitation": null,
+      "disposition": "UNASSESSED",
+      "custom_gap": null,
+      "maintenance_exit_risk": null
+    },
+    {
+      "requirement_id": "PRP-SEC-013",
+      "title": "Cross-site route boundary",
+      "srs_section": "7. Security requirements",
+      "phase": "G0",
+      "epic": "E01",
+      "owner": "Security",
+      "acceptance_test": "PRP-AT-094",
+      "proof": "network boundary security review",
+      "candidate": "A_OR_B",
+      "stack_eval_reuse_rows": [],
+      "evaluation_experiments": [
+        "EV02"
       ],
       "source_review": [],
       "upstream_source": null,

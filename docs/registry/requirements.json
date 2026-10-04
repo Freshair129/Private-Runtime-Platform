@@ -1209,6 +1209,20 @@
       "status": "PROPOSED"
     },
     {
+      "id": "PRP-SEC-013",
+      "title": "Cross-site route boundary",
+      "statement": "เส้นทางข้ามไซต์ต้อง default-deny และอนุญาตเฉพาะ flow ที่มี source/destination, direction, service, protocol/port, purpose, enforcement owner และ reviewer ระบุไว้; client ingress, control-to-worker และ operator management เป็นคนละ flow; ห้าม public worker/admin/metrics/filesystem/SMB/SSH exposure โดยปริยาย; การเปลี่ยน route, DNS binding หรือ peer identity เพิกถอน route qualification",
+      "acceptance": "`N0-NET` record ผ่านการทบทวนจากเจ้าของเครือข่ายทั้งสองฝั่ง, Operations, Security และ Architecture; positive/negative route tests, peer/TLS identity, public exposure, egress และ failure/revocation checks ผ่านก่อนประกาศ cross-site READY",
+      "phase": "G0",
+      "epic": "E01",
+      "owner": "Security",
+      "diagram": "D04",
+      "test": "PRP-AT-094",
+      "proof": "network boundary security review",
+      "priority": "MUST",
+      "status": "PROPOSED"
+    },
+    {
       "id": "PRP-NFR-019",
       "title": "Python-first control plane",
       "statement": "PRP-owned control/API/policy/adapters ต้องใช้ Python เป็น baseline และไม่บังคับ Rust/Tauri หรือ desktop shell เพื่อ build/run core; native code ภายใน runtime dependency ใช้ได้ ข้อยกเว้น first-party native module ต้องมี ADR พร้อม profiling หรือข้อจำกัดที่พิสูจน์แล้ว",
@@ -1289,6 +1303,20 @@
       "diagram": "D34",
       "test": "PRP-AT-092",
       "proof": "portability + migration rehearsal",
+      "priority": "MUST",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "PRP-NFR-025",
+      "title": "Cross-site route qualification",
+      "statement": "เมื่อ compute hosts อยู่คนละสถานที่หรือคนละเครือข่าย ต้องมี boundary record ระบุ site/host, addressing/DNS/NAT, route, direction, service/protocol/port, enforcement owner, peer identity, encryption และ egress พร้อมผลทบทวน `N0-NET` ก่อนปรับ route หรือ dispatch งานข้ามไซต์; route loss/change/revocation ต้องทำให้ qualification ใช้ไม่ได้และปิด dispatch จนกว่าจะทบทวน/ทดสอบใหม่ ห้าม public fallback หรือ hidden reroute",
+      "acceptance": "Network owners ทั้งสองไซต์, Operations, Security และ Architecture อนุมัติ record เดียวกัน; ทดสอบ flow ที่อนุญาตและปฏิเสธ source/destination/service/identity ที่ไม่อนุญาต; ยืนยัน route change/loss/revocation ทำให้ไม่มี new dispatch และไม่มี unauthorized egress",
+      "phase": "G0",
+      "epic": "E02",
+      "owner": "Operations + Security",
+      "diagram": "D04",
+      "test": "PRP-AT-093",
+      "proof": "cross-site boundary + route qualification",
       "priority": "MUST",
       "status": "PROPOSED"
     }

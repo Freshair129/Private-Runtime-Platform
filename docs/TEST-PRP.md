@@ -2,7 +2,7 @@
 document_id: TEST-PRP
 title: "Verification | Acceptance Cases & Evidence Plan"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -14,9 +14,9 @@ repository_integration: NOT_PERFORMED
 
 # Verification | Acceptance Cases & Evidence Plan
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.4.0 | 2026-10-04 | Draft for review**
 
-เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [Traceability](TRACEABILITY-PRP.md) · [Roadmap](ROADMAP-PRP.md)
+เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [Traceability](TRACEABILITY-PRP.md) · [Roadmap](ROADMAP-PRP.md) · [Network Boundary](NETWORK-BOUNDARY-PRP.md)
 
 ## 1. Verification levels and status
 This is an executable-test specification and trace register, not a test-run report. Every case is NOT_RUN. A file existing or a diagram rendering does not mean functional/GPU/security tests passed. PASS requires evidence_id, exact runtime/config and observed assertions. SKIPPED/BLOCKED is not PASS.
@@ -858,6 +858,24 @@ Each case inherits the exact setup/limits from its linked SRS requirement and wo
 **Stimulus / expected assertions:** fake adapter replacement ผ่าน client conformance; replay approved synthetic workloads ผ่าน candidate replacement เมื่อมี; export excludes plaintext keys; รักษางาน uncertain/erasure และบันทึกขั้น key rotation แทนการอ้าง portable secret ที่อ่านคืนไม่ได้
 
 **Status:** NOT_RUN | **Evidence:** none | **Owner:** API + Operations
+
+<a id="PRP-AT-093"></a>
+
+### PRP-AT-093 — Cross-site route qualification
+**Requirement:** [PRP-NFR-025](SRS-PRP.md#PRP-NFR-025) | **Phase:** G0 | **Proof:** cross-site boundary + route qualification
+
+**Stimulus / expected assertions:** use only a current N0-NET-approved record; expected source/peer/service reaches the allowlisted worker flow; unlisted source/destination/service is denied; route/DNS/peer change, revocation or path loss invalidates qualification and blocks new dispatch; no hidden retry or public fallback; capture happy/failure egress and measured loss/latency.
+
+**Status:** NOT_RUN | **Evidence:** none | **Owner:** Network + Operations + Security
+
+<a id="PRP-AT-094"></a>
+
+### PRP-AT-094 — Cross-site security boundary
+**Requirement:** [PRP-SEC-013](SRS-PRP.md#PRP-SEC-013) | **Phase:** G0 | **Proof:** network boundary security review
+
+**Stimulus / expected assertions:** independently review the boundary record and enforcement points; reject wrong peer/service TLS identity and unauthorized initiation direction; confirm public scans cannot reach worker/admin/metrics/filesystem/SMB/SSH; verify deny-by-default ACL, egress, route revocation and sanitized evidence.
+
+**Status:** NOT_RUN | **Evidence:** none | **Owner:** Security + Network Operations
 
 
 ## 4. Composite release scenarios

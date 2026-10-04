@@ -13,7 +13,7 @@ Design views" fillcolor="#FFF4DB" shape=box]
 	road [label="Roadmap WP01-WP25
 G0/G1/G2/G3 + LINE/P2 gates" fillcolor="#E9F3F8" shape=box]
 	test [label="Acceptance specifications
-AT001-AT092 (NOT_RUN)" fillcolor="#ECE8F6" shape=box]
+AT001-AT094 (NOT_RUN)" fillcolor="#ECE8F6" shape=box]
 	code [label="Future implementation
 Exact commits / images" fillcolor="#E5F3ED" shape=box]
 	ev [label="Real evidence / release receipt" fillcolor="#E5F3ED" shape=box]

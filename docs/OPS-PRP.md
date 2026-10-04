@@ -2,7 +2,7 @@
 document_id: OPS-PRP
 title: "Operations | Deployment, Recovery & Release Runbooks"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -14,12 +14,12 @@ repository_integration: NOT_PERFORMED
 
 # Operations | Deployment, Recovery & Release Runbooks
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.4.0 | 2026-10-04 | Draft for review**
 
-เอกสารที่เกี่ยวข้อง: [Roadmap](ROADMAP-PRP.md) · [SRS](SRS-PRP.md) · [Tests](TEST-PRP.md)
+เอกสารที่เกี่ยวข้อง: [Roadmap](ROADMAP-PRP.md) · [SRS](SRS-PRP.md) · [Tests](TEST-PRP.md) · [Network Boundary](NETWORK-BOUNDARY-PRP.md)
 
 ## 1. Operational prerequisites
-Confirm exact host/GPU/CPU/RAM/OS/driver, private network reachability, available disk, time synchronization and recovery access. Record runtime image/model/profile/voice revisions and license receipts. No production command or credential is provided in this draft; version-pinned manifests are implementation deliverables.
+Confirm exact host/GPU/CPU/RAM/OS/driver, private network reachability, available disk, time synchronization and recovery access. If hosts are cross-site, require the reviewed `N0-NET` record and a separate authorization before configuration or route checks. Record runtime image/model/profile/voice revisions and license receipts. No production command or credential is provided in this draft; version-pinned manifests are implementation deliverables.
 
 P1-A deploy control application + PostgreSQL + private worker adapters and two independent vLLM nodes. Console and reference client use public contracts only. Speech worker joins only after model/rights/placement qualification. Do not install full Lalin Studio or expose its broad route set as PRP voice API.
 
@@ -94,3 +94,11 @@ Inventory every retry/restart/fallback mechanism (client SDK, gateway, manager, 
 Map a delegated job to physical runtime epoch before compute, and check mapping again before settlement. Unexplained relocation disables that profile. Keep backup/restore ownership for both PRP state and delegated state; deployment-wide recovery does not assume their snapshots are transactionally simultaneous.
 
 Export declarative policy/profile bindings through supported APIs. Do not export raw keys or copy a vendor database blindly. When non-recoverable key verifiers cannot migrate, schedule authorized rotation and disclose client credential changes; public request schemas remain unchanged.
+
+## 16. RB13 Cross-site route commissioning and revocation
+
+For `CROSS_SITE_PRIVATE_ROUTED`, first reconcile the current site/host identities and obtain the boundary record from the owner-approved restricted store. Check that its reference and SHA-256 match the copy reviewed by both site network owners, Operations, Security and Architecture under `N0-NET`. Do not configure or probe a route while any boundary-critical field or reviewer disposition is unknown.
+
+After `N0-NET` passes, obtain a separate recorded authorization for the exact configuration change. Apply only the reviewed flow matrix. Qualify allowed and denied paths, peer and service identity, TLS, egress, public exposure and disconnect/revocation behavior; record sanitized evidence and measured latency/loss. Do not publish raw credentials or restricted network values in logs or repo evidence.
+
+On route, DNS binding, peer identity or boundary-record change, revoke the qualification and block new dispatch until review and checks pass again. On path loss, fail closed; do not enable public fallback, hidden retry, broad port-forward, or unrelated SSH/SMB access as a recovery shortcut.

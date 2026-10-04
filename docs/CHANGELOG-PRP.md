@@ -2,7 +2,7 @@
 document_id: CHANGELOG-PRP
 title: "Change Log | v0.2.0 to v0.3.0"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -12,11 +12,17 @@ runtime_verification: NOT_RUN
 repository_integration: NOT_PERFORMED
 ---
 
-# Change Log | v0.2.0 to v0.3.0
+# Change Log | v0.2.0 to v0.3.0 and unreleased v0.5.0-draft
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.4.0 | 2026-10-04 | Draft for review**
 
-## Unreleased — v0.4.0-draft
+## Unreleased — v0.5.0-draft
+
+### Cross-site network boundary (2026-10-04, C-3 / HIGH)
+- Owner approved a conditional vendor-neutral private routed topology and canonical [Network Boundary design](NETWORK-BOUNDARY-PRP.md); N0-NET review is required before route configuration or probing.
+- SRS is v0.4.0 with NFR-025 and SEC-013 plus AT-093/094; all 94 acceptance cases remain `NOT_RUN`.
+- Updated architecture, security, WP24, operations, roadmap, execution DAG, D04 and derived requirement/traceability views. The documentation validator now derives case cardinality from the registry while enforcing approved requirement-family counts.
+- No network route, VPN, firewall, endpoint, application/runtime code or deployment changed; WP02 remains PARTIAL and RG0 remains gated.
 
 ### WP02 Host A inventory summary (2026-10-04, C-2 / MEDIUM)
 - Recorded the owner-provided local inventory for `DESKTOP-8UR61U8`; its hostname matches the previously expected Host A worker name. The underlying files remain on Host A and were not available for independent JSON/hash verification in this checkout.

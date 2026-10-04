@@ -2,7 +2,7 @@
 document_id: SECURITY-DATA-PRP
 title: "Security & Data | Trust, Privacy and Failure Boundaries"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0
 status: draft-for-review
 created_at: 2026-09-20
 language: th-TH
@@ -14,12 +14,12 @@ repository_integration: NOT_PERFORMED
 
 # Security & Data | Trust, Privacy and Failure Boundaries
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-20 | Draft for review**
+**PRP — Private Runtime Platform | v0.4.0 | 2026-10-04 | Draft for review**
 
-เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [API](API-PRP.md) · [Ops](OPS-PRP.md) · [Tests](TEST-PRP.md)
+เอกสารที่เกี่ยวข้อง: [SRS](SRS-PRP.md) · [API](API-PRP.md) · [Ops](OPS-PRP.md) · [Tests](TEST-PRP.md) · [Network Boundary](NETWORK-BOUNDARY-PRP.md)
 
 ## 1. Security posture
-Private means controlled identity/network/data boundary, not automatic confidentiality merely from self-hosting. P1 prohibits third-party inference fallback. LINE is outside the private compute boundary and can receive content by caller policy. Host/root operators remain trusted; no hardware attestation or hostile co-tenant isolation claim.
+Private means controlled identity/network/data boundary, not automatic confidentiality merely from self-hosting. A private routed link does not merge trust boundaries or replace application identity/TLS. P1 prohibits third-party inference fallback. LINE is outside the private compute boundary and can receive content by caller policy. Host/root operators remain trusted; no hardware attestation or hostile co-tenant isolation claim.
 
 WP03 froze the role/action and secret-custody contract boundaries on 2026-09-30. This decision does not change this document's overall `draft-for-review` status or establish a deployed secret-store topology, hardware qualification, or model/voice license receipt; those remain separate gates.
 
@@ -30,7 +30,8 @@ Threat model assets: client keys/upstream credentials, prompts/transcripts/audio
 |---|---|---|---|
 | Client -> API | user/service key or console session | bounded text/audio/correlation | spoofed org, quota abuse; verified auth/object grants |
 | Console -> management | operator/org admin session | versioned config | CSRF/escalation; least privilege + audit |
-| PRP -> worker | service identity/private TLS | scoped payload + profile/attempt | rogue endpoint/SSRF; origin allowlist + epoch qualification |
+| PRP -> worker within a site | service identity/private TLS | scoped payload + profile/attempt | rogue endpoint/SSRF; origin allowlist + epoch qualification |
+| Site A -> Site B worker | peer identity + service identity/TLS; route-specific ACL | bound worker request/reply only | over-broad route, DNS/NAT drift, peer spoofing; default deny + `N0-NET` review + separate route qualification |
 | Worker -> artifact | scoped grant | authorized input/output | storage traversal; UUID/sandbox/short TTL |
 | Artifact -> third party | explicitly minted grant | one bounded artifact | link disclosure; revoke/TTL/no-PII policy |
 | PRP -> diagnostics | telemetry identity | redacted operational metadata | content leakage; default omission and bounded opt-in |
@@ -50,8 +51,9 @@ Threat model assets: client keys/upstream credentials, prompts/transcripts/audio
 | TH10 | Secret/content logging | debug dumps body/env | redaction/default no payload | AT047/082 |
 | TH11 | Supply chain | untrusted model code auto executes | pinned reviewed assets/manifest | AT084 |
 | TH12 | Voice rights | arbitrary uploaded clone reference | preset allowlist/rights receipt | AT033/081 |
+| TH16 | Route overreach | cross-site route or DNS binding permits an unreviewed host/service | approved flow matrix; default deny; authenticated peer and application identity; invalidate qualification on route change | AT093/094 |
 
-Labels identify analysis categories, not a certification. Exact tests use full PRP-AT IDs in TEST-PRP. Every threat maps to at least one normative requirement; changes update trace and diagram D20.
+Labels identify analysis categories, not a certification. Exact tests use full PRP-AT IDs in TEST-PRP. Every threat maps to at least one normative requirement; changes update trace and the relevant diagrams, including D04 for the cross-site boundary.
 
 ## 4. Role/action matrix
 | Action | Member | App service | Org admin | Platform operator |
@@ -109,4 +111,4 @@ One physical-admission contract across framework and custom voice workers; vendo
 
 Control API does not ship model weights and avoids ML import side effects. Per-runtime lock/image/dependency scans and staged model assets apply to the complete dependency tree; model remote code/plugin execution denied unless separately reviewed. Provisioning downloads are distinguished from offline inference. Pinning alone is not a security audit.
 
-Additional threat evidence: TH13 (recoverable client-key mismatch) -> AT005/091; TH14 (hidden vendor reroute/retry) -> AT018/020/091; TH15 (API process multiplies resident models) -> AT089/090. Existing TH01..12 remain in force.
+Additional threat evidence: TH13 (recoverable client-key mismatch) -> AT005/091; TH14 (hidden vendor reroute/retry) -> AT018/020/091; TH15 (API process multiplies resident models) -> AT089/090. Existing TH01..12 and TH16 remain in force.

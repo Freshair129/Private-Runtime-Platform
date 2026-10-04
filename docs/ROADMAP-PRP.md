@@ -2,7 +2,7 @@
 document_id: ROADMAP-PRP
 title: "Roadmap | PRP Delivery & Release Gates"
 product: PRP - Private Runtime Platform
-version: 0.4.0-draft
+version: 0.5.0-draft
 status: approved
 created_at: 2026-09-20
 language: th-TH
@@ -15,9 +15,9 @@ repository_integration: NOT_PERFORMED
 
 # Roadmap | PRP Delivery & Release Gates
 
-**PRP — Private Runtime Platform | v0.4.0-draft | 2026-09-29 | APPROVED by the repository owner**
+**PRP — Private Runtime Platform | v0.5.0-draft | 2026-10-04 | APPROVED by the repository owner**
 
-เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [SRS](SRS-PRP.md) · [Tests](TEST-PRP.md) · [Operations](OPS-PRP.md)
+เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [SRS](SRS-PRP.md) · [Tests](TEST-PRP.md) · [Operations](OPS-PRP.md) · [Network Boundary](NETWORK-BOUNDARY-PRP.md)
 
 ## 1. Planning model
 Roadmap นี้เป็น dependency/gate-based plan ไม่ใช่คำมั่นกำหนดวันส่งมอบ เพราะยังไม่ทราบจำนวนผู้พัฒนาและ configuration จริง ไม่มี estimate จากจำนวน GB ของ GPU และไม่มีวันเริ่มผลิตที่สมมติขึ้น ผู้รับผิดชอบเป็น role ไม่ใช่การมอบหมายคนที่ยังไม่ยืนยัน เส้นทางส่งมอบครอบคลุมการ deploy และตรวจบน development server ก่อนผ่าน core qualification และ production release
@@ -27,7 +27,7 @@ Roadmap นี้เป็น dependency/gate-based plan ไม่ใช่ค�
 ## 2. Milestones และ exit gates
 | Milestone | Outcome | Entry | Exit evidence |
 |---|---|---|---|
-| G0 Design & qualification plan | independent platform baseline | request/old SRS reviewed | approved ownership, A/B fit-gap evidence (WP24), selected authority binding, API/state, threat model, inventory, candidate licenses |
+| G0 Design & qualification plan | independent platform baseline | request/old SRS reviewed | approved ownership, A/B fit-gap evidence (WP24), selected authority binding, API/state, threat model, inventory, candidate licenses; if cross-site is selected, approved N0-NET record and cross-site route qualification |
 | P1-A / G1 Chat foundation | keys + Router + two vLLM replicas + console | G0 frozen | clean install, compatible JSON/SSE, isolated principals, atomic admission/fault basics |
 | P1-B / G2 Voice foundation | ASR/TTS + native jobs + artifact lifecycle | G1 core seams; speech spike may parallel | quality corpora, preset rights, headless worker, safe resident placement, client fallback |
 | DEV Development-server validation | reproducible P1 deployment verified before production qualification | G1/G2 implementation evidence; pinned deployment artifacts from WP04/WP25; smoke and negative checks from WP09; bounded deploy/revert instruction in the DEV gate packet | clean deploy receipt with exact commit/image/profile; health/readiness and contract/integration/security smoke evidence; known blockers recorded; approval to proceed |
@@ -55,12 +55,14 @@ DEV ต้องผ่านก่อน G3; G3 เป็นหลักฐา�
 
 **Trace:** E02/E04 | Diagram D04,D18 | implementation: NOT_STARTED; discovery evidence: PARTIAL ([Host B snapshot ปัจจุบัน](evidence/wp02/WP02-2026-10-03-host-b-current.md); [Host A owner-provided inventory](evidence/wp02/WP02-2026-10-04-host-a-reported-inventory.md)); owner confirms both hosts are at separate physical locations and on separate networks. Host A raw receipts and some inventory fields remain unavailable in this checkout; route/tunnel, approved network boundary, and endpoint reachability remain unverified. The described arrangement does not meet the same-LAN precondition in the WP24 experiment procedure. Model/license candidates are recorded in [SEC-007 assessment](SEC-007-MODEL-LICENSE-REVIEW.md); formal SEC-007 receipt is a separate gate before activation.
 
+For a selected cross-site target, WP02 also requires current site/host/network bindings and an `N0-NET` boundary review before any route configuration or route probe. Route qualification is a separate WP24 evidence item; it is not implied by the existing Candidate A decision.
+
 ### WP24 — Runtime reuse fit-gap and A/B spikes
 **Stage:** G0 | **Owner:** Architecture + Runtime + Security + QA | **Depends on:** WP01,WP02
 
-**ส่งมอบ:** A-Xinference vs B-independent services evidence; conditional C-Ray; full requirement mapping; key-recovery gap; target-binding/retry/cancel tests; decision recommendation without fabricated benchmarks
+**ส่งมอบ:** A-Xinference vs B-independent services evidence; conditional C-Ray; full requirement mapping; key-recovery gap; target-binding/retry/cancel tests; cross-site route qualification when selected and only after N0-NET; decision recommendation without fabricated benchmarks
 
-**Trace:** NFR-020/023/024; FR-005/017/018/042 | Diagram D31,D33,D34 | implementation: NOT_STARTED; decision receipt: APPROVED 2026-09-24 (Candidate A, WP24 gate to WP03 satisfied); run 2 is measurement-only and DEV-09 remains a comparison limitation
+**Trace:** NFR-020/023/024/025; SEC-013; FR-005/017/018/042 | Diagram D04,D31,D33,D34 | implementation: NOT_STARTED; decision receipt: APPROVED 2026-09-24 (Candidate A, WP24 gate to WP03 satisfied); existing decision is unchanged. Cross-site qualification: BLOCKED pending current WP02 route inventory and N0-NET. Run 2 is measurement-only and DEV-09 remains a comparison limitation
 
 ### WP03 — Contracts & authority decision
 **Stage:** G0 | **Owner:** API + Security | **Depends on:** WP01,WP24
@@ -224,7 +226,7 @@ Critical path: ownership/contracts -> access/registry -> admission/fencing -> ch
 ห้ามทำขนานโดยไม่มี coordinator: เปลี่ยน SRS identity/state contracts, migrate shared schema, เปลี่ยน GPU resident budget และเปิด runtime ports; designated integrator ต้อง reconcile baseline แล้ว regenerate trace views เพียงรอบที่ควบคุมได้
 
 ## 5. Gate checklists
-G0: ยืนยัน independent ownership, no Zuri dependency, one admission authority, P1 voice semantics, supported interfaces, error/state model, threat/retention assumptions, host inventory, stack choices
+G0: ยืนยัน independent ownership, no Zuri dependency, one admission authority, P1 voice semantics, supported interfaces, error/state model, threat/retention assumptions, host inventory, stack choices; when cross-site is selected, close N0-NET and cross-site WP24 qualification before implementation entry
 G1: real two-node qualification, wrong/missing auth refusal, physical ID dedupe, resource race, bounded queue, streaming interruption, no cloud egress, operator can revoke key
 G2: approved ASR/TTS/preset manifests, corpus gates, upload/decode limits, async durable state, delete/late-result fencing, CPU/GPU resident placement, independent client voice cycle
 DEV: clean deploy from pinned artifacts; health/readiness and contract/integration/security smoke evidence; exact commit/image/profile recorded; known blockers reviewed before G3
@@ -272,7 +274,7 @@ Integrator เริ่ม WP01/WP02 -> WP24 -> WP03 ก่อน แล้ว W
 ก่อน G3 ต้องมี development-server clean-deploy receipt, pinned commit/image/profile, health/readiness และ smoke evidence พร้อม known-limitations sheet; ก่อน PROD ต้องมี production manifests, model/voice rights receipts, executable contract tests, benchmark fixtures/results, admin/bootstrap/key/runbook, backup/restore receipts, API schema export, canary/rollback evidence และ owner/operator signoff
 
 ## 10. Reuse-first gate refinement — v0.3.0
-G0 ไม่ผ่านเพียงเพราะมี diagram: ต้องมี WP24 fit-gap ครบ 92 P1 requirements, source/experiment evidence แยกกัน, actual target/epoch binding, key-verifier conformance, cancellation และ framework retry policy ก่อน WP03 เลือก stack
+G0 ไม่ผ่านเพียงเพราะมี diagram: ต้องมี WP24 fit-gap ครบ 94 P1 requirements, source/experiment evidence แยกกัน, actual target/epoch binding, key-verifier conformance, cancellation และ framework retry policy ก่อน WP03 เลือก stack; cross-site target ต้องผ่าน N0-NET และ route qualification เพิ่มด้วย
 
 WP25 สร้าง engineering baseline หลัง stack contract ตกลงแล้วและก่อน WP04 production code; isolated throwaway spike ใน WP24 อนุญาตก่อนหน้าได้ ไม่อ้างเป็น production implementation
 

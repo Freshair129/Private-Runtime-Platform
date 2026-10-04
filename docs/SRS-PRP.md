@@ -2,7 +2,7 @@
 document_id: SRS-PRP
 title: "SRS | PRP Software Requirements"
 product: PRP - Private Runtime Platform
-version: 0.3.0
+version: 0.4.0
 status: approved
 created_at: 2026-09-20
 language: th-TH
@@ -14,19 +14,19 @@ repository_integration: NOT_PERFORMED
 
 # SRS | PRP Software Requirements
 
-**PRP — Private Runtime Platform | v0.3.0 | 2026-09-30 | Approved baseline**
+**PRP — Private Runtime Platform | v0.4.0 | 2026-10-04 | Approved baseline**
 
-เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [API](API-PRP.md) · [Tests](TEST-PRP.md) · [Roadmap](ROADMAP-PRP.md) · [Sources](SOURCES-PRP.md)
+เอกสารที่เกี่ยวข้อง: [PRD](PRD-PRP.md) · [API](API-PRP.md) · [Tests](TEST-PRP.md) · [Roadmap](ROADMAP-PRP.md) · [Network Boundary](NETWORK-BOUNDARY-PRP.md) · [Sources](SOURCES-PRP.md)
 
 ## 1. Scope, authority และ normative language
-SRS นี้เป็น requirement authority ของ PRP v0.3.0 approved baseline และแยก core platform ออกจาก integration adapters คำว่า ต้อง/ห้าม คือ normative MUST ของ baseline; คำว่า candidate/target/default ต้องยืนยันก่อน formal qualification ไม่ใช่ผล benchmark
+SRS นี้เป็น requirement authority ของ PRP v0.4.0 approved baseline และแยก core platform ออกจาก integration adapters คำว่า ต้อง/ห้าม คือ normative MUST ของ baseline; คำว่า candidate/target/default ต้องยืนยันก่อน formal qualification ไม่ใช่ผล benchmark
 
 เอกสาร SRS-Self-Hosted-Inference-Pool-Chat-Voice-v0.1.0 เป็น historical input [SRC-B01] ส่วนที่เคยให้ Zuri Identity/Integration/Agent ถือสิทธิ์หรือ GPU lease ถูกแทนด้วย PRP-owned contracts ในร่างนี้ การเปลี่ยนนี้ไม่แก้ย้อนหลังหรือถอนการอนุมัติของเอกสาร Zuri เก่า และไม่จองเลขใน Zuri registry
 
 รหัส PRP-FR/NFR/SEC/P2 เป็น stable IDs ของชุด PRP เท่านั้น Markdown นี้เป็น canonical requirement source; registry JSON, traceability, Word และภาพเป็น derived views ไม่แก้ข้อความข้อกำหนดแยกกัน
 
 ## 2. Operating context
-มี compute hosts A (12 GB nominal VRAM) และ B (16 GB nominal VRAM) ใน LAN เดียวกัน เป็น independent full-model replicas ไม่รวม VRAM Control services ใช้ CPU/RAM/disk ของเครื่องที่จัดสรร ไม่จำเป็นต้องซื้อเครื่องที่สาม แต่การอยู่ A หมายถึง A เป็น control-plane SPOF
+มี compute hosts A (12 GB nominal VRAM) และ B (16 GB nominal VRAM) เป็น independent full-model replicas ไม่รวม VRAM; อยู่ LAN เดียวกันได้ หรืออยู่คนละสถานที่/เครือข่ายได้เมื่อผ่าน `N0-NET` ตาม [Network Boundary](NETWORK-BOUNDARY-PRP.md) และ requalification แล้ว Control services ใช้ CPU/RAM/disk ของเครื่องที่จัดสรร ไม่จำเป็นต้องซื้อเครื่องที่สาม แต่การอยู่ A หมายถึง A เป็น control-plane SPOF
 
 P1 deployment: หนึ่ง trusted PRP organization หลาย teams/applications; identity schema ต้องรองรับ isolation fixture ข้าม organization แต่ไม่เปิด untrusted customer sharing บน engine เดียว Production รุ่น GPU/CPU/RAM/OS/network/model ยังไม่ confirmed
 
@@ -704,7 +704,7 @@ CI/runbooks/core acceptance ต้องรันโดยไม่มี Zuri; 
 <a id="PRP-NFR-017"></a>
 
 ### PRP-NFR-017 — No hidden content egress
-P1 default deny third-party inference/telemetry payload egress; model downloads อยู่ install stage ที่ audit; network capture happy+failure ไม่มี content ออกนอก approved boundary
+P1 default deny third-party inference/telemetry payload egress; model downloads อยู่ install stage ที่ audit; network capture happy+failure ไม่มี content ออกนอก approved boundary รวมถึงเส้นทางข้ามไซต์ที่ผ่าน `N0-NET` แล้ว
 
 **Proof:** egress capture / P1-C / PRP-AT-073
 
@@ -774,6 +774,15 @@ public PRP contract ต้องไม่เปิดเผย vendor model IDs,
 
 **Proof:** portability + migration rehearsal / P1-C / PRP-AT-092
 
+<a id="PRP-NFR-025"></a>
+
+### PRP-NFR-025 — Cross-site route qualification
+เมื่อ compute hosts อยู่คนละสถานที่หรือคนละเครือข่าย ต้องมี boundary record ระบุ site/host, addressing/DNS/NAT, route, direction, service/protocol/port, enforcement owner, peer identity, encryption และ egress พร้อมผลทบทวน `N0-NET` ก่อนปรับ route หรือ dispatch งานข้ามไซต์; route loss/change/revocation ต้องทำให้ qualification ใช้ไม่ได้และปิด dispatch จนกว่าจะทบทวน/ทดสอบใหม่ ห้าม public fallback หรือ hidden reroute
+
+**รับมอบ:** Network owners ทั้งสองไซต์, Operations, Security และ Architecture อนุมัติ record เดียวกัน; ทดสอบ flow ที่อนุญาตและปฏิเสธ source/destination/service/identity ที่ไม่อนุญาต; ยืนยัน route change/loss/revocation ทำให้ไม่มี new dispatch และไม่มี unauthorized egress
+
+**Proof:** cross-site boundary + route qualification / G0 / PRP-AT-093
+
 
 ## 7. Security requirements
 Security cases เป็น release blockers แม้ aggregate pass rate สูง; ผู้ดูแลเครื่องเป็นส่วนของ trust boundary ไม่อ้าง confidential computing
@@ -781,7 +790,7 @@ Security cases เป็น release blockers แม้ aggregate pass rate ส�
 <a id="PRP-SEC-001"></a>
 
 ### PRP-SEC-001 — Private transport
-ใช้ TLS ที่ verify identity หรือ authenticated encrypted tunnel; API/worker/admin/metrics เปิดเฉพาะ permitted callers; runtime API key ลำพังไม่พอ [SRC-02]
+ใช้ TLS ที่ verify identity หรือ authenticated encrypted tunnel; API/worker/admin/metrics เปิดเฉพาะ permitted callers; runtime API key ลำพังไม่พอ [SRC-02] การเชื่อมข้ามไซต์เป็น trust boundary แยกและต้องผ่าน `N0-NET`; link encryption ไม่แทน application TLS/service identity
 
 **รับมอบ:** negative route scan, wrong TLS identity และ unauthenticated engine routes ถูกบล็อก | PRP-AT-075 / D20
 
@@ -861,6 +870,15 @@ P1 shared engines จำกัด trusted organization; host administrator อ�
 worker ไม่มี LINE token/business DB/cloud admin credential; artifact access เป็น scoped short-lived grant; client app compromise จำกัดผลด้วย service quota/scopes
 
 **รับมอบ:** inspect worker environment + denied network access + stolen low-scope key test | PRP-AT-086 / D03
+
+<a id="PRP-SEC-013"></a>
+
+### PRP-SEC-013 — Cross-site route boundary
+เส้นทางข้ามไซต์ต้อง default-deny และอนุญาตเฉพาะ flow ที่มี source/destination, direction, service, protocol/port, purpose, enforcement owner และ reviewer ระบุไว้; client ingress, control-to-worker และ operator management เป็นคนละ flow; ห้าม public worker/admin/metrics/filesystem/SMB/SSH exposure โดยปริยาย; การเปลี่ยน route, DNS binding หรือ peer identity เพิกถอน route qualification
+
+**รับมอบ:** `N0-NET` record ผ่านการทบทวนจากเจ้าของเครือข่ายทั้งสองฝั่ง, Operations, Security และ Architecture; positive/negative route tests, peer/TLS identity, public exposure, egress และ failure/revocation checks ผ่านก่อนประกาศ cross-site READY
+
+**Proof:** network boundary security review / G0 / PRP-AT-094
 
 ## 8. API contract baseline
 | Interface | Success | Scope / semantics |
@@ -989,20 +1007,20 @@ image/video additive APIs/adapters ต้องผ่าน P1 regression + two-
 ## 14. Release gates และ unresolved decisions
 Core P1 acceptance ต้องมี FR/NFR/SEC ทุก MUST ที่เกี่ยวข้องพร้อม implementation/test evidence; test ไม่ได้รันเป็น NOT_RUN/blocked ไม่ใช่ PASS Security isolation, secret leakage, unsafe uncertain release และ unapproved egress เป็น blockers
 
-G0: Python-first / A-B fit-gap / authority binding / locked-environment decision;  approve ownership/API/state/defaults + hardware inventory + selected gateway authority chain
+G0: Python-first / A-B fit-gap / authority binding / locked-environment decision; approve ownership/API/state/defaults + hardware inventory + selected gateway authority chain; when cross-site is selected, pass `N0-NET` and cross-site WP24 qualification before implementation entry
 G1: independent chat service + two qualified replicas + negative security and atomic race tests
 G2: ASR/TTS contracts + licensed preset + async jobs/artifacts + Thai/English quality + placement decision
 G3: mixed workload/restore/rollback/fault/evidence + two independent clients + operator handoff
 Integration-LINE: separate authorized live canary + reply/push/URL/mobile playback evidence
 
-Open decisions ก่อน production: exact GPU/OS/driver, pinned LLM/ASR/TTS artifacts, candidate A/B runtime-management และ gateway/key authority จาก WP24, database/secret-store deployment, capacity profiles, retention/egress approvals, service-user mapping policy และ LINE native bearer-link permission ไม่มี decision ใดถูกเปลี่ยนเป็น approved เพียงเพราะเอกสารนี้มีข้อความละเอียด
+Open decisions ก่อน production: exact GPU/OS/driver, pinned LLM/ASR/TTS artifacts, candidate A/B runtime-management และ gateway/key authority จาก WP24, database/secret-store deployment, capacity profiles, retention/egress approvals, service-user mapping policy, LINE native bearer-link permission และ route-specific `N0-NET`/cross-site evidence เมื่อเลือก topology ข้ามไซต์ ไม่มี decision ใดถูกเปลี่ยนเป็น approved เพียงเพราะเอกสารนี้มีข้อความละเอียด
 
 ## 15. Traceability และ change control
-PRD goal -> Epic -> SRS requirement -> API/architecture/diagram -> acceptance test -> roadmap gate -> implementation/evidence มีรหัสเชื่อมใน TRACEABILITY-PRP และ registry JSON แบบ generated เมื่อ scope ใหม่เปลี่ยนความหมาย requirement ให้ retire/supersede ID เดิม ไม่ recycle
+PRD goal -> Epic -> SRS requirement -> API/architecture/diagram -> acceptance test -> roadmap gate -> implementation/evidence มีรหัสเชื่อมใน TRACEABILITY-PRP และ registry JSON แบบ derived เมื่อ scope ใหม่เปลี่ยนความหมาย requirement ให้ retire/supersede ID เดิม ไม่ recycle
 
 คำว่า source reviewed, document generated และ runtime verified เป็นคนละสถานะ ชุดนี้เขียนเอกสารและตรวจ consistency เท่านั้น ไม่ได้เพิ่ม source code, deploy, ออกคีย์จริง, เปลี่ยน network หรือส่ง LINE
 
-## 16. Implementation strategy clarification for v0.3.0
+## 16. Implementation strategy clarification for v0.4.0
 ใช้ framework ที่มีอยู่ก่อนสร้าง custom infrastructure: vLLM เป็น initial LLM engine, FastAPI/Pydantic เป็น candidate ของ thin Python API, Xinference-managed runtimes และ independent services เป็นแบบที่ต้องเทียบ ส่วน LiteLLM เป็น optional key/routing implementation และ Ray Serve เป็น conditional alternative [SRC-01][SRC-03][SRC-09][SRC-11][SRC-13]
 
 ชื่อ PRP Router/Admission/Registry ไม่ได้สั่งให้เขียนใหม่ทั้งหมด ต้องมี implementation mapping ระบุ REUSE/CONFIGURE/ADAPT/BUILD-GAP ต่อ requirement; ให้ใช้ primitive ที่มีอยู่เมื่อรักษา atomicity, identity, cancellation และ observable execution ได้

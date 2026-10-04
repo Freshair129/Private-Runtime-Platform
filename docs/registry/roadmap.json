@@ -259,9 +259,9 @@
       "phase": "G0",
       "title": "Runtime reuse fit-gap and A/B spikes",
       "owner": "Architecture + Runtime + Security + QA",
-      "deliverable": "A-Xinference vs B-independent services evidence; conditional C-Ray; full requirement mapping; key-recovery gap; target-binding/retry/cancel tests; decision recommendation without fabricated benchmarks",
+      "deliverable": "A-Xinference vs B-independent services evidence; conditional C-Ray; full requirement mapping; key-recovery gap; target-binding/retry/cancel tests; cross-site route qualification when selected and only after N0-NET; decision recommendation without fabricated benchmarks",
       "dependencies": "WP01,WP02",
-      "trace": "NFR-020/023/024; FR-005/017/018/042",
+      "trace": "NFR-020/023/024/025; SEC-013; FR-005/017/018/042",
       "diagrams": "D31,D33,D34",
       "status": "NOT_STARTED"
     },

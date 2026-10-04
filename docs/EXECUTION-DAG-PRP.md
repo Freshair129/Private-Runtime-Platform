@@ -2,7 +2,7 @@
 document_id: EXECUTION-DAG-PRP
 title: "Execution DAG | PRP Implementation through Production"
 product: PRP - Private Runtime Platform
-version: 0.4.0-draft
+version: 0.5.0-draft
 status: approved
 created_at: 2026-09-29
 language: th-TH
@@ -14,7 +14,7 @@ runtime_verification: NOT_RUN
 
 # Execution DAG | PRP Implementation through Production
 
-**PRP — Private Runtime Platform | v0.4.0-draft | 2026-09-29 | APPROVED by the repository owner**
+**PRP — Private Runtime Platform | v0.5.0-draft | 2026-10-04 | APPROVED by the repository owner**
 
 **Complexity / risk:** C-3 / HIGH
 **Related:** [Roadmap](ROADMAP-PRP.md) · [SRS](SRS-PRP.md) · [Verification plan](TEST-PRP.md) · [Operations](OPS-PRP.md) · [Execution Governance](standards/STD-Execution-Governance.md)
@@ -29,7 +29,7 @@ LINE canary and P2 image/video remain separate follow-on tracks. They do not blo
 
 - M1–M3 and the Python skeletons exist. `apps/control-api` has contract-bound routes but no adapters; requests fail closed with `503 STATE_STORE_UNAVAILABLE`. `workers/voice` has the worker contract and lifecycle skeleton but no speech engine. Preserve these seams; do not regenerate the skeleton from scratch.
 - WP24 run 1's approved receipt selects candidate A and satisfies the WP24 decision prerequisite for WP03. Run 2 is supplemental measurement only and does not reopen that decision; DEV-09 remains a limitation on cross-candidate cache/concurrency comparison. The WP01 scope/ownership decision receipt was approved 2026-09-30; WP01 implementation remains `NOT_STARTED`.
-- The owner approved the WP03 contract freeze on 2026-09-30; worker and management contracts are `0.4.0` / `FROZEN` under [the freeze receipt](../.brain/proposals/PROP-2026-09-30-wp03-formal-contract-freeze.md). The public client contract remains proposed at `0.3.0` / `DRAFT` and outside this freeze; its approval or freeze needs a separate owner decision. WP02 has a current Host B snapshot and an owner-provided Host A inventory summary ([Host A report](evidence/wp02/WP02-2026-10-04-host-a-reported-inventory.md)); Host A's raw files are not in this checkout. The owner confirms the hosts are at separate locations and on separate networks; the exact route/boundary remains unverified, and this arrangement does not satisfy the WP24 procedure's same-LAN precondition. A one-shot Host B→Host A ICMP/TCP probe via Host B's default gateway did not connect and is inconclusive about routing vs filtering. RG0 also needs the remaining entry evidence. No WP25/WP04 implementation may start before RG0. All 92 acceptance cases remain `NOT_RUN`; WP01/WP03 approval does not constitute runtime implementation or acceptance evidence.
+- The owner approved the WP03 contract freeze on 2026-09-30; worker and management contracts are `0.4.0` / `FROZEN` under [the freeze receipt](../.brain/proposals/PROP-2026-09-30-wp03-formal-contract-freeze.md). The public client contract remains proposed at `0.3.0` / `DRAFT` and outside this freeze; its approval or freeze needs a separate owner decision. WP02 has a current Host B snapshot and an owner-provided Host A inventory summary ([Host A report](evidence/wp02/WP02-2026-10-04-host-a-reported-inventory.md)); Host A's raw files are not in this checkout. The owner confirms the hosts are at separate locations and on separate networks; exact route/boundary remains unverified, so cross-site WP24 qualification is blocked pending `N0-NET`. The prior one-shot Host B→Host A ICMP/TCP probe via Host B's default gateway is inconclusive about routing vs filtering. RG0 also needs remaining entry evidence. No WP25/WP04 implementation may start before RG0. All 94 acceptance cases remain `NOT_RUN`; WP01/WP03 approval does not constitute runtime implementation or acceptance evidence.
 - The roadmap now records the approved WP24 decision receipt separately from implementation status. Keep work-package implementation statuses `NOT_STARTED` until implementation evidence exists; do not infer PASS from files existing.
 
 Sources: `apps/control-api/README.md`; `workers/voice/README.md`; `docs/CHANGELOG-PRP.md` (M3 and WP24 entries); `docs/evidence/wp24/WP24-2026-09-24-run2/A/FINDINGS.md`; `docs/TEST-PRP.md` §1.
@@ -42,6 +42,8 @@ flowchart TD
   WP01["WP01 Scope/ownership decision approved; implementation pending"]
   WP02["WP02 Hardware/runtime inventory"]
   WP24["WP24 Approved candidate binding; track DEV-09 measurement limitation"]
+  N0NET["N0-NET Site A/B boundary and route review"]
+  WP24X["WP24 cross-site route qualification; only if selected"]
   WP03["WP03 contract freeze approved; implementation pending"]
   RG0["RG0 owner/security + WP02 inventory gate"]
   WP25["WP25 Complete pinned environments and CI gates"]
@@ -71,8 +73,11 @@ flowchart TD
   BASE --> WP02
   WP01 --> WP24
   WP02 --> WP24
+  WP02 --> N0NET
+  N0NET --> WP24X
   WP24 --> WP03
   WP03 --> RG0
+  WP24X -. conditional cross-site target .-> RG0
   RG0 --> WP25
   WP25 --> WP04
   WP01 --> WP04

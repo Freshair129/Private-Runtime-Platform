@@ -84,7 +84,7 @@
 <title>test</title>
 <path fill="#ece8f6" stroke="#536779" stroke-width="1.1" d="M798.5,-197C798.5,-197 640.5,-197 640.5,-197 634.5,-197 628.5,-191 628.5,-185 628.5,-185 628.5,-165 628.5,-165 628.5,-159 634.5,-153 640.5,-153 640.5,-153 798.5,-153 798.5,-153 804.5,-153 810.5,-159 810.5,-165 810.5,-165 810.5,-185 810.5,-185 810.5,-191 804.5,-197 798.5,-197"/>
 <text text-anchor="middle" x="719.5" y="-178.4" font-family="DejaVu Sans" font-size="12.00">Acceptance specifications</text>
-<text text-anchor="middle" x="719.5" y="-165.4" font-family="DejaVu Sans" font-size="12.00">AT001&#45;AT092 (NOT_RUN)</text>
+<text text-anchor="middle" x="719.5" y="-165.4" font-family="DejaVu Sans" font-size="12.00">AT001&#45;AT094 (NOT_RUN)</text>
 </g>
 <!-- srs&#45;&gt;test -->
 <g id="edge5" class="edge">

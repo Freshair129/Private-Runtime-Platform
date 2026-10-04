@@ -1,16 +1,16 @@
 ---
 document_id: DIAGRAMS-PRP
-version: 0.3.0
+version: 0.4.0
 status: draft-for-review
 ---
 
 # Diagram Atlas | PRP Architecture & Flows
 
-**34 rendered diagrams | v0.3.0 | 2026-09-20 | Design views, not implementation evidence**
+**34 rendered diagrams | v0.4.0 | 2026-10-04 | Design views, not implementation evidence**
 
 ภาพใช้ English labels เพื่ออ่านชื่อ API/state ตรงกัน ส่วนคำอธิบายเป็นภาษาไทย กล่องแสดงความรับผิดชอบเชิงตรรกะ ไม่ได้บังคับสร้าง microservice/custom code ทุกกล่อง D31..34 เพิ่ม Python-first/reuse boundaries; D01..30 คง ID เดิมและแก้ส่วนที่ได้รับผล
 
-[PRD](PRD-PRP.md) · [SRS](SRS-PRP.md) · [Roadmap](ROADMAP-PRP.md) · [Stack Evaluation](STACK-EVALUATION-PRP.md)
+[PRD](PRD-PRP.md) · [SRS](SRS-PRP.md) · [Roadmap](ROADMAP-PRP.md) · [Stack Evaluation](STACK-EVALUATION-PRP.md) · [Network Boundary](NETWORK-BOUNDARY-PRP.md)
 
 <a id="D01"></a>
 
@@ -56,17 +56,17 @@ v0.3.0: logical ownership can be implemented by reused libraries/configuration; 
 
 <a id="D04"></a>
 
-## D04 — Two-host private deployment
+## D04 — Two-site private deployment
 
-**Type:** Deployment / network topology | **Trace:** PRP-FR-018,044,050; PRP-NFR-012
+**Type:** Deployment / network topology | **Trace:** PRP-FR-018,044,050; PRP-NFR-012,025; PRP-SEC-013
 
-สองเครื่องไม่เท่ากับ high availability; speech แชร์ GPU เฉพาะหลัง qualification
+แยก client ingress จาก control-to-worker และ operator flows; เส้นทางข้ามไซต์เป็น default-deny และเริ่มได้หลัง N0-NET; สองเครื่องไม่เท่ากับ high availability
 
-![D04: Two-host private deployment](diagrams/svg/D04.svg)
+![D04: Two-site private deployment](diagrams/svg/D04.svg)
 
 [Editable source](diagrams/source/D04.dot) · [SVG](diagrams/svg/D04.svg) · [PNG](diagrams/png/D04.png)
 
-v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.
+v0.4.0: routed path is a conditional logical view; actual route, endpoints and ports require N0-NET and separate runtime qualification. D04.svg was layout-refreshed directly because Graphviz `dot` was unavailable; regenerate SVG/PNG from D04.dot before release.
 
 <a id="D05"></a>
 

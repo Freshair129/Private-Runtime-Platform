@@ -28,11 +28,11 @@
   },
   {
     "id": "D04",
-    "title": "Two-host private deployment",
+    "title": "Two-site private deployment",
     "type": "Deployment / network topology",
-    "description": "สองเครื่องไม่เท่ากับ high availability; speech แชร์ GPU เฉพาะหลัง qualification",
-    "requirements": "PRP-FR-018,044,050; PRP-NFR-012",
-    "notes": "v0.3.0: logical ownership can be implemented by reused libraries/configuration; no automatic custom service.",
+    "description": "แยก client ingress, control-to-worker และ operator flows; route ข้ามไซต์เป็น default-deny และต้องผ่าน N0-NET; ไม่ใช่ HA",
+    "requirements": "PRP-FR-018,044,050; PRP-NFR-012,025; PRP-SEC-013",
+    "notes": "v0.4.0: logical route only; no configured path or runtime qualification is implied.",
     "source": "diagrams/source/D04.dot"
   },
   {

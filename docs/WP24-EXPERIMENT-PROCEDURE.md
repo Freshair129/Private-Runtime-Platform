@@ -2,44 +2,44 @@
 document_id: WP24-PROCEDURE
 title: "WP24 | ขั้นตอนทดลอง fit-gap และ A/B spikes"
 product: PRP - Private Runtime Platform
-version: 0.4.0-draft
+version: 0.5.0-draft
 status: approved
 created_at: 2026-09-20
 language: th-TH
 source_authority: authored-proposal
 implementation_status: NOT_IMPLEMENTED
 runtime_verification: NOT_RUN
-decision: APPROVED 2026-09-20 by the repository owner; run records go to docs/evidence/wp24/
+decision: "WP24 candidate decision approved 2026-09-20; cross-site boundary/procedure update approved by repository owner 2026-10-04; run records go to docs/evidence/wp24/"
 governance:
-  complexity: C-2
+  complexity: C-3
   access_scope: H4
   w_scale: N/A
-  risk: MEDIUM
+  risk: HIGH
 ---
 
 # WP24 | ขั้นตอนทดลอง fit-gap และ A/B spikes
 
-**PRP — Private Runtime Platform | v0.4.0-draft | 2026-09-20 | APPROVED 2026-09-20 โดย owner; ยังไม่มีการรัน ไม่มี run record**
+**PRP — Private Runtime Platform | v0.5.0-draft | 2026-10-04 | APPROVED by owner for procedure/design; cross-site route and runtime qualification NOT_RUN**
 
-เอกสารที่เกี่ยวข้อง: STACK-EVALUATION-PRP §2–§8 · ROADMAP-PRP WP24 / WP03 / WP10 · SRS-PRP NFR-019..024, FR-003..022, FR-042..044 · `registry/reuse-fit-gap-template.json` · `registry/stack-evaluation-template.json` · `evidence/README.md` · SOURCES-PRP
+เอกสารที่เกี่ยวข้อง: STACK-EVALUATION-PRP §2–§8 · ROADMAP-PRP WP24 / WP03 / WP10 · SRS-PRP NFR-019..025, SEC-013, FR-003..022, FR-042..044 · [Network Boundary](NETWORK-BOUNDARY-PRP.md) · `registry/reuse-fit-gap-template.json` · `registry/stack-evaluation-template.json` · `evidence/README.md` · SOURCES-PRP
 
 ## 1. เอกสารนี้เป็นอะไรและไม่เป็นอะไร
 
-เป็น **ขั้นตอน** สำหรับผู้ทดลองและผู้ตรวจของ WP24 เพื่อให้ผลออกมาเป็นหลักฐานที่ WP03 ใช้ตัดสิน candidate ได้ ทุกข้อในนี้ผูกกับ gate ที่ STACK-EVALUATION §6 กำหนดไว้แล้ว ไม่เพิ่ม experiment ใหม่
+เป็น **ขั้นตอน** สำหรับผู้ทดลองและผู้ตรวจของ WP24 เพื่อให้ผลออกมาเป็นหลักฐานที่ WP03 ใช้ตัดสิน candidate ได้ การเลือก Candidate A เดิมยังคงเดิม; สำหรับ target ข้ามไซต์ให้เพิ่ม network-boundary qualification ใน EV02 ตาม gate `N0-NET` ก่อน ไม่ย้อนแก้ run record เก่า
 
 ไม่เป็นผลการทดลอง ไม่มีตัวเลขใดในเอกสารนี้ ตัวเลขทุกตัวต้องมาจาก run record ที่วัดจริง (§7) กติกาที่บังคับตลอด:
 
 - **ห้าม stub เป็น proof** โดยเฉพาะคุณภาพเสียง (STACK §6) และห้ามใส่ benchmark ที่ไม่ได้วัด (STACK §7)
 - **ห้าม DEFER requirement ระดับ P1 Must แล้วประกาศว่า P1 ผ่าน** (STACK §5) สิ่งที่ยังทดลองไม่ได้ให้ลง `BLOCKED` พร้อม blocker
 - **ห้ามแก้ code ของ PRP ระหว่างรัน** สิ่งที่พบว่าขาดให้ลงคอลัมน์ `custom_gap` ของ fit-gap ไม่ใช่ patch (NFR-020)
-- **ผลของ WP24 คือหลักฐานเรื่อง candidate** ไม่ใช่การพิสูจน์ PRP end-to-end acceptance test ทั้ง 92 กรณียัง NOT_RUN หลัง WP24 จบ เพราะ PRP ยังไม่มี adapter (M4)
+- **ผลของ WP24 คือหลักฐานเรื่อง candidate** ไม่ใช่การพิสูจน์ PRP end-to-end acceptance test ทั้ง 94 กรณียัง NOT_RUN หลัง WP24 จบ เพราะ PRP ยังไม่มี adapter (M4)
 
 ## 2. เงื่อนไขก่อนเริ่ม (owner / ops จัดหา)
 
 | รายการ | ผู้จัดหา | บันทึกลง record ที่ |
 |---|---|---|
-| Host A (nominal VRAM 12 GB) และ Host B (16 GB) ใน LAN เดียวกัน พร้อม driver / CUDA ที่ติดตั้งแล้ว และเครื่องที่ control processes จะรัน (ตาม SRS host topology และ ARCH §3 control co-locate บน CPU ของ A ได้ ไม่ต้องมีเครื่องที่สาม) การมี GPU driver บนเครื่องเดียวกันเป็นสิ่งที่ **บันทึก** ไม่ใช่สิ่งต้องห้าม ข้อกำหนดจริงคือ control process ต้องไม่แตะ GPU (NFR-021) และมี lock แยก (NFR-022) | ops | `environment.gpu_hosts[]`, `environment.control_host` |
-| Network boundary: LAN เท่านั้น ไม่ expose สู่ public, egress policy ระบุชัด (ARCH §1 ไม่มี automatic public-cloud) | ops | `environment.network_boundary` |
+| Host A (nominal VRAM 12 GB) และ Host B (16 GB) พร้อม driver / CUDA ที่ติดตั้งแล้ว และเครื่องที่ control processes จะรัน (ตาม SRS host topology และ ARCH §3 control co-locate บน CPU ของ A ได้ ไม่ต้องมีเครื่องที่สาม) การมี GPU driver บนเครื่องเดียวกันเป็นสิ่งที่ **บันทึก** ไม่ใช่สิ่งต้องห้าม ข้อกำหนดจริงคือ control process ต้องไม่แตะ GPU (NFR-021) และมี lock แยก (NFR-022) | ops | `environment.gpu_hosts[]`, `environment.control_host` |
+| Network profile ต้องเป็น `SAME_LAN` หรือ `CROSS_SITE_PRIVATE_ROUTED`; ทั้งคู่ห้าม expose worker/admin/metrics สู่ public และต้องระบุ egress. `CROSS_SITE_PRIVATE_ROUTED` ต้องผ่าน `N0-NET` จาก [Network Boundary](NETWORK-BOUNDARY-PRP.md) ก่อนตั้งค่า route หรือ probe; ถ้ายังไม่ผ่าน EV01 เท่านั้นที่เริ่มได้ และ cross-site EV02 เป็น BLOCKED. | ops + network owners + Security | `environment.network_boundary` |
 | Test corpus: ข้อความและเสียงที่เตรียมไว้เพื่อทดสอบเท่านั้น ห้ามใช้ข้อมูลหรือเสียงลูกค้า (Coding-Standards §10) พร้อม data-retention rule | owner | `environment.test_corpus`, `environment.data_retention` |
 | LLM model ที่จะใช้ทดลอง: ชื่อ, revision, tokenizer, chat template, context length, license ตรวจแล้ว **ชุดเดียวใช้กับทั้ง A และ B** (STACK §6) โมเดลเป็น BYOM: owner นำมาเองและรับผิดชอบสิทธิ์ แต่ license receipt ตาม SEC-007 / SECURITY-DATA §8 ยังต้องมีก่อน activation | owner | `shared_revision` |
 | Speech candidate (ถ้าจะรวมใน WP24): faster-whisper รุ่นใด, TTS ใด (F5-TTS-THAI ต้องผ่าน license/voice-rights gate [SRC-08]) หรือตัดสินว่า EV07 เป็น BLOCKED โดยตั้งใจจน WP10 | owner | `shared_revision.asr_model`, `shared_revision.tts_model`, `experiments.EV07` |
@@ -48,7 +48,7 @@ governance:
 | ผู้ทดลอง 1 คน ผู้ตรวจ 1 คน (คนเดียวกันไม่ได้) และ time box ต่อ candidate | owner | `people`, `run_window` |
 | ตัดสินว่า candidate C (Ray Serve) อยู่ใน scope หรือไม่ (STACK §7: ไม่บังคับเพิ่ม C เมื่อ A/B ยังไม่ผ่าน) LiteLLM **ตัดสินแล้ว 2026-09-20**: อยู่ใน scope เฉพาะ EV04 + EV03 ภายใน candidate B, time box รวมไม่เกิน 1 วันทำงาน (ดู EV04) | owner | `candidates[].in_scope`, `scope_decisions` |
 
-ถ้ารายการใดยังไม่มี ให้เริ่มเฉพาะ EV01 (ไม่ต้องใช้ GPU) และบันทึกส่วนที่เหลือเป็น `BLOCKED` พร้อมชื่อรายการที่ขาด
+ถ้ารายการใดยังไม่มี ให้เริ่มเฉพาะ EV01 (ไม่ต้องใช้ GPU) และบันทึกส่วนที่เหลือเป็น `BLOCKED` พร้อมชื่อรายการที่ขาด หากเลือก profile `CROSS_SITE_PRIVATE_ROUTED` ห้ามตั้งค่า route หรือ probe จน `N0-NET` ผ่านและมี authorization แยกสำหรับ configuration step
 
 ## 3. กติกาการรันร่วมทุก experiment
 
@@ -68,7 +68,7 @@ EV01 (control host, ไม่มี GPU, ครั้งเดียวสำห
        └─ reset hosts
   └─ candidate B: ลำดับเดียวกัน
   └─ candidate C: เฉพาะเมื่อ owner ให้อยู่ใน scope
-→ full requirement mapping (92 แถว) → decision recommendation → reviewer sign-off → WP03
+→ full requirement mapping (94 แถว) → decision recommendation → reviewer sign-off → WP03
 ```
 
 EV04 ขึ้นก่อน EV03 ในลำดับปฏิบัติเพราะทุก endpoint ต้องมี auth ก่อนจึงทดสอบ binding ได้อย่างมีความหมาย gate ทั้งสองยังเป็นอิสระต่อกันตาม §6
@@ -90,9 +90,11 @@ EV04 ขึ้นก่อน EV03 ในลำดับปฏิบัติเ
 
 **เกณฑ์:** `PASS` เมื่อ PRP ผ่านทั้งข้อ 1–2 โดยไม่มี ML module ใน `sys.modules` หลัง import ทุก module ของ control และ process ของ `prp-api` ไม่ปรากฏใน GPU process list (เมื่อเครื่องมี GPU) และ SDK ของ candidate import ได้โดยไม่มี ML module; `FAIL` เมื่อ SDK ดึง ML เข้ามาและไม่มีทางเลือก HTTP-only; disposition ที่เป็นไปได้: REUSE (HTTP only), ADAPT (เขียน thin HTTP client เอง) การรันบนเครื่องที่ไม่มี driver เป็นหลักฐานเสริมที่เลือกได้ ไม่ใช่ precondition
 
-### EV02 Real A/B registration — gate PRP-FR-010..015
+### EV02 Real A/B registration — gate PRP-FR-010..015, PRP-NFR-025, PRP-SEC-013
 
 **คำถาม:** candidate เปิด LLM runtime บน host A และ B เป็น replica อิสระ พร้อมข้อมูลพอให้ PRP ผูก node กับ physical GPU, model profile และ epoch ได้หรือไม่
+
+**Cross-site precondition:** หาก `environment.network_boundary.profile` เป็น `CROSS_SITE_PRIVATE_ROUTED`, ต้องอ้าง `N0-NET` record ref + SHA-256 ที่ reviewer เข้าถึงได้ใน store ที่ owner อนุมัติ และสถานะต้องเป็น `PASS` ก่อนเริ่ม network action; เก็บเฉพาะ ref/hash/redacted disposition ใน repo, ห้าม commit credentials หรือข้อมูล network ละเอียดที่ owner จัดเป็น restricted.
 
 **ขั้นตอน**
 1. Launch LLM runtime บน A และ B ตามวิธีของ candidate (A: Xinference supervisor + workers [SRC-09]; B: vLLM service ต่อเครื่อง [SRC-01]) ด้วย `shared_revision` เดียวกัน
@@ -213,18 +215,18 @@ owner ตัดสินใจเมื่อ 2026-09-20 ว่า speech ไม
 |---|---|---|
 | Run record หนึ่งไฟล์ต่อรอบ | `docs/evidence/wp24/<record_id>.json` | [`registry/wp24-run-record-template.json`](registry/wp24-run-record-template.json) |
 | Artifact ของทุกคำสั่งและ log | `docs/evidence/wp24/<record_id>/<candidate>/<EVnn>/` | — |
-| fit-gap ที่เติมผลจริง 92 แถว | `docs/registry/reuse-fit-gap.<record_id>.json` **copy** จาก template; template เดิมห้ามแก้ (validator ปฏิเสธ) | `registry/reuse-fit-gap-template.json` |
+| fit-gap ที่เติมผลจริง 94 แถว | `docs/registry/reuse-fit-gap.<record_id>.json` **copy** จาก template; template เดิมห้ามแก้ (validator ปฏิเสธ) | `registry/reuse-fit-gap-template.json` |
 | candidate-level evidence + decision receipt | ส่วน `candidates` และ `decision_receipt` ใน run record ตามโครง `stack-evaluation-template.json` และ STACK §8 | `registry/stack-evaluation-template.json` |
 
 `record_id` รูปแบบ `WP24-<YYYY-MM-DD>-run<n>` ทุกไฟล์อ้าง `record_id` เดียวกัน ค่าที่ต้องไม่เป็น null ตอนส่งตรวจ: `people.operator`, `people.reviewer`, `prepared_from.prp_commit`, `shared_revision.*` ที่ใช้จริง, `candidates[].version_manifest` ของทุก candidate ที่รัน, สถานะทุก gate ของทุก EV ที่ไม่ใช่ NOT_RUN ต้องมี `artifacts` อย่างน้อยหนึ่งรายการ
 
-งาน tooling ที่ตามมา (ไม่อยู่ในเอกสารนี้): ขยาย `tools/docs/validate_docs.py` ให้ตรวจ run record กับ template (ชื่อ gate ตรง §6, ไม่มี PASS ที่ไม่มี artifact, fit-gap copy มี 92 แถวและ disposition ไม่ใช่ UNASSESSED) เมื่อมีไฟล์แรกจริง
+งาน tooling ที่ตามมา (ไม่อยู่ในเอกสารนี้): ขยาย `tools/docs/validate_docs.py` ให้ตรวจ run record กับ template (ชื่อ gate ตรง §6, ไม่มี PASS ที่ไม่มี artifact, fit-gap copy มี 94 แถวและ disposition ไม่ใช่ UNASSESSED) เมื่อมีไฟล์แรกจริง
 
 ## 8. เกณฑ์จบ WP24 (ตาม deliverable ใน `registry/roadmap.json`)
 
 1. หลักฐาน A เทียบ B ครบทุก EV ที่รันได้ และ EV ที่รันไม่ได้มี `BLOCKED` พร้อม blocker ทั้งคู่
 2. C มีผลเฉพาะเมื่ออยู่ใน scope ไม่บังคับ
-3. Full requirement mapping: ทั้ง 92 แถวมี disposition ไม่ใช่ UNASSESSED หรือมี blocker ระบุ; ไม่มี P1 Must ที่เป็น DEFER
+3. Full requirement mapping: ทั้ง 94 แถวมี disposition ไม่ใช่ UNASSESSED หรือมี blocker ระบุ; ไม่มี P1 Must ที่เป็น DEFER
 4. key-recovery gap (FR-005 ของ A) มีคำตอบจากการรันจริง
 5. target-binding / retry / cancel (EV03, EV06) มีหลักฐานต่อ candidate
 6. `decision_receipt` ตาม STACK §8 ครบทุก field พร้อม `rejected_alternatives` และ `rollback_exit_plan` ไม่มีตัวเลขที่ไม่ได้วัด
